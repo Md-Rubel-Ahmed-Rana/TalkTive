@@ -5,6 +5,7 @@ import React, { ReactElement, useState } from "react";
 import ShowMessages from "./ShowMessage";
 import { MdOutlineCall, MdOutlineVideoCall } from "react-icons/md";
 import NoUserSelected from "./NoUserSelected";
+import MessageForm from "./MessageForm";
 
 const users = [
   { id: 1, name: "Rubel", image: "https://i.ibb.co/1MqspsL/user-Avater.png" },
@@ -90,7 +91,14 @@ const Inbox = () => {
             </div>
           </div>
         )}
-        {selectedUser?.name ? <ShowMessages /> : <NoUserSelected />}
+        {selectedUser?.name ? (
+          <>
+            <ShowMessages />
+            <MessageForm />
+          </>
+        ) : (
+          <NoUserSelected />
+        )}
       </div>
     </div>
   );
