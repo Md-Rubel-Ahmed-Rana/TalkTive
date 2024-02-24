@@ -11,6 +11,17 @@ const sendMessage = async (req: Request, res: Response) => {
   });
 };
 
+const getMessages = async (req: Request, res: Response) => {
+  const result = await MessageService.getMessages(req.params.conversationId);
+  res.status(200).json({
+    statusCode: 200,
+    success: true,
+    message: "Messages fetched successfully",
+    data: result,
+  });
+};
+
 export const MessageController = {
   sendMessage,
+  getMessages,
 };

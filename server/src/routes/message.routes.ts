@@ -4,4 +4,6 @@ const router = Router();
 
 router.post("/send", MessageController.sendMessage);
 
+router.get("/:conversationId", MessageController.getMessages);
+
 export const MessageRoutes = router;

@@ -11,6 +11,11 @@ const register = async (user: IUser) => {
   return newUser;
 };
 
+const getUsers = async () => {
+  const users = await User.find({}).select({ name: 1, image: 1 });
+  return users;
+};
+
 const login = async (credentials: ILogin) => {
   const user: any = await User.findOne({ email: credentials?.email });
 
@@ -60,4 +65,5 @@ export const UserService = {
   register,
   login,
   auth,
+  getUsers,
 };

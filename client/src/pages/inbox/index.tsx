@@ -6,33 +6,11 @@ import ShowMessages from "./ShowMessage";
 import { MdOutlineCall, MdOutlineVideoCall } from "react-icons/md";
 import NoUserSelected from "./NoUserSelected";
 import MessageForm from "./MessageForm";
-
-const users = [
-  { id: 1, name: "Rubel", image: "https://i.ibb.co/1MqspsL/user-Avater.png" },
-  {
-    id: 2,
-    name: "Bodrul Amin",
-    image: "https://i.ibb.co/1MqspsL/user-Avater.png",
-  },
-  {
-    id: 3,
-    name: "Najim Uddin",
-    image: "https://i.ibb.co/1MqspsL/user-Avater.png",
-  },
-  {
-    id: 4,
-    name: "Ahad Uddin",
-    image: "https://i.ibb.co/1MqspsL/user-Avater.png",
-  },
-];
+import UserList from "./UserList";
+import { IUser, userInitData } from "@/interfaces/user.interface";
 
 const Inbox = () => {
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-
-  const handleUserClick = (user: any) => {
-    setSelectedUser(user);
-  };
-
+  const [selectedUser, setSelectedUser] = useState<IUser>(userInitData);
   return (
     <div className="flex py-5">
       <div className="w-1/4 border-r">
@@ -43,32 +21,14 @@ const Inbox = () => {
             placeholder="Search dears to chat"
           />
         </div>
-        <ul>
-          {users.map((user: any) => (
-            <>
-              <li
-                key={user.id}
-                className={`p-4 cursor-pointer flex items-center gap-3 ${
-                  selectedUser?.id === user.id ? "bg-gray-200" : ""
-                }`}
-                onClick={() => handleUserClick(user)}
-              >
-                <img
-                  className="w-12 h-10 rounded-full"
-                  src={
-                    user?.image || "https://i.ibb.co/1MqspsL/user-Avater.png"
-                  }
-                  alt=""
-                />
-                <p>{user.name}</p>
-              </li>
-              <hr />
-            </>
-          ))}
-        </ul>
+        {/* // users list  */}
+        <UserList
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+        />
       </div>
       <div className="w-3/4">
-        {selectedUser && (
+        {selectedUser.id && (
           <div className="p-4 flex justify-between items-center shadow-md">
             <div className="flex items-center gap-3">
               <img
@@ -91,10 +51,10 @@ const Inbox = () => {
             </div>
           </div>
         )}
-        {selectedUser?.name ? (
+        {selectedUser?.name !== "" ? (
           <>
-            <ShowMessages />
-            <MessageForm />
+            <ShowMessages selectedUser={selectedUser} />
+            <MessageForm selectedUser={selectedUser} />
           </>
         ) : (
           <NoUserSelected />

@@ -11,6 +11,13 @@ const messageApi = apiSlice.injectEndpoints({
       invalidatesTags: ["message"] as any,
     }),
 
+    getMessages: builder.query({
+      query: (conversationId) => ({
+        url: `/message/${conversationId}`,
+      }),
+      providesTags: ["message"] as any,
+    }),
+
     deleteMessage: builder.mutation({
       query: (id) => ({
         url: `/message/delete/${id}`,
@@ -34,4 +41,5 @@ export const {
   useSendMessageMutation,
   useDeleteMessageMutation,
   useEditMessageMutation,
+  useGetMessagesQuery,
 } = messageApi;

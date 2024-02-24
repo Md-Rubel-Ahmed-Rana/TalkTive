@@ -19,10 +19,14 @@ type Inputs = {
   files?: FileList | string[];
 };
 
-const MessageForm = () => {
+type Props = {
+  selectedUser: IUser;
+};
+
+const MessageForm = ({ selectedUser }: Props) => {
   const { data: userData } = useLoggedInUserQuery({});
-  const { socket, setRealTimeMessages }: any = useContext(SocketContext);
   const user: IUser = userData?.data;
+  const { socket, setRealTimeMessages }: any = useContext(SocketContext);
   const { register, handleSubmit, reset } = useForm<Inputs>({
     mode: "onChange",
   });
@@ -48,7 +52,7 @@ const MessageForm = () => {
     data.files = filesUrls!;
     data.images = imageUrls!;
     data.poster = user.id;
-    data.conversationId = "";
+    data.conversationId = `${user.id}&${selectedUser.id}`;
     const result: any = await sendMessage(data);
     if (result?.data?.success) {
       const message = result?.data?.data;
@@ -111,7 +115,7 @@ const MessageForm = () => {
   };
 
   return (
-    <div className="mx-auto bg-gray-200 dark:bg-gray-700 shadow-md px-6 py-2 rounded-md mt-8">
+    <div className="mx-auto bg-gray-200 dark:bg-gray-700 shadow-md px-6 py-2 mt-8">
       {/* Image Preview Section */}
       {imagePreview.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">

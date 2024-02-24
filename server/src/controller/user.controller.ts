@@ -20,6 +20,25 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
+const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await UserService.getUsers();
+    res.status(200).json({
+      statusCode: 200,
+      success: true,
+      message: "Successfully fetched users",
+      data: users,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      statusCode: 500,
+      success: false,
+      message: "Failed to register",
+      error: error.message,
+    });
+  }
+};
+
 const login = async (req: Request, res: Response) => {
   try {
     const token = await UserService.login(req.body);
@@ -63,4 +82,5 @@ export const UserController = {
   register,
   login,
   auth,
+  getUsers,
 };

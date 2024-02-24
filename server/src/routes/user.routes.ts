@@ -9,4 +9,6 @@ router.post("/login", UserController.login);
 
 router.get("/auth", UserController.auth);
 
+router.get("/", UserController.getUsers);
+
 export const UserRoutes = router;
