@@ -1,6 +1,10 @@
+import { useCreateUserMutation } from "@/features/user/user.api";
 import Layout from "@/layout";
-import React, { ReactElement } from "react";
+import { useRouter } from "next/router";
+import React, { ReactElement, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import Swal from "sweetalert2";
+import useUploadFile from "@/hooks/useUploadFile";
 
 type Inputs = {
   name: string;
@@ -10,8 +14,45 @@ type Inputs = {
 };
 
 const Register = () => {
+  const router = useRouter();
   const { handleSubmit, register } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const [profilePicture, setProfilePicture] = useState("");
+  const [createUser] = useCreateUserMutation();
+
+  const handleRegister: SubmitHandler<Inputs> = async (data) => {
+    data.image = profilePicture;
+    const result: any = await createUser(data);
+    if (result?.data?.success) {
+      if (result?.data?.success) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: result?.data?.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        router.push("/login");
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: result?.data?.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    }
+  };
+
+  const uploadFile = useUploadFile();
+
+  const handleFileChange = async (e: any) => {
+    const selectedFile = e.target.files[0];
+    const uploadedFile: any = await uploadFile(selectedFile);
+    setProfilePicture(uploadedFile?.url);
+  };
+
+  console.log({ profilePicture });
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -26,7 +67,7 @@ const Register = () => {
             join the conversation!
           </p>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
           <div className="flex flex-col">
             <label htmlFor="name" className="font-semibold">
               Name
@@ -71,9 +112,9 @@ const Register = () => {
               Profile Image
             </label>
             <input
-              {...register("image")}
               type="file"
-              id="profile-image"
+              accept="image/*"
+              onChange={handleFileChange}
               className="border border-gray-300 rounded px-4 py-2"
               placeholder="Profile Image"
               required

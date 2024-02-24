@@ -1,11 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
+import { useLoggedInUserQuery } from "@/features/user/user.api";
+import { IUser } from "@/interfaces/user.interface";
 import Link from "next/link";
 import React from "react";
 import { MdMessage } from "react-icons/md";
 const Navbar = () => {
-  const user = {
-    email: "ruasdfgbsdjf",
-  };
+  const { data }: any = useLoggedInUserQuery({});
+  const user: IUser = data?.data;
+
   return (
     <div className="navbar bg-base-100 shadow-md">
       <div className="navbar-start">
@@ -18,8 +20,8 @@ const Navbar = () => {
         )}
         {user?.email && (
           <img
-            className="w-16 h-12 rounded-full"
-            src="https://i.ibb.co/1MqspsL/user-Avater.png"
+            className="w-12 h-12 object-cover rounded-full"
+            src={user?.image}
             alt=""
           />
         )}

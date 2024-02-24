@@ -1,6 +1,9 @@
+import { useLoginUserMutation } from "@/features/user/user.api";
 import Layout from "@/layout";
 import React, { ReactElement } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 
 type Inputs = {
   email: string;
@@ -9,7 +12,31 @@ type Inputs = {
 
 const Login = () => {
   const { handleSubmit, register } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const [loginUser] = useLoginUserMutation();
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    const result: any = await loginUser(data);
+    Cookies.set("talktiveAccessToken", result?.data?.data, { expires: 6 });
+    if (result?.data?.success) {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: result?.data?.message,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      window.location.replace("/inbox");
+    }
+    if (result?.error?.data?.statusCode === 404) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: result?.error?.data?.message,
+        showConfirmButton: false,
+        timer: 2500,
+      });
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen">

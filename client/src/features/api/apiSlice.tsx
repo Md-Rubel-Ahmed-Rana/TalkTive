@@ -4,9 +4,9 @@ import Cookies from "js-cookie";
 const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000",
+    baseUrl: "http://localhost:5050",
     headers: {
-      authorization: Cookies.get("tmAccessToken") as string,
+      authorization: Cookies.get("talktiveAccessToken") as string,
     },
   }),
   tagTypes: ["user", "message"] as any,

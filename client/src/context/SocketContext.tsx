@@ -19,18 +19,13 @@ type Props = {
 
 const SocketProvider = ({ children }: Props) => {
   const socketIo: any = io;
-  const socket = socketIo.connect("http://localhost:5000");
+  const socket = socketIo.connect("http://localhost:5050");
   const [realTimeMessages, setRealTimeMessages] = useState<IMessage[]>([]);
   const user: IUser = useGetLoggedInUser();
 
-  // connect to socket notification room
+  // connect to socket message room
   useEffect(() => {
-    socket.emit("notification-room", user?.id);
-  }, [socket, user?.id]);
-
-  // connect to socket active
-  useEffect(() => {
-    socket.emit("active", user?.id);
+    socket.emit("message-room", user?.id);
   }, [socket, user?.id]);
 
   const values: IContext = {
