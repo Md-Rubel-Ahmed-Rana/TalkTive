@@ -56,7 +56,11 @@ const auth = async (token: string) => {
       data: null,
     });
   } else {
-    const user = await User.findById(verifyUser?.id);
+    const user = await User.findById(verifyUser?.id).select({
+      name: 1,
+      email: 1,
+      image: 1,
+    });
     return user;
   }
 };

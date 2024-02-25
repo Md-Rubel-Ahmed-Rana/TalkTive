@@ -36,13 +36,20 @@ io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("message-room", (userId: string) => {
-    console.log("Joined to room", userId);
     socket.join(userId);
   });
 
   socket.on("message", (data) => {
-    console.log("Emit data", data);
     io.to(data.receiver.id).emit("message", data);
+  });
+
+  // calling feature
+  socket.on("videoCall", (data) => {
+    socket.to(data.to).emit("videoCall", data);
+  });
+
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
   });
 
   socket.on("disconnect", () => {

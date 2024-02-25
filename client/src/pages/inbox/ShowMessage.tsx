@@ -24,8 +24,6 @@ const ShowMessages = ({ selectedUser }: Props) => {
   });
   const messages: IMessage[] = messageData?.data;
 
-  console.log(realTimeMessages);
-
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
