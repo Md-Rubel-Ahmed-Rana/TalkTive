@@ -12,8 +12,8 @@ const messageApi = apiSlice.injectEndpoints({
     }),
 
     getMessages: builder.query({
-      query: (conversationId) => ({
-        url: `/message/${conversationId}`,
+      query: ({ sender, receiver }) => ({
+        url: `/message/${sender}/${receiver}`,
       }),
       providesTags: ["message"] as any,
     }),

@@ -2,10 +2,9 @@ import { Types } from "mongoose";
 import { IUser } from "./user.interface";
 
 export type IMessage = {
-  poster: Types.ObjectId | IUser;
-  conversationId: string;
-  type: string;
-  text?: string;
+  sender: Types.ObjectId | IUser;
+  receiver: Types.ObjectId | IUser;
+  content?: string;
   images?: string[];
   files?: string[];
 };

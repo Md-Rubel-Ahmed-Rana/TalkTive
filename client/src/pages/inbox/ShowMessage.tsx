@@ -18,15 +18,19 @@ const ShowMessages = ({ selectedUser }: Props) => {
     useContext(SocketContext);
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
-  const conversationId =
-    `${user?.id}&${selectedUser?.id}` || `${selectedUser?.id}&${user?.id}`;
-  const { data: messageData } = useGetMessagesQuery(conversationId);
-  const messages = messageData?.data;
+  const { data: messageData } = useGetMessagesQuery({
+    sender: user.id,
+    receiver: selectedUser.id,
+  });
+  const messages: IMessage[] = messageData?.data;
+
+  console.log(realTimeMessages);
 
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleMessage = (data: IMessage) => {
+      console.log("Received data", data);
       setRealTimeMessages((prev: IMessage[]) => [...prev, data]);
     };
 
@@ -55,26 +59,26 @@ const ShowMessages = ({ selectedUser }: Props) => {
       ref={messagesContainerRef}
       className="h-96  overflow-hidden hover:overflow-auto"
     >
-      {messages?.map((post: any, index: number) => (
-        <div key={post?.id} className="mx-auto p-6 border-t">
+      {realTimeMessages?.map((message: IMessage) => (
+        <div key={message?.id} className="mx-auto p-6 border-t">
           <div className="flex items-center justify-between">
             <div className="flex items-center mb-4">
               <img
-                src={post?.poster?.image}
-                alt={post?.poster?.name}
+                src={message?.sender?.image}
+                alt={message?.sender?.name}
                 className="w-10 h-10 rounded-full mr-4"
               />
               <div className="flex flex-col gap-1">
-                <span className="font-bold">{post?.poster?.name}</span>
+                <span className="font-bold">{message?.sender?.name}</span>
                 <span className="text-sm text-gray-500">
-                  {moment(post?.createdAt).fromNow()}
+                  {moment(message?.createdAt).fromNow()}
                 </span>
               </div>
             </div>
           </div>
           <div className="mx-auto p-2">
-            <p className="mb-4">{post?.text}</p>
-            <p>{formattedDate(post.createdAt)}</p>
+            <p className="mb-4">{message?.content}</p>
+            <p>{formattedDate(message.createdAt)}</p>
           </div>
         </div>
       ))}

@@ -3,17 +3,17 @@ import { IMessage } from "../interfaces/message.interface";
 
 const messageSchema = new Schema<IMessage>(
   {
-    poster: {
+    sender: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    conversationId: {
-      type: String,
+    receiver: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
-
-    text: {
+    content: {
       type: String,
     },
     images: [{ type: String }],

@@ -12,9 +12,9 @@ import { useLoggedInUserQuery } from "@/features/user/user.api";
 import { useSendMessageMutation } from "@/features/message/message.api";
 
 type Inputs = {
-  poster?: string;
-  conversationId?: string;
-  text?: string;
+  sender?: string;
+  receiver?: string;
+  content?: string;
   images?: FileList | string[];
   files?: FileList | string[];
 };
@@ -51,14 +51,13 @@ const MessageForm = ({ selectedUser }: Props) => {
     }
     data.files = filesUrls!;
     data.images = imageUrls!;
-    data.poster = user.id;
-    data.conversationId = `${user.id}&${selectedUser.id}`;
+    data.sender = user?.id;
+    data.receiver = selectedUser?.id;
     const result: any = await sendMessage(data);
     if (result?.data?.success) {
       const message = result?.data?.data;
-      const emitData: IMessage = { ...message, poster: user };
-      socket.emit("message", emitData);
-      setRealTimeMessages((prev: IMessage[]) => [...prev, emitData]);
+      socket.emit("message", message);
+      setRealTimeMessages((prev: IMessage[]) => [...prev, message]);
 
       setImagePreview([]);
       setFilePreview([]);
@@ -191,7 +190,7 @@ const MessageForm = ({ selectedUser }: Props) => {
 
         <input
           type="text"
-          {...register("text")}
+          {...register("content")}
           placeholder="Type your message..."
           onChange={(e) => setIsMessage(e.target.value ? true : false)}
           className="border-2 border-gray-300 p-2 rounded-md focus:outline-none focus:border-blue-500 flex-grow"

@@ -40,9 +40,9 @@ io.on("connection", (socket) => {
     socket.join(userId);
   });
 
-  socket.on("message", ({ roomId, message }) => {
-    console.log({ roomId, message });
-    socket.to(roomId).emit("message", message);
+  socket.on("message", (data) => {
+    console.log("Emit data", data);
+    io.to(data.receiver.id).emit("message", data);
   });
 
   socket.on("disconnect", () => {

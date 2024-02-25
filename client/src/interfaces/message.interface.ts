@@ -1,9 +1,10 @@
 import { IUser } from "./user.interface";
 
 export interface IMessage {
-  poster: IUser;
+  sender: IUser;
+  receiver: IUser;
   id?: string;
-  text?: string;
+  content?: string;
   images?: string[];
   files?: string[];
   createdAt: Date;

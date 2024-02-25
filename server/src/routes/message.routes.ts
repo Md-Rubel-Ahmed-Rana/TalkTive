@@ -4,6 +4,7 @@ const router = Router();
 
 router.post("/send", MessageController.sendMessage);
 
-router.get("/:conversationId", MessageController.getMessages);
+router.get("/:sender/:receiver", MessageController.getMessages);
+router.get("/all", MessageController.getAllMessages);
 
 export const MessageRoutes = router;

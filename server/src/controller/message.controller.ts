@@ -12,7 +12,19 @@ const sendMessage = async (req: Request, res: Response) => {
 };
 
 const getMessages = async (req: Request, res: Response) => {
-  const result = await MessageService.getMessages(req.params.conversationId);
+  const sender = req.params.sender;
+  const receiver = req.params.receiver;
+  const result = await MessageService.getMessages(sender, receiver);
+  res.status(200).json({
+    statusCode: 200,
+    success: true,
+    message: "Messages fetched successfully",
+    data: result,
+  });
+};
+
+const getAllMessages = async (req: Request, res: Response) => {
+  const result = await MessageService.getAllMessages();
   res.status(200).json({
     statusCode: 200,
     success: true,
@@ -24,4 +36,5 @@ const getMessages = async (req: Request, res: Response) => {
 export const MessageController = {
   sendMessage,
   getMessages,
+  getAllMessages,
 };
