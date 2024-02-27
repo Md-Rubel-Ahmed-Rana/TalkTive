@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Layout from "@/layout";
 import { ReactElement } from "react";
 

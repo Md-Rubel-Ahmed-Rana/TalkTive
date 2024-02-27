@@ -1,11 +1,12 @@
 import useGetLoggedInUser from "@/hooks/useGetLoggedInUser";
 import { IContext } from "@/interfaces/context.interface";
 import { IMessage } from "@/interfaces/message.interface";
-import { IUser } from "@/interfaces/user.interface";
+import { IUser, userInitData } from "@/interfaces/user.interface";
 import IncomingVideoCall from "@/pages/calls/IncomingVideoCall";
 import { ReactNode, createContext, useEffect, useRef, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import Peer from "simple-peer";
+import { useRouter } from "next/router";
 
 // const initValues: IContext = {
 //   socket: io("http://localhost:5050") as Socket,
@@ -34,10 +35,27 @@ const SocketProvider = ({ children }: Props) => {
   const [idToCall, setIdToCall] = useState("");
   const [callEnded, setCallEnded] = useState(false);
   const [isCalled, setIsCalled] = useState(false);
+  const [openUserSearchModal, setOpenUserSearchModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<IUser>(userInitData);
   const [name, setName] = useState("");
   const myVideo = useRef<any>(null);
   const userVideo = useRef<any>(null);
   const connectionRef = useRef<any>(null);
+  const router = useRouter();
+
+  const handleSelectUser = (user: IUser) => {
+    router.push({
+      pathname: "/inbox",
+      query: {
+        uId: user.id,
+        name: user.name,
+        email: user.email,
+        profile: user.image,
+      },
+    });
+    setSelectedUser(user);
+    setOpenUserSearchModal(false);
+  };
 
   const answerCall = () => {
     setCallAccepted(true);
@@ -84,6 +102,11 @@ const SocketProvider = ({ children }: Props) => {
     setName,
     setStream,
     myVideo,
+    openUserSearchModal,
+    setOpenUserSearchModal,
+    selectedUser,
+    setSelectedUser,
+    handleSelectUser,
   };
 
   // connect to socket message room

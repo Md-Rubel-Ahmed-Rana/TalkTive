@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Layout from "@/layout";
-import React, { ReactElement, useContext, useRef, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import ShowMessages from "./ShowMessage";
 import { MdOutlineCall, MdOutlineVideoCall } from "react-icons/md";
 import NoUserSelected from "./NoUserSelected";
@@ -25,8 +25,9 @@ const Inbox = () => {
     setIsCalled,
     isCalled,
     setIsVideoCalling,
+    selectedUser,
   }: any = useContext(SocketContext);
-  const [selectedUser, setSelectedUser] = useState<IUser>(userInitData);
+
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
 
@@ -60,13 +61,10 @@ const Inbox = () => {
     <div className="flex py-5">
       <div className="w-1/4 border-r">
         <div className="mb-2">
-          <UserSearchInput setSelectedUser={setSelectedUser} />
+          <UserSearchInput />
         </div>
         {/* // users list  */}
-        <UserList
-          selectedUser={selectedUser}
-          setSelectedUser={setSelectedUser}
-        />
+        <UserList />
       </div>
       <div className="w-3/4">
         {selectedUser.id && (

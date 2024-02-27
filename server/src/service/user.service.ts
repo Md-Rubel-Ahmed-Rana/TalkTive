@@ -12,7 +12,7 @@ const register = async (user: IUser) => {
 };
 
 const getUsers = async () => {
-  const users = await User.find({}).select({ name: 1, image: 1 });
+  const users = await User.find({}).select({ name: 1, image: 1, email: 1 });
   return users;
 };
 

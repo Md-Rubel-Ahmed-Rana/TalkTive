@@ -1,12 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
+import { SocketContext } from "@/context/SocketContext";
 import { useLoggedInUserQuery } from "@/features/user/user.api";
 import { IUser } from "@/interfaces/user.interface";
+import Cookies from "js-cookie";
 import Link from "next/link";
-import React from "react";
+import React, { useContext } from "react";
+import { IoMdLogOut } from "react-icons/io";
 import { MdMessage } from "react-icons/md";
+import UserSearchModal from "../modals/UserSearchModal";
 const Navbar = () => {
+  const { openUserSearchModal, setOpenUserSearchModal } =
+    useContext(SocketContext);
   const { data }: any = useLoggedInUserQuery({});
   const user: IUser = data?.data;
+
+  const handleLogOut = () => {
+    Cookies.remove("talktiveAccessToken");
+    window.location.replace("/");
+  };
 
   return (
     <div className="navbar bg-base-100 shadow-md">
@@ -19,11 +30,14 @@ const Navbar = () => {
           />
         )}
         {user?.email && (
-          <img
-            className="w-12 h-12 object-cover rounded-full"
-            src={user?.image}
-            alt=""
-          />
+          <div className="flex items-center justify-center gap-3">
+            <img
+              className="w-12 h-12 object-cover rounded-full"
+              src={user?.image}
+              alt=""
+            />
+            <h3 className="text-xl font-semibold">{user.name}</h3>
+          </div>
         )}
       </div>
       <div className="navbar-center">
@@ -34,7 +48,11 @@ const Navbar = () => {
       <div className="navbar-end">
         {user?.email && (
           <>
-            <button className="btn btn-ghost btn-circle">
+            <button
+              onClick={() => setOpenUserSearchModal(true)}
+              title="Search user to chat"
+              className="btn btn-ghost btn-circle"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -50,11 +68,18 @@ const Navbar = () => {
                 />
               </svg>
             </button>
-            <div className="ml-5 btn btn-ghost">
-              <Link href={"/inbox"}>
+            <Link href={"/inbox"}>
+              <div title="Go to inbox" className="ml-5 btn btn-ghost">
                 <MdMessage className="h-5 w-5" />
-              </Link>
-            </div>
+              </div>
+            </Link>
+            <button
+              onClick={handleLogOut}
+              title="Log out"
+              className="ml-5 btn btn-ghost"
+            >
+              <IoMdLogOut className="h-5 w-5" />
+            </button>
           </>
         )}
         {!user?.email && (
@@ -72,6 +97,7 @@ const Navbar = () => {
           </>
         )}
       </div>
+      {openUserSearchModal && <UserSearchModal />}
     </div>
   );
 };

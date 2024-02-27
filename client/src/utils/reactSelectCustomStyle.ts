@@ -14,6 +14,7 @@ const customStyles = {
   control: (base: any) => ({
     ...base,
     padding: "17px 10px",
+    width: "100%",
     border: "none",
     ":hover": {
       outline: "none !important",

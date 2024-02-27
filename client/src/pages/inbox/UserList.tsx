@@ -1,17 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
+import { SocketContext } from "@/context/SocketContext";
 import {
   useGetUsersQuery,
   useLoggedInUserQuery,
 } from "@/features/user/user.api";
 import { IUser } from "@/interfaces/user.interface";
-import React, { SetStateAction } from "react";
+import React, { useContext } from "react";
 
-type Props = {
-  setSelectedUser: (user: SetStateAction<IUser>) => void;
-  selectedUser: IUser;
-};
-
-const UserList = ({ setSelectedUser, selectedUser }: Props) => {
+const UserList = () => {
+  const { selectedUser, handleSelectUser }: any = useContext(SocketContext);
   const { data } = useGetUsersQuery({});
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
@@ -19,7 +16,7 @@ const UserList = ({ setSelectedUser, selectedUser }: Props) => {
     data?.data?.filter((sUser: IUser) => sUser?.id !== user?.id) || [];
 
   const handleUserClick = (user: any) => {
-    setSelectedUser(user);
+    handleSelectUser(user);
   };
   return (
     <div>

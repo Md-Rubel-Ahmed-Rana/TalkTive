@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import moment from "moment";
 import { formattedDate } from "@/utils/formattedDate";
 import { SocketContext } from "@/context/SocketContext";
@@ -19,16 +19,16 @@ const ShowMessages = ({ selectedUser }: Props) => {
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
   const { data: messageData } = useGetMessagesQuery({
-    sender: user.id,
-    receiver: selectedUser.id,
+    sender: user?.id,
+    receiver: selectedUser?.id,
   });
+
   const messages: IMessage[] = messageData?.data;
 
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleMessage = (data: IMessage) => {
-      console.log("Received data", data);
       setRealTimeMessages((prev: IMessage[]) => [...prev, data]);
     };
 
