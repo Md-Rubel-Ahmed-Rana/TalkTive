@@ -43,9 +43,14 @@ io.on("connection", (socket) => {
     io.to(data.receiver.id).emit("message", data);
   });
 
-  // calling feature
-  socket.on("videoCall", (data) => {
-    socket.to(data.to).emit("videoCall", data);
+  socket.emit("me", socket.id);
+
+  socket.on("callUser", (data) => {
+    io.to(data.userToCall).emit("callUser", {
+      signal: data.signalData,
+      from: data.from,
+      name: data.name,
+    });
   });
 
   socket.on("answerCall", (data) => {

@@ -25,9 +25,8 @@ const UserList = ({ setSelectedUser, selectedUser }: Props) => {
     <div>
       <ul>
         {users?.map((user: any) => (
-          <>
+          <div key={user.id}>
             <li
-              key={user.id}
               className={`p-4 cursor-pointer flex items-center gap-3 ${
                 selectedUser?.id === user.id ? "bg-gray-200" : ""
               }`}
@@ -41,7 +40,7 @@ const UserList = ({ setSelectedUser, selectedUser }: Props) => {
               <p>{user.name}</p>
             </li>
             <hr />
-          </>
+          </div>
         ))}
       </ul>
     </div>

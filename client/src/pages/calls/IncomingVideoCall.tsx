@@ -1,7 +1,12 @@
 import React from "react";
 import { MdCall, MdCallEnd } from "react-icons/md";
 
-const VideoCall = ({ isVideoCalling, setIsVideoCalling, caller }: any) => {
+const IncomingVideoCall = ({
+  isVideoCalling,
+  setIsVideoCalling,
+  caller,
+  handleAcceptVideoCall,
+}: any) => {
   return (
     <>
       {isVideoCalling && (
@@ -19,7 +24,7 @@ const VideoCall = ({ isVideoCalling, setIsVideoCalling, caller }: any) => {
               </button>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 flex justify-center w-full font-bold rounded-lg"
-                onClick={() => setIsVideoCalling(false)}
+                onClick={handleAcceptVideoCall}
               >
                 <MdCall className="h-10 w-10" />
               </button>
@@ -31,4 +36,4 @@ const VideoCall = ({ isVideoCalling, setIsVideoCalling, caller }: any) => {
   );
 };
 
-export default VideoCall;
+export default IncomingVideoCall;

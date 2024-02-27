@@ -10,42 +10,44 @@ import { IUser, userInitData } from "@/interfaces/user.interface";
 import Peer from "simple-peer";
 import { SocketContext } from "@/context/SocketContext";
 import { useLoggedInUserQuery } from "@/features/user/user.api";
+import VideoRoom from "../calls/VideoRoom";
+import UserSearchInput from "./UserSearchInput";
 
 const Inbox = () => {
-  const { socket }: any = useContext(SocketContext);
+  const {
+    socket,
+    me,
+    stream,
+    userVideo,
+    setCallAccepted,
+    connectionRef,
+    idToCall,
+    setIsCalled,
+    isCalled,
+    setIsVideoCalling,
+  }: any = useContext(SocketContext);
   const [selectedUser, setSelectedUser] = useState<IUser>(userInitData);
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
 
-  const [stream, setStream] = useState<any>(null);
-  const [caller, setCaller] = useState<any>({});
-  const [callee, setCallee] = useState("");
-  const [callerSignal, setCallerSignal] = useState();
-  const [callAccepted, setCallAccepted] = useState(false);
-  const [callEnded, setCallEnded] = useState(false);
-  const [isVideoCalling, setIsVideoCalling] = useState(false);
-  const myVideo = useRef<any>(null);
-  const userVideo = useRef<any>(null);
-  const connectionRef = useRef<any>(null);
-
-  const handleStartVideoCall = () => {
+  const callUser = (id: string) => {
     const peer = new Peer({
       initiator: true,
       trickle: false,
       stream: stream,
     });
-
     peer.on("signal", (data) => {
-      socket.emit("videoCall", {
-        to: selectedUser.id,
-        signal: data,
-        from: user,
+      socket.emit("callUser", {
+        userToCall: id,
+        signalData: data,
+        from: me,
+        name: user.name,
       });
+      setIsCalled(true);
     });
     peer.on("stream", (stream) => {
       userVideo.current.srcObject = stream;
     });
-
     socket.on("callAccepted", (signal: any) => {
       setCallAccepted(true);
       peer.signal(signal);
@@ -54,40 +56,11 @@ const Inbox = () => {
     connectionRef.current = peer;
   };
 
-  /*
-  const answerCall = () => {
-    setCallAccepted(true);
-    const peer: any = new Peer({
-      initiator: false,
-      trickle: false,
-      stream: stream,
-    });
-    peer.on("signal", (data: any) => {
-      socket.emit("answerCall", { signal: data, to: caller });
-    });
-    peer.on("stream", (stream: any) => {
-      userVideo.current.srcObject = stream;
-    });
-
-    peer.signal(callerSignal);
-    connectionRef.current = peer;
-  };
-
-  const leaveCall = () => {
-    setCallEnded(true);
-    connectionRef.current.destroy();
-  };
-  */
-
   return (
     <div className="flex py-5">
       <div className="w-1/4 border-r">
         <div className="mb-2">
-          <input
-            type="text"
-            className="px-4 py-6 w-full shadow-md outline-none focus:border"
-            placeholder="Search dears to chat"
-          />
+          <UserSearchInput setSelectedUser={setSelectedUser} />
         </div>
         {/* // users list  */}
         <UserList
@@ -114,7 +87,7 @@ const Inbox = () => {
                 <MdOutlineCall className="w-7 h-7" />
               </button>
               <button
-                onClick={handleStartVideoCall}
+                onClick={() => callUser(idToCall)}
                 className="bg-gray-300 px-3 py-1 rounded-md"
               >
                 <MdOutlineVideoCall className="w-7 h-7" />
@@ -131,6 +104,12 @@ const Inbox = () => {
           <NoUserSelected />
         )}
       </div>
+      {isCalled && (
+        <VideoRoom
+          callee={selectedUser}
+          setIsVideoCalling={setIsVideoCalling}
+        />
+      )}
     </div>
   );
 };

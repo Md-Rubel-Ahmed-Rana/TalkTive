@@ -5,4 +5,11 @@ export type IContext = {
   socket: Socket;
   realTimeMessages: IMessage[];
   setRealTimeMessages: (messages: IMessage[]) => void;
+  handleAcceptVideoCall: (
+    setCallAccepted: any,
+    stream: any,
+    userVideo: any,
+    callerSignal: any,
+    connectionRef: any
+  ) => void;
 };
