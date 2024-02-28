@@ -16,6 +16,7 @@ const UserSearchModal = () => {
           <RxCross2 />
         </button>
         <div className="w-full">
+          <h3 className="text-xl font-semibold mb-2">Search your favourite</h3>
           <UserSearchInput />
         </div>
       </div>

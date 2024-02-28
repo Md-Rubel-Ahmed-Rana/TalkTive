@@ -1,5 +1,6 @@
 import { ILogin, IUser } from "../interfaces/user.interface";
 import { sendResponse } from "../middleware/sendResponse";
+import { Message } from "../models/message.model";
 import { User } from "../models/user.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -13,6 +14,50 @@ const register = async (user: IUser) => {
 
 const getUsers = async () => {
   const users = await User.find({}).select({ name: 1, image: 1, email: 1 });
+  return users;
+};
+
+const getSortedUsersToChat = async (userId: string): Promise<IUser[]> => {
+  // Find all distinct users the current user has communicated with
+  console.log({ userId });
+  const distinctUsers = await Message.distinct("sender", { receiver: userId });
+  distinctUsers.push(
+    ...(await Message.distinct("receiver", { sender: userId }))
+  );
+
+  // Find the latest message for each user
+  const latestMessages = await Promise.all(
+    distinctUsers.map(async (user) => {
+      const latestMessage = await Message.findOne({
+        $or: [
+          { sender: userId, receiver: user },
+          { sender: user, receiver: userId },
+        ],
+      }).sort({ createdAt: -1 });
+      return latestMessage;
+    })
+  );
+
+  // Sort users based on the latest message's creation date
+  const users = await User.find({ _id: { $in: distinctUsers } }).select({
+    name: 1,
+    image: 1,
+  });
+
+  users.sort((a, b) => {
+    const messageA: any = latestMessages.find(
+      (message: any) =>
+        message.sender.toString() === a._id.toString() ||
+        message.receiver.toString() === a._id.toString()
+    );
+    const messageB: any = latestMessages.find(
+      (message: any) =>
+        message.sender.toString() === b._id.toString() ||
+        message.receiver.toString() === b._id.toString()
+    );
+    return messageB?.createdAt - messageA?.createdAt;
+  });
+
   return users;
 };
 
@@ -70,4 +115,5 @@ export const UserService = {
   login,
   auth,
   getUsers,
+  getSortedUsersToChat,
 };

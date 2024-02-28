@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { SocketContext } from "@/context/SocketContext";
 import {
-  useGetUsersQuery,
+  useGetSortedChatUsersQuery,
   useLoggedInUserQuery,
 } from "@/features/user/user.api";
 import { IUser } from "@/interfaces/user.interface";
@@ -9,17 +9,22 @@ import React, { useContext } from "react";
 
 const UserList = () => {
   const { selectedUser, handleSelectUser }: any = useContext(SocketContext);
-  const { data } = useGetUsersQuery({});
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
-  const users =
-    data?.data?.filter((sUser: IUser) => sUser?.id !== user?.id) || [];
+  const { data } = useGetSortedChatUsersQuery(user?.id);
+  const users = data?.data;
 
   const handleUserClick = (user: any) => {
     handleSelectUser(user);
   };
   return (
     <div>
+      {users?.length > 0 && (
+        <h3 className="text-xl ml-4 mb-2 font-semibold">
+          Recently talked to them
+        </h3>
+      )}
+
       <ul>
         {users?.map((user: any) => (
           <div key={user.id}>

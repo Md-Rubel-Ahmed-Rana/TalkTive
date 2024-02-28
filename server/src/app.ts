@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
   res.status(200).json({
     statusCode: 200,
     success: true,
-    message: "Server is working fine",
+    message: "TalkTive server is working fine!!",
   });
 });
 

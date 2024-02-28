@@ -39,6 +39,26 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+const getSortedUsersToChat = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const users = await UserService.getSortedUsersToChat(userId);
+    res.status(200).json({
+      statusCode: 200,
+      success: true,
+      message: "Sorted users fetched successfully",
+      data: users,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      statusCode: 500,
+      success: false,
+      message: "Failed to fetch users",
+      error: error.message,
+    });
+  }
+};
+
 const login = async (req: Request, res: Response) => {
   try {
     const token = await UserService.login(req.body);
@@ -83,4 +103,5 @@ export const UserController = {
   login,
   auth,
   getUsers,
+  getSortedUsersToChat,
 };

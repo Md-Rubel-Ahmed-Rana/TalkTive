@@ -32,7 +32,7 @@ const UserSearchInput = () => {
         }))}
         styles={customStyles}
         onChange={handleSelect}
-        placeholder="Type a name to search"
+        placeholder="Type a name to chat"
         className="w-full h-full shadow-md"
         classNamePrefix="select2-selection"
         noOptionsMessage={({ inputValue }: any) =>

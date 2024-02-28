@@ -11,4 +11,6 @@ router.get("/auth", UserController.auth);
 
 router.get("/", UserController.getUsers);
 
+router.get("/sorted-users/:userId", UserController.getSortedUsersToChat);
+
 export const UserRoutes = router;

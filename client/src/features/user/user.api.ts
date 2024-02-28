@@ -23,6 +23,11 @@ const userApi = apiSlice.injectEndpoints({
         url: "/user",
       }),
     }),
+    getSortedChatUsers: builder.query({
+      query: (userId) => ({
+        url: `/user/sorted-users/${userId}`,
+      }),
+    }),
     loggedInUser: builder.query({
       query: () => ({
         url: "/user/auth",
@@ -37,4 +42,5 @@ export const {
   useGetUsersQuery,
   useLoginUserMutation,
   useLoggedInUserQuery,
+  useGetSortedChatUsersQuery,
 } = userApi;

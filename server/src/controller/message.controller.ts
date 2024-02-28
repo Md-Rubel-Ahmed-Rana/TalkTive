@@ -23,6 +23,16 @@ const getMessages = async (req: Request, res: Response) => {
   });
 };
 
+const getLastMessage = async (req: Request, res: Response) => {
+  const result = await MessageService.getLastMessage();
+  res.status(200).json({
+    statusCode: 200,
+    success: true,
+    message: "Last Message fetched successfully",
+    data: result,
+  });
+};
+
 const getAllMessages = async (req: Request, res: Response) => {
   const result = await MessageService.getAllMessages();
   res.status(200).json({
@@ -37,4 +47,5 @@ export const MessageController = {
   sendMessage,
   getMessages,
   getAllMessages,
+  getLastMessage,
 };
