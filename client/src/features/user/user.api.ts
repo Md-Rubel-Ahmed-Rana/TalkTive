@@ -27,6 +27,7 @@ const userApi = apiSlice.injectEndpoints({
       query: (userId) => ({
         url: `/user/sorted-users/${userId}`,
       }),
+      providesTags: ["user"] as any,
     }),
     loggedInUser: builder.query({
       query: () => ({

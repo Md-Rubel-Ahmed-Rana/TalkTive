@@ -8,7 +8,7 @@ const messageApi = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["message"] as any,
+      invalidatesTags: ["message", "user"] as any,
     }),
 
     getMessages: builder.query({
