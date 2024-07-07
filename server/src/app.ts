@@ -35,7 +35,7 @@ app.use(RootRoutes);
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("message-room", (userId: string) => {
+  socket.on("message-room", (userId) => {
     socket.join(userId);
   });
 
@@ -43,13 +43,12 @@ io.on("connection", (socket) => {
     io.to(data.receiver.id).emit("message", data);
   });
 
-  socket.emit("me", socket.id);
-
   socket.on("callUser", (data) => {
+    console.log("callUser", data);
     io.to(data.userToCall).emit("callUser", {
       signal: data.signalData,
       from: data.from,
-      name: data.name,
+      to: data.userToCall,
     });
   });
 

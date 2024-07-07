@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FileUploadRoutes = void 0;
+const express_1 = require("express");
+const cloudinary_1 = require("../config/cloudinary");
+const uploadFile_controller_1 = require("../controller/uploadFile.controller");
+const router = (0, express_1.Router)();
+router.post("/single-image", cloudinary_1.uploadFileMiddleware.singleImage.single("image"), uploadFile_controller_1.UploadFileController.uploadSingleImage);
+router.post("/multiple-image", cloudinary_1.uploadFileMiddleware.multipleImage.array("images"), uploadFile_controller_1.UploadFileController.uploadMultipleImage);
+router.post("/single-file", cloudinary_1.uploadFileMiddleware.singleImage.single("file"), uploadFile_controller_1.UploadFileController.uploadSingleFile);
+router.post("/multiple-files", cloudinary_1.uploadFileMiddleware.multipleImage.array("files"), uploadFile_controller_1.UploadFileController.uploadMultipleFile);
+exports.FileUploadRoutes = router;

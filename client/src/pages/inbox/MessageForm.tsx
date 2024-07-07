@@ -42,17 +42,23 @@ const MessageForm = ({ selectedUser }: Props) => {
   const [sendMessage] = useSendMessageMutation();
   const [isMessage, setIsMessage] = useState(false);
 
+  console.log(imageUrls);
+
   const handleSendMessage: SubmitHandler<Inputs> = async (data) => {
     if (files && files?.length > 0) {
-      await uploadFiles(files, setFileUrls);
+      const result = await uploadFiles(files, setFileUrls);
+      console.log("Result for file", result);
     }
     if (images && images.length > 0) {
-      await uploadImages(images, setImageUrls);
+      const result = await uploadImages(images, setImageUrls);
+      console.log("Result for image", result);
     }
+    console.log({ imageUrls });
     data.files = filesUrls!;
     data.images = imageUrls!;
     data.sender = user?.id;
     data.receiver = selectedUser?.id;
+    console.log("Data", data);
     const result: any = await sendMessage(data);
     if (result?.data?.success) {
       const message = result?.data?.data;

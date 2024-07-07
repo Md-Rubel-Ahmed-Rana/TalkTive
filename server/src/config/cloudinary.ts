@@ -1,6 +1,8 @@
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import dotenv from "dotenv";
+dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_API_NAME as string,
@@ -13,7 +15,7 @@ const singleImageStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
     return {
-      folder: "team-management-app/images",
+      folder: "talktive/images",
       allowedFormats: [
         "jpg",
         "jpeg",
@@ -34,7 +36,7 @@ const multipleImageStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
     return {
-      folder: "team-management-app/images",
+      folder: "talktive/images",
       allowedFormats: [
         "jpg",
         "jpeg",
@@ -55,7 +57,7 @@ const multipleFileStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
     return {
-      folder: "team-management-app/files",
+      folder: "talktive/files",
       allowedFormats: [
         "pdf",
         "mp4",
@@ -77,7 +79,7 @@ const singleFileStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
     return {
-      folder: "team-management-app/files",
+      folder: "talktive/files",
       allowedFormats: [
         "pdf",
         "mp4",

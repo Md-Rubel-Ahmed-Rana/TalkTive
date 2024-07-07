@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RootRoutes = void 0;
+const express_1 = require("express");
+const user_routes_1 = require("./user.routes");
+const message_routes_1 = require("./message.routes");
+const fileUpload_routes_1 = require("./fileUpload.routes");
+const router = (0, express_1.Router)();
+router.use("/user", user_routes_1.UserRoutes);
+router.use("/message", message_routes_1.MessageRoutes);
+router.use("/cloudinary", fileUpload_routes_1.FileUploadRoutes);
+exports.RootRoutes = router;

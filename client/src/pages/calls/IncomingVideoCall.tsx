@@ -1,3 +1,7 @@
+import { useLoggedInUserQuery } from "@/features/user/user.api";
+import useGetLoggedInUser from "@/hooks/useGetLoggedInUser";
+import { IUser } from "@/interfaces/user.interface";
+import { useRouter } from "next/router";
 import React from "react";
 import { MdCall, MdCallEnd } from "react-icons/md";
 
@@ -5,8 +9,22 @@ const IncomingVideoCall = ({
   isVideoCalling,
   setIsVideoCalling,
   caller,
-  handleAcceptVideoCall,
 }: any) => {
+  const router = useRouter();
+  const user: IUser = useGetLoggedInUser();
+  const handleAcceptCall = () => {
+    router.push({
+      pathname: "video-call",
+      query: {
+        callerId: caller?.id,
+        callerName: caller?.name,
+        idToCall: user?.id,
+        calleeName: user?.name,
+      },
+    });
+    setIsVideoCalling(false);
+  };
+
   return (
     <>
       {isVideoCalling && (
@@ -23,8 +41,8 @@ const IncomingVideoCall = ({
                 <MdCallEnd className="h-10 w-10" />
               </button>
               <button
+                onClick={handleAcceptCall}
                 className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 flex justify-center w-full font-bold rounded-lg"
-                onClick={handleAcceptVideoCall}
               >
                 <MdCall className="h-10 w-10" />
               </button>

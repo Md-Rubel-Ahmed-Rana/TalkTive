@@ -8,14 +8,14 @@ import { IUser } from "@/interfaces/user.interface";
 import React, { useContext } from "react";
 
 const UserList = () => {
-  const { selectedUser, handleSelectUser }: any = useContext(SocketContext);
+  const { selectedUser, setSelectedUser }: any = useContext(SocketContext);
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
   const { data } = useGetSortedChatUsersQuery(user?.id);
   const users = data?.data;
 
   const handleUserClick = (user: any) => {
-    handleSelectUser(user);
+    setSelectedUser(user);
   };
   return (
     <div>

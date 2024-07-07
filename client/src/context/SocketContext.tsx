@@ -1,18 +1,9 @@
 import useGetLoggedInUser from "@/hooks/useGetLoggedInUser";
-import { IContext } from "@/interfaces/context.interface";
 import { IMessage } from "@/interfaces/message.interface";
-import { IUser, userInitData } from "@/interfaces/user.interface";
+import { IUser } from "@/interfaces/user.interface";
 import IncomingVideoCall from "@/pages/calls/IncomingVideoCall";
-import { ReactNode, createContext, useEffect, useRef, useState } from "react";
-import io, { Socket } from "socket.io-client";
-import Peer from "simple-peer";
-import { useRouter } from "next/router";
-
-// const initValues: IContext = {
-//   socket: io("http://localhost:5050") as Socket,
-//   realTimeMessages: [],
-//   setRealTimeMessages: (messages: IMessage[]) => {},
-// };
+import { ReactNode, createContext, useEffect, useState } from "react";
+import io from "socket.io-client";
 
 export const SocketContext = createContext<any>(null);
 
@@ -26,54 +17,8 @@ const SocketProvider = ({ children }: Props) => {
   const [realTimeMessages, setRealTimeMessages] = useState<IMessage[]>([]);
   const user: IUser = useGetLoggedInUser();
   const [isVideoCalling, setIsVideoCalling] = useState(false);
-  const [me, setMe] = useState("");
-  const [stream, setStream] = useState();
-  const [receivingCall, setReceivingCall] = useState(false);
-  const [caller, setCaller] = useState("");
-  const [callerSignal, setCallerSignal] = useState<any>(null);
-  const [callAccepted, setCallAccepted] = useState(false);
-  const [idToCall, setIdToCall] = useState("");
-  const [callEnded, setCallEnded] = useState(false);
-  const [isCalled, setIsCalled] = useState(false);
-  const [openUserSearchModal, setOpenUserSearchModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<IUser>(userInitData);
-  const [name, setName] = useState("");
-  const myVideo = useRef<any>(null);
-  const userVideo = useRef<any>(null);
-  const connectionRef = useRef<any>(null);
-  const router = useRouter();
-
-  const handleSelectUser = (user: IUser) => {
-    router.push({
-      pathname: "/inbox",
-      query: {
-        uId: user.id,
-        name: user.name,
-        email: user.email,
-        profile: user.image,
-      },
-    });
-    setSelectedUser(user);
-    setOpenUserSearchModal(false);
-  };
-
-  const answerCall = () => {
-    setCallAccepted(true);
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream: stream,
-    });
-    peer.on("signal", (data) => {
-      socket.emit("answerCall", { signal: data, to: caller });
-    });
-    peer.on("stream", (stream) => {
-      userVideo.current.srcObject = stream;
-    });
-
-    peer.signal(callerSignal);
-    connectionRef.current = peer;
-  };
+  const [caller, setCaller] = useState({});
+  const [selectedUser, setSelectedUser] = useState({});
 
   const values = {
     socket,
@@ -83,31 +28,16 @@ const SocketProvider = ({ children }: Props) => {
     setIsVideoCalling,
     caller,
     setCaller,
-    callerSignal,
-    setCallerSignal,
-    callAccepted,
-    setCallAccepted,
-    connectionRef,
-    isCalled,
-    setIsCalled,
-    me,
-    setMe,
-    receivingCall,
-    setReceivingCall,
-    idToCall,
-    setIdToCall,
-    callEnded,
-    setCallEnded,
-    name,
-    setName,
-    setStream,
-    myVideo,
-    openUserSearchModal,
-    setOpenUserSearchModal,
     selectedUser,
     setSelectedUser,
-    handleSelectUser,
   };
+
+  useEffect(() => {
+    socket.on("callUser", (data: any) => {
+      user?.id === data?.to && setIsVideoCalling(true);
+      setCaller(data.from);
+    });
+  }, [socket, user?.id]);
 
   // connect to socket message room
   useEffect(() => {
@@ -122,7 +52,6 @@ const SocketProvider = ({ children }: Props) => {
           isVideoCalling={isVideoCalling}
           setIsVideoCalling={setIsVideoCalling}
           caller={caller}
-          handleAcceptVideoCall={answerCall}
         />
       )}
     </>

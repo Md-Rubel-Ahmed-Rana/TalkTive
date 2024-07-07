@@ -9,8 +9,9 @@ const useUploadMultipleFile = () => {
     });
     try {
       const result: any = await uploadFiles(formData);
+      console.log("result for files", result?.data?.data);
       if (result?.data?.success) {
-        setFileUrls(result?.data?.data);
+        return setFileUrls(result?.data?.data);
       }
       if (result?.error) {
         Swal.fire({
