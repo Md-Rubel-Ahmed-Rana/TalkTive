@@ -7,7 +7,7 @@ services:
       context: ./
     container_name: talktive-server
     ports:
-      - "5050:5050"
+      - "5051:5051"
     restart: always
     volumes:
       - .:/app

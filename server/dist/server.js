@@ -14,10 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const database_1 = __importDefault(require("./config/database"));
-const port = process.env.PORT || 5050;
+const port = process.env.PORT || 5051;
 const bootStrap = () => {
     app_1.default.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(`Talktive express server is running on port:${port}`);
+        console.log(`Talktive server is running on port:${port}`);
         yield (0, database_1.default)();
     }));
 };
