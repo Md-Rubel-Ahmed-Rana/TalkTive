@@ -10,6 +10,7 @@ import { SocketContext } from "@/context/SocketContext";
 import { IMessage } from "@/interfaces/message.interface";
 import { useLoggedInUserQuery } from "@/features/user/user.api";
 import { useSendMessageMutation } from "@/features/message/message.api";
+import { useRouter } from "next/router";
 
 type Inputs = {
   sender?: string;
@@ -19,13 +20,12 @@ type Inputs = {
   files?: FileList | string[];
 };
 
-type Props = {
-  selectedUser: IUser;
-};
-
-const MessageForm = ({ selectedUser }: Props) => {
+const MessageForm = () => {
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
+  const router = useRouter();
+  const queryParams = router.query;
+
   const { socket, setRealTimeMessages }: any = useContext(SocketContext);
   const { register, handleSubmit, reset } = useForm<Inputs>({
     mode: "onChange",
@@ -57,7 +57,7 @@ const MessageForm = ({ selectedUser }: Props) => {
     data.files = filesUrls!;
     data.images = imageUrls!;
     data.sender = user?.id;
-    data.receiver = selectedUser?.id;
+    data.receiver = queryParams?.userId as string;
     console.log("Data", data);
     const result: any = await sendMessage(data);
     if (result?.data?.success) {

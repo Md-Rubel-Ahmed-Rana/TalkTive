@@ -14,8 +14,8 @@ import GetHead from "@/utils/Head";
 import { useRouter } from "next/router";
 
 const Inbox = () => {
-  const { selectedUser }: any = useContext(SocketContext);
   const router = useRouter();
+  const queryParams = router.query;
 
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
@@ -26,8 +26,8 @@ const Inbox = () => {
       query: {
         callerId: user.id,
         callerName: user.name,
-        idToCall: selectedUser?.id,
-        calleeName: selectedUser?.name,
+        idToCall: queryParams?.userId,
+        calleeName: queryParams?.userName,
       },
     });
   };
@@ -49,18 +49,20 @@ const Inbox = () => {
           <UserList />
         </div>
         <div className="w-3/4">
-          {selectedUser.id && (
+          {queryParams?.userId && (
             <div className="p-4 flex justify-between items-center shadow-md">
               <div className="flex items-center gap-3">
                 <img
                   className="w-12 h-10 rounded-full"
                   src={
-                    selectedUser?.image ||
+                    (queryParams?.userImage as string) ||
                     "https://i.ibb.co/1MqspsL/user-Avater.png"
                   }
                   alt=""
                 />
-                <h4 className="text-2xl font-semibold">{selectedUser.name}</h4>
+                <h4 className="text-2xl font-semibold">
+                  {queryParams?.userName}
+                </h4>
               </div>
               <div className="flex gap-3 items-center">
                 <button className="bg-gray-300 px-3 py-1 rounded-md">
@@ -75,10 +77,10 @@ const Inbox = () => {
               </div>
             </div>
           )}
-          {selectedUser?.name !== "" ? (
+          {queryParams?.userId ? (
             <>
-              <ShowMessages selectedUser={selectedUser} />
-              <MessageForm selectedUser={selectedUser} />
+              <ShowMessages />
+              <MessageForm />
             </>
           ) : (
             <NoUserSelected />
