@@ -1,107 +1,84 @@
 import { Request, Response } from "express";
 import { UserService } from "../service/user.service";
+import RootController from "./rootController";
+import httpStatus from "http-status";
+import { cookieManager } from "../utils/cookie";
 
-const register = async (req: Request, res: Response) => {
-  try {
+class Controller extends RootController {
+  register = this.catchAsync(async (req: Request, res: Response) => {
     await UserService.register(req.body);
-    res.status(201).json({
-      statusCode: 201,
+    this.apiResponse(res, {
+      statusCode: httpStatus.CREATED,
       success: true,
-      message: "Successfully register",
+      message: "User registration successful!",
       data: null,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      statusCode: 500,
-      success: false,
-      message: "Failed to register",
-      error: error.message,
-    });
-  }
-};
-
-const getUsers = async (req: Request, res: Response) => {
-  try {
+  });
+  getUsers = this.catchAsync(async (req: Request, res: Response) => {
     const users = await UserService.getUsers();
-    res.status(200).json({
+    this.apiResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Successfully fetched users",
+      message: "Users found!",
       data: users,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      statusCode: 500,
-      success: false,
-      message: "Failed to register",
-      error: error.message,
-    });
-  }
-};
-
-const getSortedUsersToChat = async (req: Request, res: Response) => {
-  try {
-    const userId = req.params.userId;
-    const users = await UserService.getSortedUsersToChat(userId);
-    res.status(200).json({
+  });
+  getSortedUsersToChat = this.catchAsync(
+    async (req: Request, res: Response) => {
+      const userId = req.params.userId;
+      const users = await UserService.getSortedUsersToChat(userId);
+      this.apiResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Users found!",
+        data: users,
+      });
+    }
+  );
+  getSingleUserInfo = this.catchAsync(async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const user = await UserService.getSingleUserInfo(userId);
+    this.apiResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Sorted users fetched successfully",
-      data: users,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      statusCode: 500,
-      success: false,
-      message: "Failed to fetch users",
-      error: error.message,
-    });
-  }
-};
-
-const login = async (req: Request, res: Response) => {
-  try {
-    const token = await UserService.login(req.body);
-    res.status(200).json({
-      statusCode: 200,
-      success: true,
-      message: "Successfully logged in",
-      data: token,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      statusCode: 500,
-      success: false,
-      message: "Failed to login",
-      error: error?.message,
-    });
-  }
-};
-
-const auth = async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization as string;
-    const user = await UserService.auth(token);
-    res.status(200).json({
-      statusCode: 200,
-      success: true,
-      message: "Authentication success",
+      message: "User info found!",
       data: user,
     });
-  } catch (error) {
-    res.status(500).json({
-      statusCode: 500,
-      success: false,
-      message: "Failed to authenticate",
+  });
+  updateProfilePicture = this.catchAsync(
+    async (req: Request, res: Response) => {
+      const userId = req.params.id;
+      console.log(req.body);
+      await UserService.updateProfilePicture(userId, req.body.image);
+      this.apiResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Profile picture updated!",
+        data: null,
+      });
+    }
+  );
+  updateUserInfo = this.catchAsync(async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    await UserService.updateUserInfo(userId, req.body);
+    this.apiResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User info updated!",
       data: null,
     });
-  }
-};
+  });
+  updatePassword = this.catchAsync(async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    await UserService.updatePassword(userId, req.body.password);
+    cookieManager.clearTokens(res);
+    this.apiResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Your password was changed!",
+      data: null,
+    });
+  });
+}
 
-export const UserController = {
-  register,
-  login,
-  auth,
-  getUsers,
-  getSortedUsersToChat,
-};
+export const UserController = new Controller();
