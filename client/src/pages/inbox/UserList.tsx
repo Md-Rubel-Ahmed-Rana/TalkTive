@@ -1,21 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
-import { SocketContext } from "@/context/SocketContext";
 import {
   useGetSortedChatUsersQuery,
   useLoggedInUserQuery,
 } from "@/features/user/user.api";
 import { IUser } from "@/interfaces/user.interface";
-import React, { useContext } from "react";
+import { useRouter } from "next/router";
 
 const UserList = () => {
-  const { selectedUser, setSelectedUser }: any = useContext(SocketContext);
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
   const { data } = useGetSortedChatUsersQuery(user?.id);
   const users = data?.data;
-
+  const router = useRouter();
   const handleUserClick = (user: any) => {
-    setSelectedUser(user);
+    const queries = `/inbox?userId=${user?.id}&userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
+    router.push(queries);
   };
   return (
     <div>
@@ -29,9 +28,7 @@ const UserList = () => {
         {users?.map((user: any) => (
           <div key={user.id}>
             <li
-              className={`p-4 cursor-pointer flex items-center gap-3 ${
-                selectedUser?.id === user.id ? "bg-gray-200" : ""
-              }`}
+              className={"p-4 cursor-pointer flex items-center gap-3"}
               onClick={() => handleUserClick(user)}
             >
               <img

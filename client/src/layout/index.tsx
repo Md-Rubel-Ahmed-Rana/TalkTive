@@ -1,5 +1,5 @@
-import Footer from "@/pages/shared/Footer";
-import Navbar from "@/pages/shared/Navbar";
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
 
 export default function Layout({ children }: any) {
   return (

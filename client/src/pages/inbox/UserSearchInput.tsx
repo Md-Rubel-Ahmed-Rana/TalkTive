@@ -5,22 +5,24 @@ import {
 } from "@/features/user/user.api";
 import { IUser } from "@/interfaces/user.interface";
 import customStyles from "@/utils/reactSelectCustomStyle";
+import { useRouter } from "next/router";
 import React, { useContext } from "react";
 import Select from "react-select";
 
 const UserSearchInput = () => {
-  const { handleSelectUser }: any = useContext(SocketContext);
   const { data } = useGetUsersQuery({});
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
   const users: IUser[] =
     data?.data?.filter((sUser: IUser) => sUser?.id !== user?.id) || [];
+  const router = useRouter();
 
   const handleSelect = (user: any) => {
-    const selected = users.find((sUser: IUser) => sUser?.id === user?.value);
-    if (selected) {
-      handleSelectUser(selected);
-    }
+    const selectedUser = users.find(
+      (sUser: IUser) => sUser?.id === user?.value
+    );
+    const queries = `/inbox?userId=${selectedUser?.id}&userName=${selectedUser?.name}&userEmail=${selectedUser?.email}&userImage=${selectedUser?.image}`;
+    router.push(queries);
   };
 
   return (

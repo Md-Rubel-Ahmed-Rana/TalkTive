@@ -8,19 +8,18 @@ import { IMessage } from "@/interfaces/message.interface";
 import { useGetMessagesQuery } from "@/features/message/message.api";
 import { useLoggedInUserQuery } from "@/features/user/user.api";
 import { IUser } from "@/interfaces/user.interface";
+import { useRouter } from "next/router";
 
-type Props = {
-  selectedUser: IUser;
-};
-
-const ShowMessages = ({ selectedUser }: Props) => {
+const ShowMessages = () => {
   const { socket, realTimeMessages, setRealTimeMessages }: any =
     useContext(SocketContext);
+  const router = useRouter();
+  const queryParams = router.query;
   const { data: userData } = useLoggedInUserQuery({});
   const user: IUser = userData?.data;
   const { data: messageData } = useGetMessagesQuery({
     sender: user?.id,
-    receiver: selectedUser?.id,
+    receiver: queryParams?.userId,
   });
 
   const messages: IMessage[] = messageData?.data;

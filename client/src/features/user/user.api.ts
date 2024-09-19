@@ -1,14 +1,16 @@
+import { IRegisterUser } from "@/interfaces/user.interface";
 import apiSlice from "../api/apiSlice";
 
 const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createUser: builder.mutation({
-      query: (data) => ({
+      query: (user) => ({
         method: "POST",
         url: "/user/register",
-        body: data,
+        body: user,
       }),
     }),
+
     loginUser: builder.mutation({
       query: (data) => ({
         method: "POST",

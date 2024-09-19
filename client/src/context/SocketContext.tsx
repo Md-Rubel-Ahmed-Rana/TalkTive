@@ -1,7 +1,6 @@
 import useGetLoggedInUser from "@/hooks/useGetLoggedInUser";
 import { IMessage } from "@/interfaces/message.interface";
 import { IUser } from "@/interfaces/user.interface";
-import IncomingVideoCall from "@/pages/calls/IncomingVideoCall";
 import { ReactNode, createContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 
@@ -45,16 +44,7 @@ const SocketProvider = ({ children }: Props) => {
   }, [socket, user?.id]);
 
   return (
-    <>
-      <SocketContext.Provider value={values}>{children}</SocketContext.Provider>
-      {isVideoCalling && (
-        <IncomingVideoCall
-          isVideoCalling={isVideoCalling}
-          setIsVideoCalling={setIsVideoCalling}
-          caller={caller}
-        />
-      )}
-    </>
+    <SocketContext.Provider value={values}>{children}</SocketContext.Provider>
   );
 };
 

@@ -15,3 +15,10 @@ export const userInitData: IUser = {
   createdAt: "",
   updatedAt: "",
 };
+
+export type IRegisterUser = {
+  name: string;
+  email: string;
+  image: string;
+  password: string;
+};
