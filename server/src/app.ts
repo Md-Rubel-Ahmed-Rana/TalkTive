@@ -4,7 +4,10 @@ import http from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import { RootRoutes } from "./routes/root.routes";
+import handle404NotFoundError from "./errors/notFoundError";
+import { ErrorInstance } from "./errors/globalErrorHandler";
 dotenv.config();
 
 const app = express();
@@ -12,6 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(cookieParser());
 app.use(morgan("dev"));
 
 const server = http.createServer(app);
@@ -20,6 +24,8 @@ const io = new Server(server, {
     origin: ["http://localhost:3000", "https://talktive-beryl.vercel.app"],
   },
 });
+
+global.io = io;
 
 // health check
 app.get("/", (req, res) => {
@@ -33,34 +39,10 @@ app.get("/", (req, res) => {
 // routes
 app.use(RootRoutes);
 
-// Connecting to Socket.IO
-io.on("connection", (socket) => {
-  console.log("A user connected");
+// 404 not found error
+handle404NotFoundError(app);
 
-  socket.on("message-room", (userId) => {
-    socket.join(userId);
-  });
-
-  socket.on("message", (data) => {
-    io.to(data.receiver.id).emit("message", data);
-  });
-
-  socket.on("callUser", (data) => {
-    console.log("callUser", data);
-    io.to(data.userToCall).emit("callUser", {
-      signal: data.signalData,
-      from: data.from,
-      to: data.userToCall,
-    });
-  });
-
-  socket.on("answerCall", (data) => {
-    io.to(data.to).emit("callAccepted", data.signal);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
-});
+// global error handler
+app.use(ErrorInstance.globalErrorHandler);
 
 export default server;

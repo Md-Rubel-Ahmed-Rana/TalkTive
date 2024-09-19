@@ -1,119 +1,100 @@
-import { ILogin, IUser } from "../interfaces/user.interface";
-import { sendResponse } from "../middleware/sendResponse";
+import httpStatus from "http-status";
+import { GetUserProperties, IUser } from "../interfaces/user.interface";
 import { Message } from "../models/message.model";
 import { User } from "../models/user.model";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import ApiError from "../utils/apiError";
+import { BcryptInstance } from "../utils/bcrypt";
+import extractCloudinaryPublicId from "../utils/getCloudinaryFilePublicIdFromUrl";
+import { deleteSingleFileFromCloudinary } from "../utils/deletePreviousFileFromCloudinary";
 
-const register = async (user: IUser) => {
-  const hashedPassword = await bcrypt.hash(user.password, 12);
-  user.password = hashedPassword;
-  const newUser = await User.create(user);
-  return newUser;
-};
+class Service {
+  async register(user: IUser) {
+    user.password = await BcryptInstance.hash(user.password);
+    await User.create(user);
+  }
 
-const getUsers = async () => {
-  const users = await User.find({}).select({ name: 1, image: 1, email: 1 });
-  return users;
-};
+  async createUser(user: IUser) {
+    return await User.create(user);
+  }
 
-const getSortedUsersToChat = async (userId: string): Promise<IUser[]> => {
-  // Find all distinct users the current user has communicated with
-  console.log({ userId });
-  const distinctUsers = await Message.distinct("sender", { receiver: userId });
-  distinctUsers.push(
-    ...(await Message.distinct("receiver", { sender: userId }))
-  );
+  async findUserById(id: string) {
+    return await User.findById(id);
+  }
 
-  // Find the latest message for each user
-  const latestMessages = await Promise.all(
-    distinctUsers.map(async (user) => {
-      const latestMessage = await Message.findOne({
-        $or: [
-          { sender: userId, receiver: user },
-          { sender: user, receiver: userId },
-        ],
-      }).sort({ createdAt: -1 });
-      return latestMessage;
-    })
-  );
+  async findUserByEmail(email: string) {
+    return await User.findOne({ email: email });
+  }
 
-  // Sort users based on the latest message's creation date
-  const users = await User.find({ _id: { $in: distinctUsers } }).select({
-    name: 1,
-    image: 1,
-  });
+  async getSingleUserInfo(id: string) {
+    return await User.findById(id).select(GetUserProperties);
+  }
 
-  users.sort((a, b) => {
-    const messageA: any = latestMessages.find(
-      (message: any) =>
-        message.sender.toString() === a._id.toString() ||
-        message.receiver.toString() === a._id.toString()
-    );
-    const messageB: any = latestMessages.find(
-      (message: any) =>
-        message.sender.toString() === b._id.toString() ||
-        message.receiver.toString() === b._id.toString()
-    );
-    return messageB?.createdAt - messageA?.createdAt;
-  });
+  async getUsers() {
+    const users = await User.find({}).select(GetUserProperties);
+    return users;
+  }
 
-  return users;
-};
-
-const login = async (credentials: ILogin) => {
-  const user: any = await User.findOne({ email: credentials?.email });
-
-  if (!user) {
-    return "User not found";
-  } else {
-    const matchedPassword = await bcrypt.compare(
-      credentials?.password,
-      user?.password
-    );
-    if (!matchedPassword) {
-      return "Invalid credentials";
+  async updateProfilePicture(id: string, imageLink: string) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, "User was not found!");
     } else {
-      const payload = {
-        id: user?.id,
-        email: user.email,
-      };
-      const accessToken = await jwt.sign(
-        payload,
-        process.env.JWT_SECRET as string,
-        { expiresIn: "3d" }
-      );
-      return accessToken;
+      const publicId = extractCloudinaryPublicId(user?.image);
+      if (publicId) {
+        await deleteSingleFileFromCloudinary(publicId);
+      }
+      await User.findByIdAndUpdate(id, { $set: { image: imageLink } });
     }
   }
-};
 
-const auth = async (token: string) => {
-  const verifyUser: any = await jwt.verify(
-    token,
-    process.env.JWT_SECRET as string
-  );
-  if (!verifyUser) {
-    return sendResponse({
-      statusCode: 400,
-      success: false,
-      message: "Invalid token",
-      data: null,
-    });
-  } else {
-    const user = await User.findById(verifyUser?.id).select({
-      name: 1,
-      email: 1,
-      image: 1,
-    });
-    return user;
+  async updateUserInfo(id: string, updateData: Partial<IUser>) {
+    await User.findByIdAndUpdate(id, { $set: { ...updateData } });
   }
-};
 
-export const UserService = {
-  register,
-  login,
-  auth,
-  getUsers,
-  getSortedUsersToChat,
-};
+  async updatePassword(id: string, newPassword: string) {
+    const hashedPassword = await BcryptInstance.hash(newPassword);
+    await User.findByIdAndUpdate(id, { $set: { password: hashedPassword } });
+  }
+
+  async getSortedUsersToChat(userId: string): Promise<IUser[]> {
+    const distinctUsers = await Message.distinct("sender", {
+      receiver: userId,
+    });
+    distinctUsers.push(
+      ...(await Message.distinct("receiver", { sender: userId }))
+    );
+
+    const latestMessages = await Promise.all(
+      distinctUsers.map(async (user) => {
+        const latestMessage = await Message.findOne({
+          $or: [
+            { sender: userId, receiver: user },
+            { sender: user, receiver: userId },
+          ],
+        }).sort({ createdAt: -1 });
+        return latestMessage;
+      })
+    );
+
+    // Sort users based on the latest message's creation date
+    const users = await User.find({ _id: { $in: distinctUsers } });
+
+    users.sort((a, b) => {
+      const messageA: any = latestMessages.find(
+        (message: any) =>
+          message.sender.toString() === a._id.toString() ||
+          message.receiver.toString() === a._id.toString()
+      );
+      const messageB: any = latestMessages.find(
+        (message: any) =>
+          message.sender.toString() === b._id.toString() ||
+          message.receiver.toString() === b._id.toString()
+      );
+      return messageB?.createdAt - messageA?.createdAt;
+    });
+
+    return users;
+  }
+}
+
+export const UserService = new Service();

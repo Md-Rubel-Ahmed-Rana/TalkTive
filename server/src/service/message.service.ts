@@ -21,6 +21,7 @@ const sendMessage = async (data: IMessage): Promise<IMessage> => {
       },
     },
   ]);
+  global.io.emit("message", data);
   return result;
 };
 

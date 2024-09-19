@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
 const databaseConnection = async (): Promise<void> => {
+  console.log("Database connecting...");
   try {
     await mongoose.connect(process.env.DATABASE_URL as string);
-    console.log("Database is connected");
+    console.log("Database connected");
   } catch (error) {
-    console.log("Database is not connected");
+    console.log("Database not connected");
   }
 };
 
