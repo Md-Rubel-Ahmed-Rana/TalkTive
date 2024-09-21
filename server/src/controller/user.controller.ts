@@ -23,18 +23,6 @@ class Controller extends RootController {
       data: users,
     });
   });
-  getSortedUsersToChat = this.catchAsync(
-    async (req: Request, res: Response) => {
-      const userId = req.params.userId;
-      const users = await UserService.getSortedUsersToChat(userId);
-      this.apiResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "Users found!",
-        data: users,
-      });
-    }
-  );
   getSingleUserInfo = this.catchAsync(async (req: Request, res: Response) => {
     const userId = req.params.id;
     const user = await UserService.getSingleUserInfo(userId);

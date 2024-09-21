@@ -1,23 +1,38 @@
-import { Schema, model } from "mongoose";
+import { model, Schema } from "mongoose";
 import { IMessage } from "../interfaces/message.interface";
+import { Chat } from "./chat.model";
 
 const messageSchema = new Schema<IMessage>(
   {
-    sender: {
+    chatId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Chat",
       required: true,
     },
-    receiver: {
+    sender: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     content: {
       type: String,
+      require: false,
     },
-    images: [{ type: String }],
-    files: [{ type: String }],
+    media: [
+      {
+        type: {
+          type: String,
+          enum: ["image", "audio", "video", "document"],
+          required: true,
+        },
+        url: { type: String, required: true },
+      },
+    ],
+    status: {
+      type: String,
+      enum: ["sent", "delivered", "read"],
+      default: "sent",
+    },
   },
   {
     timestamps: true,
@@ -27,5 +42,13 @@ const messageSchema = new Schema<IMessage>(
     },
   }
 );
+
+messageSchema.post("save", async function (doc) {
+  try {
+    await Chat.findByIdAndUpdate(doc.chatId, { lastMessage: doc?._id });
+  } catch (err) {
+    console.error("Error updating lastMessage in Chat:", err);
+  }
+});
 
 export const Message = model<IMessage>("Message", messageSchema);

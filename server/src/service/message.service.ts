@@ -1,95 +1,54 @@
-import { IMessage } from "../interfaces/message.interface";
+import { Types } from "mongoose";
+import { IGetMessage, IMessage } from "../interfaces/message.interface";
 import { Message } from "../models/message.model";
+import { ChatService } from "./chat.service";
+import { UserService } from "./user.service";
 
-const sendMessage = async (data: IMessage): Promise<IMessage> => {
-  const result = await Message.create(data);
-  await result.populate([
-    {
-      path: "sender",
-      model: "User",
-      select: {
-        name: 1,
-        image: 1,
-      },
-    },
-    {
-      path: "receiver",
-      model: "User",
-      select: {
-        name: 1,
-        image: 1,
-      },
-    },
-  ]);
-  global.io.emit("message", data);
-  return result;
-};
-
-const getMessages = async (
-  sender: string,
-  receiver: string
-): Promise<IMessage[]> => {
-  console.log(sender, receiver);
-  if (sender === undefined && receiver === undefined) {
-    const result = await Message.find({
-      $or: [
-        { sender, receiver },
-        { sender: receiver, receiver: sender },
-      ],
-    }).populate([
-      {
-        path: "sender",
-        model: "User",
-        select: {
-          name: 1,
-          image: 1,
-        },
-      },
-      {
-        path: "receiver",
-        model: "User",
-        select: {
-          name: 1,
-          image: 1,
-        },
-      },
-    ]);
-    return result;
-  } else {
-    return [];
+class Service {
+  public messageSanitizer(message: any): IGetMessage {
+    const sender = UserService.userSanitizer(message?.sender);
+    return {
+      id: String(message?._id || message?.id),
+      chatId: message?.chatId,
+      sender: sender,
+      content: message?.content,
+      status: message?.status,
+      media: message?.media,
+      createdAt: message?.createdAt,
+      updatedAt: message?.updatedAt,
+    };
   }
-};
+  async sendMessage(receiver: Types.ObjectId, data: IMessage): Promise<void> {
+    if (data?.chatId) {
+      const result = await Message.create(data);
+      const newMessage = await result.populate("sender");
+      const message = this.messageSanitizer(newMessage);
+      console.log(`Emit message: ${message}`);
+    } else {
+      const chat = await ChatService.addNewChat({
+        isGroupChat: false,
+        participants: [receiver, data?.sender],
+      });
+      const result = await Message.create({
+        ...data,
+        chatId: chat?._id || chat?.id,
+      });
+      const newMessage = await result.populate("sender");
+      const message = this.messageSanitizer(newMessage);
+      console.log(`Emit message: ${message}`);
+    }
+  }
+  async getMessagesByChatId(chatId: Types.ObjectId): Promise<IGetMessage[]> {
+    const data = await Message.find({ chatId: chatId }).populate("sender");
+    const messages = data?.map((msg) => this.messageSanitizer(msg));
+    return messages;
+  }
+  async updateMessage(id: Types.ObjectId, updatedContent: string) {
+    await Message.findByIdAndUpdate(id, { $set: { content: updatedContent } });
+  }
+  async deleteMessage(id: Types.ObjectId) {
+    await Message.findByIdAndDelete(id);
+  }
+}
 
-const getLastMessage = async (): Promise<IMessage> => {
-  const result = await Message.find({}).sort({ created: -1 });
-  return result[0];
-};
-
-const getAllMessages = async (): Promise<IMessage[]> => {
-  const result = await Message.find({}).populate([
-    {
-      path: "sender",
-      model: "User",
-      select: {
-        name: 1,
-        image: 1,
-      },
-    },
-    {
-      path: "receiver",
-      model: "User",
-      select: {
-        name: 1,
-        image: 1,
-      },
-    },
-  ]);
-  return result;
-};
-
-export const MessageService = {
-  sendMessage,
-  getMessages,
-  getAllMessages,
-  getLastMessage,
-};
+export const MessageService = new Service();

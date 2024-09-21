@@ -1,6 +1,5 @@
 import httpStatus from "http-status";
-import { GetUserProperties, IUser } from "../interfaces/user.interface";
-import { Message } from "../models/message.model";
+import { IGetUser, IUser } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 import ApiError from "../utils/apiError";
 import { BcryptInstance } from "../utils/bcrypt";
@@ -8,33 +7,56 @@ import extractCloudinaryPublicId from "../utils/getCloudinaryFilePublicIdFromUrl
 import { deleteSingleFileFromCloudinary } from "../utils/deletePreviousFileFromCloudinary";
 
 class Service {
+  public userSanitizer(user: any): IGetUser {
+    return {
+      id: user?._id && String(user?._id),
+      name: user?.name,
+      email: user?.email,
+      image: user?.image,
+      title: user?.title,
+      about: user?.about,
+      links: user?.links,
+      status: user?.status,
+      lastActive: user?.lastActive,
+      createdAt: user?.createdAt,
+      updatedAt: user?.updatedAt,
+    };
+  }
+
   async register(user: IUser) {
     user.password = await BcryptInstance.hash(user.password);
     await User.create(user);
   }
 
-  async createUser(user: IUser) {
-    return await User.create(user);
+  async createUser(newUser: IUser): Promise<IGetUser> {
+    const data = await User.create(newUser);
+    const user = this.userSanitizer(data);
+    return user;
   }
 
-  async findUserById(id: string) {
-    return await User.findById(id);
+  async findUserById(id: string): Promise<IGetUser> {
+    const data = await User.findById(id);
+    const user = this.userSanitizer(data);
+    return user;
   }
 
-  async findUserByEmail(email: string) {
+  async findUserByEmailWithPassword(email: string) {
     return await User.findOne({ email: email });
   }
 
   async getSingleUserInfo(id: string) {
-    return await User.findById(id).select(GetUserProperties);
+    const data = await User.findById(id);
+    const user = this.userSanitizer(data);
+    return user;
   }
 
-  async getUsers() {
-    const users = await User.find({}).select(GetUserProperties);
+  async getUsers(): Promise<IGetUser[]> {
+    const usersData = await User.find({});
+    const users = usersData?.map((user) => this.userSanitizer(user));
     return users;
   }
 
-  async updateProfilePicture(id: string, imageLink: string) {
+  async updateProfilePicture(id: string, imageLink: string): Promise<void> {
     const user = await User.findById(id);
     if (!user) {
       throw new ApiError(httpStatus.NOT_FOUND, "User was not found!");
@@ -47,53 +69,13 @@ class Service {
     }
   }
 
-  async updateUserInfo(id: string, updateData: Partial<IUser>) {
+  async updateUserInfo(id: string, updateData: Partial<IUser>): Promise<void> {
     await User.findByIdAndUpdate(id, { $set: { ...updateData } });
   }
 
-  async updatePassword(id: string, newPassword: string) {
+  async updatePassword(id: string, newPassword: string): Promise<void> {
     const hashedPassword = await BcryptInstance.hash(newPassword);
     await User.findByIdAndUpdate(id, { $set: { password: hashedPassword } });
-  }
-
-  async getSortedUsersToChat(userId: string): Promise<IUser[]> {
-    const distinctUsers = await Message.distinct("sender", {
-      receiver: userId,
-    });
-    distinctUsers.push(
-      ...(await Message.distinct("receiver", { sender: userId }))
-    );
-
-    const latestMessages = await Promise.all(
-      distinctUsers.map(async (user) => {
-        const latestMessage = await Message.findOne({
-          $or: [
-            { sender: userId, receiver: user },
-            { sender: user, receiver: userId },
-          ],
-        }).sort({ createdAt: -1 });
-        return latestMessage;
-      })
-    );
-
-    // Sort users based on the latest message's creation date
-    const users = await User.find({ _id: { $in: distinctUsers } });
-
-    users.sort((a, b) => {
-      const messageA: any = latestMessages.find(
-        (message: any) =>
-          message.sender.toString() === a._id.toString() ||
-          message.receiver.toString() === a._id.toString()
-      );
-      const messageB: any = latestMessages.find(
-        (message: any) =>
-          message.sender.toString() === b._id.toString() ||
-          message.receiver.toString() === b._id.toString()
-      );
-      return messageB?.createdAt - messageA?.createdAt;
-    });
-
-    return users;
   }
 }
 

@@ -2,12 +2,12 @@ import { Router } from "express";
 import { MessageController } from "../controller/message.controller";
 const router = Router();
 
-router.post("/send", MessageController.sendMessage);
+router.post("/send/:sender/:receiver", MessageController.sendMessage);
 
-router.get("/:sender/:receiver", MessageController.getMessages);
+router.get("/:chatId", MessageController.getMessagesByChatId);
 
-router.get("/last", MessageController.getLastMessage);
+router.patch("/update/:id", MessageController.updateMessage);
 
-router.get("/all", MessageController.getAllMessages);
+router.delete("/delete/:id", MessageController.deleteMessage);
 
 export const MessageRoutes = router;
