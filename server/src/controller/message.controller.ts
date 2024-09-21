@@ -1,51 +1,49 @@
 import { Request, Response } from "express";
 import { MessageService } from "../service/message.service";
+import RootController from "./rootController";
+import httpStatus from "http-status";
+import { Types } from "mongoose";
 
-const sendMessage = async (req: Request, res: Response) => {
-  const result = await MessageService.sendMessage(req.body);
-  res.status(201).json({
-    statusCode: 201,
-    success: true,
-    message: "Message created successfully",
-    data: result,
+class Controller extends RootController {
+  sendMessage = this.catchAsync(async (req: Request, res: Response) => {
+    const receiver = req.params.receiver as unknown as Types.ObjectId;
+    await MessageService.sendMessage(receiver, req.body);
+    this.apiResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Message has been sent!",
+      data: null,
+    });
   });
-};
-
-const getMessages = async (req: Request, res: Response) => {
-  const sender = req.params.sender;
-  const receiver = req.params.receiver;
-  const result = await MessageService.getMessages(sender, receiver);
-  res.status(200).json({
-    statusCode: 200,
-    success: true,
-    message: "Messages fetched successfully",
-    data: result,
+  getMessagesByChatId = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params.chatId as unknown as Types.ObjectId;
+    const messages = await MessageService.getMessagesByChatId(chatId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Messages found!",
+      data: messages,
+    });
   });
-};
-
-const getLastMessage = async (req: Request, res: Response) => {
-  const result = await MessageService.getLastMessage();
-  res.status(200).json({
-    statusCode: 200,
-    success: true,
-    message: "Last Message fetched successfully",
-    data: result,
+  updateMessage = this.catchAsync(async (req: Request, res: Response) => {
+    const id = req.params.id as unknown as Types.ObjectId;
+    await MessageService.updateMessage(id, req.body.content);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Message updated!",
+      data: null,
+    });
   });
-};
-
-const getAllMessages = async (req: Request, res: Response) => {
-  const result = await MessageService.getAllMessages();
-  res.status(200).json({
-    statusCode: 200,
-    success: true,
-    message: "Messages fetched successfully",
-    data: result,
+  deleteMessage = this.catchAsync(async (req: Request, res: Response) => {
+    const id = req.params.id as unknown as Types.ObjectId;
+    await MessageService.deleteMessage(id);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Message deleted!",
+      data: null,
+    });
   });
-};
-
-export const MessageController = {
-  sendMessage,
-  getMessages,
-  getAllMessages,
-  getLastMessage,
-};
+}
+export const MessageController = new Controller();

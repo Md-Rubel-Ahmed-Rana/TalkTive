@@ -1,10 +1,29 @@
 import { Types } from "mongoose";
-import { IUser } from "./user.interface";
+import { IGetUser } from "./user.interface";
 
 export type IMessage = {
-  sender: Types.ObjectId | IUser;
-  receiver: Types.ObjectId | IUser;
+  chatId: Types.ObjectId;
+  sender: Types.ObjectId;
   content?: string;
-  images?: string[];
-  files?: string[];
+  media?: {
+    type: "image" | "audio" | "video" | "document";
+    url: string;
+  }[];
+  status: "sent" | "delivered" | "read";
+};
+
+type IMedia = {
+  type: string;
+  url: string;
+};
+
+export type IGetMessage = {
+  id: string;
+  chatId: string;
+  sender: IGetUser;
+  content: string;
+  media: IMedia[];
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
 };

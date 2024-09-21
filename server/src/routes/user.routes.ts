@@ -26,6 +26,4 @@ router.patch(
 
 router.patch("/change-password/:id", UserController.updatePassword);
 
-router.get("/sorted-users/:userId", UserController.getSortedUsersToChat);
-
 export const UserRoutes = router;
