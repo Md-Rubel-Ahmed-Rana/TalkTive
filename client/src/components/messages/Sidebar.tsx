@@ -1,7 +1,7 @@
 import Link from "next/link";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import SearchUserList from "./SearchUserList";
-import ChatList from "./ChatList";
+import ChatList from "./chatList";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutButton from "../shared/LogoutButton";
 
