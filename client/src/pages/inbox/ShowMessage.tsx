@@ -4,9 +4,7 @@ import React, { useContext, useEffect, useRef } from "react";
 import moment from "moment";
 import { formattedDate } from "@/utils/formattedDate";
 import { SocketContext } from "@/context/SocketContext";
-import { IMessage } from "@/interfaces/message.interface";
-import { useGetMessagesQuery } from "@/features/message/message.api";
-import { useLoggedInUserQuery } from "@/features/user";
+import { IGetMessage, IMessage } from "@/interfaces/message.interface";
 import { IUser } from "@/interfaces/user.interface";
 import { useRouter } from "next/router";
 
@@ -15,15 +13,6 @@ const ShowMessages = () => {
     useContext(SocketContext);
   const router = useRouter();
   const queryParams = router.query;
-  const { data: userData } = useLoggedInUserQuery({});
-  const user: IUser = userData?.data;
-  const { data: messageData } = useGetMessagesQuery({
-    sender: user?.id,
-    receiver: queryParams?.userId,
-  });
-
-  const messages: IMessage[] = messageData?.data;
-
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -38,11 +27,6 @@ const ShowMessages = () => {
     };
   }, [setRealTimeMessages, socket]);
 
-  // keep updated message in state
-  useEffect(() => {
-    setRealTimeMessages(messages);
-  }, [messages, setRealTimeMessages]);
-
   // keep user in the bottom of the message
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -56,7 +40,7 @@ const ShowMessages = () => {
       ref={messagesContainerRef}
       className="h-96  overflow-hidden hover:overflow-auto"
     >
-      {realTimeMessages?.map((message: IMessage) => (
+      {realTimeMessages?.map((message: IGetMessage) => (
         <div key={message?.id} className="mx-auto p-6 border-t">
           <div className="flex items-center justify-between">
             <div className="flex items-center mb-4">

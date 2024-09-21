@@ -32,7 +32,7 @@ const LoginForm = () => {
   const handleLogin: SubmitHandler<Inputs> = async (data) => {
     try {
       const result: any = await loginUser(data);
-      if (result?.data?.statusCode === 201) {
+      if (result?.data?.statusCode === 200) {
         toast.success(result?.data?.message || "User login successfully!");
         router.push("/inbox");
       } else {
