@@ -10,7 +10,7 @@ class Service {
   async checkUserExistence(
     data: IUser
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const isExist = await UserService.findUserByEmail(data?.email);
+    const isExist = await UserService.findUserByEmailWithPassword(data?.email);
     const jwtPayload: IJwtPayload = {
       id: "",
       email: "",
@@ -23,7 +23,7 @@ class Service {
       return { accessToken, refreshToken };
     } else {
       const result = await UserService.createUser(data);
-      jwtPayload.id = result?._id;
+      jwtPayload.id = result?.id;
       jwtPayload.email = result?.email;
       const accessToken = await JwtInstance.generateAccessToken(jwtPayload);
       const refreshToken = await JwtInstance.generateRefreshToken(jwtPayload);
@@ -38,7 +38,7 @@ class Service {
     email: string,
     password: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const isExist = await UserService.findUserByEmail(email);
+    const isExist = await UserService.findUserByEmailWithPassword(email);
     if (!isExist) {
       throw new ApiError(httpStatus.NOT_FOUND, "User not found!");
     }
@@ -58,7 +58,6 @@ class Service {
 
     const accessToken = await JwtInstance.generateAccessToken(jwtPayload);
     const refreshToken = await JwtInstance.generateRefreshToken(jwtPayload);
-
     return { accessToken, refreshToken };
   }
 }
