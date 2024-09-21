@@ -8,7 +8,7 @@ import useUploadMultipleFile from "@/hooks/useUploadMultipleFiles";
 import { IUser } from "@/interfaces/user.interface";
 import { SocketContext } from "@/context/SocketContext";
 import { IMessage } from "@/interfaces/message.interface";
-import { useLoggedInUserQuery } from "@/features/user/user.api";
+import { useLoggedInUserQuery } from "@/features/user";
 import { useSendMessageMutation } from "@/features/message/message.api";
 import { useRouter } from "next/router";
 

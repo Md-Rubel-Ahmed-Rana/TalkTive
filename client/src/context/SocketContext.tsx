@@ -1,8 +1,6 @@
-import useGetLoggedInUser from "@/hooks/useGetLoggedInUser";
 import { IMessage } from "@/interfaces/message.interface";
-import { IUser } from "@/interfaces/user.interface";
-import { ReactNode, createContext, useEffect, useState } from "react";
-import io from "socket.io-client";
+import { ReactNode, createContext, useState } from "react";
+import io, { Socket } from "socket.io-client";
 
 export const SocketContext = createContext<any>(null);
 
@@ -12,9 +10,8 @@ type Props = {
 
 const SocketProvider = ({ children }: Props) => {
   const socketIo: any = io;
-  const socket = socketIo.connect("http://localhost:5050");
+  const socket = socketIo.connect("http://localhost:5050") as Socket;
   const [realTimeMessages, setRealTimeMessages] = useState<IMessage[]>([]);
-  const user: IUser = useGetLoggedInUser();
   const [isVideoCalling, setIsVideoCalling] = useState(false);
   const [caller, setCaller] = useState({});
   const [selectedUser, setSelectedUser] = useState({});
@@ -30,18 +27,6 @@ const SocketProvider = ({ children }: Props) => {
     selectedUser,
     setSelectedUser,
   };
-
-  useEffect(() => {
-    socket.on("callUser", (data: any) => {
-      user?.id === data?.to && setIsVideoCalling(true);
-      setCaller(data.from);
-    });
-  }, [socket, user?.id]);
-
-  // connect to socket message room
-  useEffect(() => {
-    socket.emit("message-room", user?.id);
-  }, [socket, user?.id]);
 
   return (
     <SocketContext.Provider value={values}>{children}</SocketContext.Provider>
