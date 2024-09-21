@@ -1,11 +1,12 @@
 import { IChat, IGetChat, IGetLastMessage } from "../interfaces/chat.interface";
 import { Chat } from "../models/chat.model";
+import { sortChatsByLastMessage } from "../utils/chatSorter";
 import { UserService } from "./user.service";
 
 class Service {
   public lastMessageSanitizer(message: any): IGetLastMessage {
     return {
-      id: String(message?._id || message?.id),
+      id: message?._id && String(message?._id),
       chatId: message?.chatId,
       sender: message?.sender,
       content: message?.content,
@@ -41,24 +42,24 @@ class Service {
   }
 
   async myChatList(participantId: string): Promise<IGetChat[]> {
-    const chatList = await Chat.find({ participants: participantId })
-      .populate([
-        {
-          path: "admin",
-          model: "User",
-        },
-        {
-          path: "participants",
-          model: "User",
-        },
-        {
-          path: "lastMessage",
-          model: "Message",
-        },
-      ])
-      .sort({ createdAt: -1 });
+    const chatList = await Chat.find({ participants: participantId }).populate([
+      {
+        path: "admin",
+        model: "User",
+      },
+      {
+        path: "participants",
+        model: "User",
+      },
+      {
+        path: "lastMessage",
+        model: "Message",
+      },
+    ]);
+
     const chats = chatList.map((chat) => this.chatSanitizer(chat));
-    return chats;
+    const sortedChats = sortChatsByLastMessage(chats);
+    return sortedChats;
   }
 }
 
