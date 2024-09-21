@@ -9,12 +9,12 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useCreateUserMutation } from "@/features/user/user.api";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
-import { IRegisterUser } from "@/interfaces/user.interface";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { IUser } from "@/interfaces/user.interface";
+import { useRegisterMutation } from "@/features/user";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -42,14 +42,14 @@ const RegisterForm = () => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<IRegisterUser>();
+  } = useForm<IUser>();
   const [showPassword, setShowPassword] = useState(false);
-  const [registerUser, { isLoading }] = useCreateUserMutation();
+  const [registerUser, { isLoading }] = useRegisterMutation();
   const router = useRouter();
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const handleRegister: SubmitHandler<IRegisterUser> = async (data) => {
+  const handleRegister: SubmitHandler<IUser> = async (data) => {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", data.email);

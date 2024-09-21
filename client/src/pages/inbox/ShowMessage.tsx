@@ -6,7 +6,7 @@ import { formattedDate } from "@/utils/formattedDate";
 import { SocketContext } from "@/context/SocketContext";
 import { IMessage } from "@/interfaces/message.interface";
 import { useGetMessagesQuery } from "@/features/message/message.api";
-import { useLoggedInUserQuery } from "@/features/user/user.api";
+import { useLoggedInUserQuery } from "@/features/user";
 import { IUser } from "@/interfaces/user.interface";
 import { useRouter } from "next/router";
 

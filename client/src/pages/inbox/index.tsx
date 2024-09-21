@@ -8,7 +8,7 @@ import MessageForm from "./MessageForm";
 import UserList from "./UserList";
 import { IUser } from "@/interfaces/user.interface";
 import { SocketContext } from "@/context/SocketContext";
-import { useLoggedInUserQuery } from "@/features/user/user.api";
+import { useLoggedInUserQuery } from "@/features/user";
 import UserSearchInput from "./UserSearchInput";
 import GetHead from "@/utils/Head";
 import { useRouter } from "next/router";

@@ -1,12 +1,28 @@
-import { IUser } from "./user.interface";
+import { IGetUser } from "./user.interface";
 
-export interface IMessage {
-  sender: IUser;
-  receiver: IUser;
-  id?: string;
+export type IMessage = {
+  chatId: string;
+  sender: string;
   content?: string;
-  images?: string[];
-  files?: string[];
+  media?: {
+    type: "image" | "audio" | "video" | "document";
+    url: string;
+  }[];
+  status: "sent" | "delivered" | "read";
+};
+
+type IMedia = {
+  type: string;
+  url: string;
+};
+
+export type IGetMessage = {
+  id: string;
+  chatId: string;
+  sender: IGetUser;
+  content: string;
+  media: IMedia[];
+  status: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};

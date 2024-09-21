@@ -2,7 +2,7 @@
 import {
   useGetSortedChatUsersQuery,
   useLoggedInUserQuery,
-} from "@/features/user/user.api";
+} from "@/features/user";
 import { IUser } from "@/interfaces/user.interface";
 import { useRouter } from "next/router";
 

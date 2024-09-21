@@ -8,7 +8,9 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useLoginUserMutation } from "@/features/user/user.api";
+import { useLoginMutation } from "@/features/auth";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 type Inputs = {
   email: string;
@@ -22,12 +24,27 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm<Inputs>();
   const [showPassword, setShowPassword] = useState(false);
-  const [loginUser, { isLoading }] = useLoginUserMutation();
+  const [loginUser, { isLoading }] = useLoginMutation();
+  const router = useRouter();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleLogin: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
+    try {
+      const result: any = await loginUser(data);
+      if (result?.data?.statusCode === 201) {
+        toast.success(result?.data?.message || "User login successfully!");
+        router.push("/inbox");
+      } else {
+        toast.error(
+          result?.data?.message ||
+            result?.error?.data?.message ||
+            "Failed to login. Try again!"
+        );
+      }
+    } catch (error) {
+      toast.error("Failed to login. Try again!");
+    }
   };
 
   return (

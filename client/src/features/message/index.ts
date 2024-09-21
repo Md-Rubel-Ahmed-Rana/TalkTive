@@ -1,19 +1,27 @@
+import { IMessage } from "@/interfaces/message.interface";
 import apiSlice from "../api/apiSlice";
 
 const messageApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     sendMessage: builder.mutation({
-      query: (data) => ({
-        url: "/message/send",
+      query: ({
+        sender,
+        receiver,
+        data,
+      }: {
+        sender: string;
+        receiver: string;
+        data: IMessage;
+      }) => ({
+        url: `/message/send/${sender}/${receiver}`,
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["message", "user"] as any,
+      invalidatesTags: ["message", "chat"] as any,
     }),
-
-    getMessages: builder.query({
-      query: ({ sender, receiver }) => ({
-        url: `/message/${sender}/${receiver}`,
+    getMessagesByChatId: builder.query({
+      query: (chatId: string) => ({
+        url: `/message/${chatId}`,
       }),
       providesTags: ["message"] as any,
     }),
@@ -27,10 +35,10 @@ const messageApi = apiSlice.injectEndpoints({
     }),
 
     editMessage: builder.mutation({
-      query: ({ id, text }) => ({
+      query: ({ id, content }: { id: string; content: string }) => ({
         url: `/message/update/${id}`,
         method: "PATCH",
-        body: { text },
+        body: { content },
       }),
       invalidatesTags: ["message"] as any,
     }),
@@ -39,7 +47,7 @@ const messageApi = apiSlice.injectEndpoints({
 
 export const {
   useSendMessageMutation,
+  useGetMessagesByChatIdQuery,
   useDeleteMessageMutation,
   useEditMessageMutation,
-  useGetMessagesQuery,
 } = messageApi;

@@ -1,8 +1,5 @@
 import { SocketContext } from "@/context/SocketContext";
-import {
-  useGetUsersQuery,
-  useLoggedInUserQuery,
-} from "@/features/user/user.api";
+import { useGetUsersQuery, useLoggedInUserQuery } from "@/features/user";
 import { IUser } from "@/interfaces/user.interface";
 import customStyles from "@/utils/reactSelectCustomStyle";
 import { useRouter } from "next/router";
