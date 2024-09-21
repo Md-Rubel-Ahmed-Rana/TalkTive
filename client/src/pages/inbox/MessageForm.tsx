@@ -4,12 +4,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { FaImage, FaFile } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
-import useUploadMultipleFile from "@/hooks/useUploadMultipleFiles";
 import { IUser } from "@/interfaces/user.interface";
 import { SocketContext } from "@/context/SocketContext";
 import { IMessage } from "@/interfaces/message.interface";
-import { useLoggedInUserQuery } from "@/features/user";
-import { useSendMessageMutation } from "@/features/message/message.api";
 import { useRouter } from "next/router";
 
 type Inputs = {
@@ -21,12 +18,8 @@ type Inputs = {
 };
 
 const MessageForm = () => {
-  const { data: userData } = useLoggedInUserQuery({});
-  const user: IUser = userData?.data;
   const router = useRouter();
-  const queryParams = router.query;
 
-  const { socket, setRealTimeMessages }: any = useContext(SocketContext);
   const { register, handleSubmit, reset } = useForm<Inputs>({
     mode: "onChange",
   });
@@ -37,45 +30,9 @@ const MessageForm = () => {
   const [links, setLinks] = useState<string[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [filesUrls, setFileUrls] = useState<string[]>([]);
-  const uploadImages = useUploadMultipleFile();
-  const uploadFiles = useUploadMultipleFile();
-  const [sendMessage] = useSendMessageMutation();
   const [isMessage, setIsMessage] = useState(false);
 
-  console.log(imageUrls);
-
-  const handleSendMessage: SubmitHandler<Inputs> = async (data) => {
-    if (files && files?.length > 0) {
-      const result = await uploadFiles(files, setFileUrls);
-      console.log("Result for file", result);
-    }
-    if (images && images.length > 0) {
-      const result = await uploadImages(images, setImageUrls);
-      console.log("Result for image", result);
-    }
-    console.log({ imageUrls });
-    data.files = filesUrls!;
-    data.images = imageUrls!;
-    data.sender = user?.id;
-    data.receiver = queryParams?.userId as string;
-    console.log("Data", data);
-    const result: any = await sendMessage(data);
-    if (result?.data?.success) {
-      const message = result?.data?.data;
-      socket.emit("message", message);
-      setRealTimeMessages((prev: IMessage[]) => [...prev, message]);
-
-      setImagePreview([]);
-      setFilePreview([]);
-      setImages(null);
-      setFiles(null);
-      setLinks([]);
-      setImageUrls([]);
-      setFileUrls([]);
-      setIsMessage(false);
-      reset();
-    }
-  };
+  const handleSendMessage: SubmitHandler<Inputs> = async (data) => {};
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;

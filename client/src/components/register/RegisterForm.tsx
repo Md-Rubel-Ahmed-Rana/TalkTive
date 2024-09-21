@@ -84,7 +84,6 @@ const RegisterForm = () => {
   const handleReUpload = () => {
     setImagePreview(null);
   };
-  console.log({ imagePreview });
 
   return (
     <form
