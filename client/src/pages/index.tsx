@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { description } from "@/components/common/Welcome";
 import HomePage from "@/components/home";
-import Layout from "@/layout";
+import RootLayout from "@/layout";
 import GetHead from "@/utils/Head";
 import { ReactElement } from "react";
 
@@ -19,5 +19,5 @@ export default function Home() {
 }
 
 Home.getLayout = function (page: ReactElement) {
-  return <Layout>{page}</Layout>;
+  return <RootLayout>{page}</RootLayout>;
 };

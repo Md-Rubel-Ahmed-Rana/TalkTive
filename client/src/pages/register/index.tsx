@@ -1,8 +1,8 @@
-import Layout from "@/layout";
 import React, { ReactElement } from "react";
 import GetHead from "@/utils/Head";
 import RegisterPage from "@/components/register";
 import { description } from "@/components/common/Welcome";
+import RootLayout from "@/layout";
 
 const Register = () => {
   return (
@@ -18,7 +18,7 @@ const Register = () => {
 };
 
 Register.getLayout = function (page: ReactElement) {
-  return <Layout>{page}</Layout>;
+  return <RootLayout>{page}</RootLayout>;
 };
 
 export default Register;

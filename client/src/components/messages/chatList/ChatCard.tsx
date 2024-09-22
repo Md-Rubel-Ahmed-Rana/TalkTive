@@ -7,9 +7,8 @@ type Props = {
 };
 
 const ChatCard = ({ chat }: Props) => {
-  console.log(chat);
   return (
-    <div className="border-b py-2 border-blue-500">
+    <div className="border-b py-2 border-blue-500 cursor-pointer hover:bg-gray-100">
       {chat?.isGroupChat ? (
         <GroupChat chat={chat} />
       ) : (

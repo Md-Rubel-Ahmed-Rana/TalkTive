@@ -10,14 +10,18 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import Link from "next/link";
+import { useGetLoggedInUserQuery } from "@/features/auth";
+import { IGetUser } from "@/interfaces/user.interface";
 
 const settings = ["Profile", "Inbox", "Friends", "Logout"];
 
 const Navbar = () => {
+  const { data: userData } = useGetLoggedInUserQuery({});
+  const user = userData?.data as IGetUser;
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-  const user: any = {};
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -73,11 +77,11 @@ const Navbar = () => {
                 className="mt-11"
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Link href={`/${setting.toLowerCase()}`}>
+                  <Link key={setting} href={`/${setting.toLowerCase()}`}>
+                    <MenuItem onClick={handleCloseUserMenu}>
                       <Typography className="text-center">{setting}</Typography>
-                    </Link>
-                  </MenuItem>
+                    </MenuItem>
+                  </Link>
                 ))}
               </Menu>
             </Box>
