@@ -12,15 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const databaseConnection = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Database connecting...");
-    try {
-        yield mongoose_1.default.connect(process.env.DATABASE_URL);
-        console.log("Database connected");
+exports.BcryptInstance = void 0;
+const bcrypt_1 = __importDefault(require("bcrypt"));
+class Bcrypt {
+    hash(password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const hashedPassword = yield bcrypt_1.default.hash(password, 12);
+            return hashedPassword;
+        });
     }
-    catch (error) {
-        console.log("Database not connected");
+    compare(password, encryptedPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isMatchedPassword = yield bcrypt_1.default.compare(password, encryptedPassword);
+            return isMatchedPassword;
+        });
     }
-});
-exports.default = databaseConnection;
+}
+exports.BcryptInstance = new Bcrypt();

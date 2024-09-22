@@ -12,53 +12,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MessageController = void 0;
-const message_service_1 = require("../service/message.service");
-const rootController_1 = __importDefault(require("./rootController"));
+exports.AuthController = void 0;
 const http_status_1 = __importDefault(require("http-status"));
+const rootController_1 = __importDefault(require("./rootController"));
+const auth_service_1 = require("../service/auth.service");
+const cookie_1 = require("../utils/cookie");
 class Controller extends rootController_1.default {
     constructor() {
         super(...arguments);
-        this.sendMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const receiver = req.params.receiver;
-            yield message_service_1.MessageService.sendMessage(receiver, req.body);
+        this.auth = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = req === null || req === void 0 ? void 0 : req.id;
+            const result = yield auth_service_1.AuthService.auth(id);
             this.apiResponse(res, {
-                statusCode: http_status_1.default.CREATED,
+                statusCode: http_status_1.default.OK,
                 success: true,
-                message: "Message has been sent!",
+                message: "User fetched  successfully",
+                data: result,
+            });
+        }));
+        this.login = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { email, password } = req.body;
+            const { accessToken, refreshToken } = yield auth_service_1.AuthService.login(email, password);
+            cookie_1.cookieManager.setTokens(res, accessToken, refreshToken);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Login successful",
                 data: null,
             });
         }));
-        this.getMessagesByChatId = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const chatId = req.params.chatId;
-            const messages = yield message_service_1.MessageService.getMessagesByChatId(chatId);
+        this.logout = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            cookie_1.cookieManager.clearTokens(res);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.OK,
                 success: true,
-                message: "Messages found!",
-                data: messages,
-            });
-        }));
-        this.updateMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield message_service_1.MessageService.updateMessage(id, req.body.content);
-            this.apiResponse(res, {
-                statusCode: http_status_1.default.OK,
-                success: true,
-                message: "Message updated!",
-                data: null,
-            });
-        }));
-        this.deleteMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield message_service_1.MessageService.deleteMessage(id);
-            this.apiResponse(res, {
-                statusCode: http_status_1.default.OK,
-                success: true,
-                message: "Message deleted!",
+                message: "Logout successful",
                 data: null,
             });
         }));
     }
 }
-exports.MessageController = new Controller();
+exports.AuthController = new Controller();

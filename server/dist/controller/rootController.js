@@ -8,19 +8,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const databaseConnection = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Database connecting...");
-    try {
-        yield mongoose_1.default.connect(process.env.DATABASE_URL);
-        console.log("Database connected");
+class RootController {
+    constructor(model = "") {
+        this.catchAsync = (fn) => (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield fn(req, res, next);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+        this.model = model;
     }
-    catch (error) {
-        console.log("Database not connected");
+    apiResponse(res, data) {
+        const responseData = {
+            statusCode: data.statusCode,
+            success: data.success,
+            message: data.message || null,
+            data: data.data || null || undefined,
+        };
+        res.status(data.statusCode).json(responseData);
     }
-});
-exports.default = databaseConnection;
+}
+exports.default = RootController;

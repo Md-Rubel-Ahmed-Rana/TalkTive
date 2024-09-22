@@ -1,10 +1,11 @@
-import multer from "multer";
+import multer, { Multer } from "multer";
 import fs from "fs";
 import axios from "axios";
 import FormData from "form-data";
 import { Request, Response, NextFunction } from "express";
 import makeUrlFromFileObject from "../utils/makeUrlFromFileObject";
 import { config } from "../config/environment";
+import mime from "mime-types";
 
 const upload = multer({ dest: "uploads/" });
 const rootFolder = "talktive";
@@ -53,6 +54,49 @@ const uploadProfileImage = () => {
   };
 };
 
+const uploadMessageFiles = () => {
+  const folder = `${rootFolder}/messages`;
+
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const files = (req.files as Express.Multer.File[]) || [];
+    const media: { type: string; url: string }[] = [];
+
+    if (files.length > 0) {
+      for (const file of files) {
+        const mimeType = mime.lookup(file.originalname);
+        let targetFolder = "";
+        let fileType = "document";
+
+        if (mimeType && mimeType.includes("image")) {
+          targetFolder = `${folder}/images`;
+          fileType = "image";
+        } else if (mimeType && mimeType.includes("video")) {
+          targetFolder = `${folder}/videos`;
+          fileType = "video";
+        } else if (mimeType && mimeType.includes("audio")) {
+          targetFolder = `${folder}/audios`;
+          fileType = "audio";
+        } else {
+          targetFolder = `${folder}/documents`;
+          fileType = "document";
+        }
+
+        const urls = await handleUpload([file], targetFolder);
+        urls.forEach((url) => {
+          media.push({
+            type: fileType,
+            url: url,
+          });
+        });
+      }
+
+      req.body = { ...req.body, media };
+    }
+
+    next();
+  };
+};
+
 const handleUpload = async (
   files: Express.Multer.File[],
   folder: string
@@ -94,4 +138,4 @@ const handleUpload = async (
   return uploadedFiles;
 };
 
-export { upload, uploadProfileImage };
+export { upload, uploadProfileImage, uploadMessageFiles };

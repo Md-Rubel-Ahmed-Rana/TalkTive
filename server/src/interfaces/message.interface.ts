@@ -12,7 +12,8 @@ export type IMessage = {
   status: "sent" | "delivered" | "read";
 };
 
-type IMedia = {
+export type IGetMedia = {
+  id: string;
   type: string;
   url: string;
 };
@@ -22,7 +23,7 @@ export type IGetMessage = {
   chatId: string;
   sender: IGetUser;
   content: string;
-  media: IMedia[];
+  media: IGetMedia[];
   status: string;
   createdAt: Date;
   updatedAt: Date;
