@@ -1,6 +1,7 @@
 import { useGetMessagesByChatIdQuery } from "@/features/message";
 import { IGetMessage } from "@/interfaces/message.interface";
 import { useRouter } from "next/router";
+import MessageCard from "./common/MessageCard";
 
 const MessageContainer = () => {
   const { query } = useRouter();
@@ -8,7 +9,13 @@ const MessageContainer = () => {
   const { data } = useGetMessagesByChatIdQuery(chatId);
   const messages = data?.data as IGetMessage[];
   console.log(messages);
-  return <div>This is message container: {messages?.length}</div>;
+  return (
+    <div className="h-full overflow-y-auto p-2">
+      {messages?.map((message) => (
+        <MessageCard key={message?.id} message={message} />
+      ))}
+    </div>
+  );
 };
 
 export default MessageContainer;

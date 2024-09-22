@@ -31,8 +31,8 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" className="bg-blue-600">
-      <Container maxWidth="xl" className="px-4 mx-auto">
+    <AppBar position="static" className="bg-blue-600 w-full">
+      <Container maxWidth={false} className="px-4">
         <Toolbar disableGutters className="flex justify-between items-center">
           <div className="flex items-center">
             <Avatar

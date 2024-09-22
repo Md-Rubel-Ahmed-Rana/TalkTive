@@ -1,4 +1,4 @@
-import { urlRegex } from "@/constants/regx";
+import urlRegex from "@/constants/regx";
 
 export const detectLinks = (text: string) => {
   const parts = text.split(" ");
