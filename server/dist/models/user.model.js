@@ -18,6 +18,33 @@ const userSchema = new mongoose_1.Schema({
     image: {
         type: String,
     },
+    title: {
+        type: String,
+        default: "",
+    },
+    about: {
+        type: String,
+        default: "",
+    },
+    status: {
+        type: String,
+        enum: ["online", "offline"],
+        default: "online",
+    },
+    links: [
+        {
+            name: {
+                type: String,
+            },
+            url: {
+                type: String,
+            },
+        },
+    ],
+    lastActive: {
+        type: Date,
+        default: Date.now(),
+    },
 }, {
     timestamps: true,
     toJSON: {

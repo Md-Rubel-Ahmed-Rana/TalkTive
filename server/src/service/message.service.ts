@@ -1,19 +1,31 @@
 import { Types } from "mongoose";
-import { IGetMessage, IMessage } from "../interfaces/message.interface";
+import {
+  IGetMedia,
+  IGetMessage,
+  IMessage,
+} from "../interfaces/message.interface";
 import { Message } from "../models/message.model";
 import { ChatService } from "./chat.service";
 import { UserService } from "./user.service";
 
 class Service {
+  private mediaSanitizer(media: any): IGetMedia {
+    return {
+      id: media?._id && String(media?._id || media?.id),
+      type: media?.type,
+      url: media?.url,
+    };
+  }
   public messageSanitizer(message: any): IGetMessage {
     const sender = UserService.userSanitizer(message?.sender);
+    const media = message?.media?.map((mda: any) => this.mediaSanitizer(mda));
     return {
-      id: String(message?._id || message?.id),
+      id: message?._id && String(message?._id || message?.id),
       chatId: message?.chatId,
       sender: sender,
       content: message?.content,
       status: message?.status,
-      media: message?.media,
+      media: media,
       createdAt: message?.createdAt,
       updatedAt: message?.updatedAt,
     };

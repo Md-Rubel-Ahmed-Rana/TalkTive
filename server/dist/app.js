@@ -9,19 +9,27 @@ const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const dotenv_1 = __importDefault(require("dotenv"));
 const morgan_1 = __importDefault(require("morgan"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const root_routes_1 = require("./routes/root.routes");
+const notFoundError_1 = __importDefault(require("./errors/notFoundError"));
+const globalErrorHandler_1 = require("./errors/globalErrorHandler");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cors_1.default)());
+app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
+app.use((0, cors_1.default)({
+    origin: ["http://localhost:3000", "https://talktive-beryl.vercel.app"],
+    credentials: true,
+}));
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {
         origin: ["http://localhost:3000", "https://talktive-beryl.vercel.app"],
     },
 });
+global.io = io;
 // health check
 app.get("/", (req, res) => {
     res.status(200).json({
@@ -32,28 +40,8 @@ app.get("/", (req, res) => {
 });
 // routes
 app.use(root_routes_1.RootRoutes);
-// Connecting to Socket.IO
-io.on("connection", (socket) => {
-    console.log("A user connected");
-    socket.on("message-room", (userId) => {
-        socket.join(userId);
-    });
-    socket.on("message", (data) => {
-        io.to(data.receiver.id).emit("message", data);
-    });
-    socket.on("callUser", (data) => {
-        console.log("callUser", data);
-        io.to(data.userToCall).emit("callUser", {
-            signal: data.signalData,
-            from: data.from,
-            to: data.userToCall,
-        });
-    });
-    socket.on("answerCall", (data) => {
-        io.to(data.to).emit("callAccepted", data.signal);
-    });
-    socket.on("disconnect", () => {
-        console.log("User disconnected");
-    });
-});
+// 404 not found error
+(0, notFoundError_1.default)(app);
+// global error handler
+app.use(globalErrorHandler_1.ErrorInstance.globalErrorHandler);
 exports.default = server;
