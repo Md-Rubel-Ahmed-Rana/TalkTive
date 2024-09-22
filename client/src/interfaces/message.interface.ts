@@ -8,7 +8,6 @@ export type IMessage = {
     type: "image" | "audio" | "video" | "document";
     url: string;
   }[];
-  status: "sent" | "delivered" | "read";
 };
 
 type IMedia = {

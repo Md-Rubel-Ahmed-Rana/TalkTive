@@ -11,7 +11,7 @@ const messageApi = apiSlice.injectEndpoints({
       }: {
         sender: string;
         receiver: string;
-        data: IMessage;
+        data: IMessage | FormData;
       }) => ({
         url: `/message/send/${sender}/${receiver}`,
         method: "POST",
