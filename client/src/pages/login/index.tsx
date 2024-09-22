@@ -1,6 +1,6 @@
 import { description } from "@/components/common/Welcome";
 import LoginPage from "@/components/login";
-import Layout from "@/layout";
+import RootLayout from "@/layout";
 import GetHead from "@/utils/Head";
 import React, { ReactElement } from "react";
 
@@ -18,7 +18,7 @@ const Login = () => {
 };
 
 Login.getLayout = function (page: ReactElement) {
-  return <Layout>{page}</Layout>;
+  return <RootLayout>{page}</RootLayout>;
 };
 
 export default Login;

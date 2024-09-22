@@ -1,12 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 import GetHead from "@/utils/Head";
-import { useRouter } from "next/router";
 import { MdMessage } from "react-icons/md";
-import Sidebar from "@/components/messages/Sidebar";
+import InboxLayoutLarge from "@/layout/InboxLayoutLarge";
+import { ReactElement } from "react";
 
 const Inbox = () => {
-  const router = useRouter();
-
   return (
     <>
       <GetHead
@@ -15,9 +12,8 @@ const Inbox = () => {
         keywords="talktive, message, audio, video"
       />
       <div className="hidden lg:block">
-        <div className="flex justify-center items-center h-screen w-full bg-gray-100">
-          <Sidebar />
-          <main className="flex-grow flex flex-col justify-center items-center h-full w-full bg-white  shadow-lg p-8">
+        <div className="flex justify-center items-center h-screen w-full">
+          <main className="flex-grow flex flex-col justify-center items-center h-full w-full bg-white\ p-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
                 Welcome to your Messages
@@ -33,11 +29,12 @@ const Inbox = () => {
           </main>
         </div>
       </div>
-      <div className="bg-gray-100 block lg:hidden">
-        {/* <MobileLayout /> */}
-      </div>
     </>
   );
 };
 
 export default Inbox;
+
+Inbox.getLayout = function (page: ReactElement) {
+  return <InboxLayoutLarge>{page}</InboxLayoutLarge>;
+};
