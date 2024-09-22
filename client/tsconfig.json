@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/utils/pdf-worker.ts"  ],
   "exclude": [
     "node_modules"
   ]

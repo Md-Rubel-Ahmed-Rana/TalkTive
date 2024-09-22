@@ -139,7 +139,7 @@ const AudioRecorder = ({ setFiles }: Props) => {
           className="focus:outline-none"
           aria-label="Open Recorder"
         >
-          <MicIcon className="text-lg lg:text-2xl text-blue-500" />
+          <MicIcon className="text-lg lg:text-3xl text-blue-500" />
         </button>
       </div>
       <Modal open={isModalOpen} onClose={closeModal}>

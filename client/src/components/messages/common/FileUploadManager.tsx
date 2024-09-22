@@ -24,7 +24,7 @@ const FileUploadManager = ({ setFiles }: Props) => {
       )}
       <ControlPointIcon
         onClick={() => setOpen((prev) => !prev)}
-        className="text-blue-500 cursor-pointer"
+        className="text-blue-500 cursor-pointer text-3xl"
       />
       <AudioRecorder setFiles={setFiles} />
     </div>

@@ -2,7 +2,7 @@ import Welcome from "../common/Welcome";
 import LoginForm from "./LoginForm";
 const LoginPage = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full flex gap-10 flex-row-reverse items-center justify-center">
         <div className="w-1/3">
           <Welcome
