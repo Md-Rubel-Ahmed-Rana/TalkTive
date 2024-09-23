@@ -3,6 +3,7 @@ import MessagePoster from "./MessagePoster";
 import { detectLinks } from "@/utils/detectLinkFromText";
 import { formattedDate } from "@/utils/formattedDate";
 import MessageMediaManager from "./MessageMediaManager";
+import MessageActions from "./MessageActions";
 
 type Props = {
   message: IGetMessage;
@@ -16,6 +17,7 @@ const MessageCard = ({ message }: Props) => {
           sender={message?.sender}
           messageCreatedAt={message?.createdAt}
         />
+        <MessageActions message={message} />
       </div>
       {message?.content && (
         <div

@@ -18,10 +18,10 @@ const LastMessage = ({ lastMessage }: Props) => {
     <>
       {lastMessage?.content ? (
         <p>
-          {lastMessage.status === "sent" ? (
+          {lastMessage?.status === "sent" ? (
             <DoneIcon className="text-md text-blue-500" />
           ) : (
-            lastMessage.status === "read" && (
+            lastMessage?.status === "read" && (
               <DoneAllIcon className="text-md text-blue-500" />
             )
           )}
@@ -29,18 +29,18 @@ const LastMessage = ({ lastMessage }: Props) => {
         </p>
       ) : (
         <p>
-          {lastMessage.status === "sent" ? (
+          {lastMessage?.status === "sent" ? (
             <DoneIcon className="text-md text-blue-500" />
           ) : (
-            lastMessage.status === "read" && (
+            lastMessage?.status === "read" && (
               <DoneAllIcon className="text-md text-blue-500" />
             )
           )}
           {lastMedia?.type === "image" ? (
             <ImageIcon className="text-md text-blue-500" />
-          ) : lastMedia.type === "audio" ? (
+          ) : lastMedia?.type === "audio" ? (
             <MicIcon className="text-md text-blue-500" />
-          ) : lastMedia.type === "video" ? (
+          ) : lastMedia?.type === "video" ? (
             <VideocamIcon className="text-md text-blue-500" />
           ) : (
             <DescriptionIcon />
