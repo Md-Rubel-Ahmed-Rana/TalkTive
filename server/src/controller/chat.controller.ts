@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import RootController from "./rootController";
 import { ChatService } from "../service/chat.service";
 import httpStatus from "http-status";
+import { Types } from "mongoose";
 
 class Controller extends RootController {
   addNewChat = this.catchAsync(async (req: Request, res: Response) => {
@@ -21,6 +22,16 @@ class Controller extends RootController {
       success: true,
       message: "Chat list found!",
       data: chatList,
+    });
+  });
+  getSingleChat = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.id as unknown as Types.ObjectId;
+    const chat = await ChatService.getSingleChat(chatId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Chat found!",
+      data: chat,
     });
   });
 }
