@@ -38,6 +38,29 @@ class Controller extends rootController_1.default {
                 data: chatList,
             });
         }));
+        this.getSingleChat = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.id;
+            const chat = yield chat_service_1.ChatService.getSingleChat(chatId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Chat found!",
+                data: chat,
+            });
+        }));
+        this.getChatByTwoParticipants = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const participant1 = (_a = req.params) === null || _a === void 0 ? void 0 : _a.participant1;
+            const participant2 = (_b = req.params) === null || _b === void 0 ? void 0 : _b.participant2;
+            const chat = yield chat_service_1.ChatService.getChatByTwoParticipants(participant1, participant2);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Chat found!",
+                data: chat,
+            });
+        }));
     }
 }
 exports.ChatController = new Controller();

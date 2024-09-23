@@ -30,12 +30,17 @@ class Service {
       updatedAt: message?.updatedAt,
     };
   }
-  async sendMessage(receiver: Types.ObjectId, data: IMessage): Promise<void> {
+  async sendMessage(
+    receiver: Types.ObjectId,
+    data: IMessage
+  ): Promise<{ chatId: Types.ObjectId } | null> {
+    console.log({ receiver, data });
     if (data?.chatId) {
       const result = await Message.create(data);
       const newMessage = await result.populate("sender");
       const message = this.messageSanitizer(newMessage);
       console.log(`Emit message: ${message}`);
+      return null;
     } else {
       const chat = await ChatService.addNewChat({
         isGroupChat: false,
@@ -48,6 +53,7 @@ class Service {
       const newMessage = await result.populate("sender");
       const message = this.messageSanitizer(newMessage);
       console.log(`Emit message: ${message}`);
+      return { chatId: chat?._id || chat?.id };
     }
   }
   async getMessagesByChatId(chatId: Types.ObjectId): Promise<IGetMessage[]> {

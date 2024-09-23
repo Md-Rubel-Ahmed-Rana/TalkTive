@@ -7,12 +7,12 @@ import { Types } from "mongoose";
 class Controller extends RootController {
   sendMessage = this.catchAsync(async (req: Request, res: Response) => {
     const receiver = req.params.receiver as unknown as Types.ObjectId;
-    await MessageService.sendMessage(receiver, req.body);
+    const result = await MessageService.sendMessage(receiver, req.body);
     this.apiResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
       message: "Message has been sent!",
-      data: null,
+      data: result,
     });
   });
   getMessagesByChatId = this.catchAsync(async (req: Request, res: Response) => {

@@ -21,12 +21,12 @@ class Controller extends rootController_1.default {
         super(...arguments);
         this.sendMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const receiver = req.params.receiver;
-            yield message_service_1.MessageService.sendMessage(receiver, req.body);
+            const result = yield message_service_1.MessageService.sendMessage(receiver, req.body);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.CREATED,
                 success: true,
                 message: "Message has been sent!",
-                data: null,
+                data: result,
             });
         }));
         this.getMessagesByChatId = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -50,7 +50,8 @@ class Controller extends rootController_1.default {
             });
         }));
         this.deleteMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
+            var _a;
+            const id = (_a = req.params) === null || _a === void 0 ? void 0 : _a.id;
             yield message_service_1.MessageService.deleteMessage(id);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.OK,
