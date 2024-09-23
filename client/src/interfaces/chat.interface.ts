@@ -1,3 +1,4 @@
+import { IGetMedia } from "./message.interface";
 import { IGetUser } from "./user.interface";
 
 export type IChat = {
@@ -14,7 +15,7 @@ export type IGetLastMessage = {
   sender: string;
   content: string;
   status: string;
-  media: string[];
+  media: IGetMedia[];
   createdAt: Date;
   updatedAt: Date;
 };
