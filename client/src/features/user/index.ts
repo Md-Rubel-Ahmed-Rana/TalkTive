@@ -32,7 +32,7 @@ const userApi = apiSlice.injectEndpoints({
       invalidatesTags: ["user"] as any,
     }),
     changeProfilePicture: builder.mutation({
-      query: ({ id, image }: { id: string; image: File }) => ({
+      query: ({ id, image }: { id: string; image: FormData }) => ({
         method: "PATCH",
         url: `/user/change-profile-picture/${id}`,
         body: image,
