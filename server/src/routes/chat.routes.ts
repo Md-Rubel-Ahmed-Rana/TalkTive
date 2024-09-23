@@ -7,4 +7,6 @@ router.post("/add-new-chat", ChatController.addNewChat);
 
 router.get("/my-chat-list/:participantId", ChatController.myChatList);
 
+router.get("/:id", ChatController.getSingleChat);
+
 export const ChatRoutes = router;

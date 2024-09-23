@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IChat, IGetChat, IGetLastMessage } from "../interfaces/chat.interface";
 import { Chat } from "../models/chat.model";
 import { sortChatsByLastMessage } from "../utils/chatSorter";
@@ -60,6 +61,25 @@ class Service {
     const chats = chatList.map((chat) => this.chatSanitizer(chat));
     const sortedChats = sortChatsByLastMessage(chats);
     return sortedChats;
+  }
+
+  async getSingleChat(chatId: Types.ObjectId): Promise<IGetChat> {
+    const data = await Chat.findById(chatId).populate([
+      {
+        path: "admin",
+        model: "User",
+      },
+      {
+        path: "participants",
+        model: "User",
+      },
+      {
+        path: "lastMessage",
+        model: "Message",
+      },
+    ]);
+    const chat = this.chatSanitizer(data);
+    return chat;
   }
 }
 
