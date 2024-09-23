@@ -89,7 +89,7 @@ const MessageEditButton = ({ message }: Props) => {
                 onClick={() => setOpen(false)}
                 variant={isLoading ? "text" : "outlined"}
               >
-                {isLoading ? <DangerousIcon /> : "No"}
+                {isLoading ? <DangerousIcon /> : "Cancel"}
               </Button>
               {message?.content === newContent || !newContent ? (
                 <Button variant="contained" className="bg-gray-600" disabled>
