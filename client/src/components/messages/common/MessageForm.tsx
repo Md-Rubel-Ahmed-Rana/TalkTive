@@ -8,13 +8,17 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import toast from "react-hot-toast";
 import SmallLoaderSpinner from "@/components/shared/SmallLoaderSpinner";
+import { useLazyGetChatByTwoParticipantsQuery } from "@/features/chat";
 
 const MessageForm = () => {
   const [files, setFiles] = useState<any>(null);
   const [content, setContent] = useState("");
-  const { query } = useRouter();
+  const { query, push } = useRouter();
   const chatId = query?.chatId as string;
   const receiver = query?.userId as string;
+  const userName = query?.userName as string;
+  const userEmail = query?.userEmail as string;
+  const userImage = query?.userImage as string;
   const [sendMessage, { isLoading }] = useSendMessageMutation();
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
@@ -31,7 +35,9 @@ const MessageForm = () => {
       });
     }
 
-    formData.append("chatId", chatId);
+    if (chatId) {
+      formData.append("chatId", chatId);
+    }
     formData.append("sender", user?.id);
     formData.append("receiver", receiver);
     formData.append("content", content);
@@ -48,6 +54,10 @@ const MessageForm = () => {
         setContent("");
         if (inputRef?.current) {
           inputRef.current.value = "";
+        }
+        if (!chatId) {
+          const path = `/inbox/messages/chat/p2p?chatId=${result?.data?.data?.chatId}&userId=${receiver}&userName=${userName}&userEmail=${userEmail}&userImage=${userImage}`;
+          push(path);
         }
       } else {
         toast.error(

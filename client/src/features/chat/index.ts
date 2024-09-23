@@ -23,6 +23,18 @@ const chatApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["chat"] as any,
     }),
+    getChatByTwoParticipants: builder.query({
+      query: ({
+        participant1,
+        participant2,
+      }: {
+        participant1: string;
+        participant2: string;
+      }) => ({
+        url: `/chat/single/${participant1}/${participant2}`,
+      }),
+      providesTags: ["chat"] as any,
+    }),
   }),
 });
 
@@ -30,4 +42,5 @@ export const {
   useAddNewChatMutation,
   useGetMyChatListQuery,
   useGetSingleChatQuery,
+  useLazyGetChatByTwoParticipantsQuery,
 } = chatApi;
