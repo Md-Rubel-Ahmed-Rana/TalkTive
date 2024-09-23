@@ -36,7 +36,7 @@ class Controller extends RootController {
     });
   });
   deleteMessage = this.catchAsync(async (req: Request, res: Response) => {
-    const id = req.params.id as unknown as Types.ObjectId;
+    const id = req.params?.id as unknown as Types.ObjectId;
     await MessageService.deleteMessage(id);
     this.apiResponse(res, {
       statusCode: httpStatus.OK,
