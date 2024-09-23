@@ -12,8 +12,15 @@ import MenuItem from "@mui/material/MenuItem";
 import Link from "next/link";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
+import { Button } from "@mui/material";
+import LogoutButton from "./LogoutButton";
 
-const settings = ["Profile", "Inbox", "Friends", "Logout"];
+const settings = [
+  { name: "Profile", url: "/user/profile" },
+  { name: "Inbox", url: "inbox" },
+  { name: "Friends", url: "/user/friends" },
+  { name: "Settings", url: "/user/settings" },
+];
 
 const Navbar = () => {
   const { data: userData } = useGetLoggedInUserQuery({});
@@ -56,7 +63,9 @@ const Navbar = () => {
                 <IconButton onClick={handleOpenUserMenu} className="p-0">
                   <Avatar
                     alt="User Avatar"
-                    src="https://i.ibb.co/1MqspsL/user-Avater.png"
+                    src={
+                      user?.image || "https://i.ibb.co/1MqspsL/user-Avater.png"
+                    }
                   />
                 </IconButton>
               </Tooltip>
@@ -77,12 +86,17 @@ const Navbar = () => {
                 className="mt-11"
               >
                 {settings.map((setting) => (
-                  <Link key={setting} href={`/${setting.toLowerCase()}`}>
+                  <Link key={setting?.name} href={`/${setting?.url}`}>
                     <MenuItem onClick={handleCloseUserMenu}>
-                      <Typography className="text-center">{setting}</Typography>
+                      <Typography className="text-center">
+                        {setting?.name}
+                      </Typography>
                     </MenuItem>
                   </Link>
                 ))}
+                <Button>
+                  <LogoutButton />
+                </Button>
               </Menu>
             </Box>
           ) : (
