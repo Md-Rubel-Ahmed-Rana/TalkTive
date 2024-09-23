@@ -8,7 +8,7 @@ type Props = {
 
 const Welcome = ({ headClasses, descClasses }: Props) => {
   return (
-    <div className="text-center">
+    <div className="text-center bg-gray-100">
       <h1 className={headClasses}>Welcome to Talktive!</h1>
       <p className={descClasses}>{description}</p>
     </div>
