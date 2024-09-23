@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import UserPreferences from "./userPreferences";
+import UserPreferences from "./UserPreferences";
 import ThemeSettings from "./ThemeSettings";
 import ChatSettings from "./ChatSettings";
 import GroupChatSettings from "./GroupChatSettings";

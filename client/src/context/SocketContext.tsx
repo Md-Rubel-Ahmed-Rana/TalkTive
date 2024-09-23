@@ -1,3 +1,4 @@
+import { baseApi } from "@/features/api";
 import { IMessage } from "@/interfaces/message.interface";
 import { ReactNode, createContext, useState } from "react";
 import io, { Socket } from "socket.io-client";
@@ -10,7 +11,7 @@ type Props = {
 
 const SocketProvider = ({ children }: Props) => {
   const socketIo: any = io;
-  const socket = socketIo.connect("http://localhost:5050") as Socket;
+  const socket = socketIo.connect(baseApi) as Socket;
   const [realTimeMessages, setRealTimeMessages] = useState<IMessage[]>([]);
   const [isVideoCalling, setIsVideoCalling] = useState(false);
   const [caller, setCaller] = useState({});
