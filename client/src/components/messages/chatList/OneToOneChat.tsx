@@ -4,6 +4,7 @@ import { IGetUser } from "@/interfaces/user.interface";
 import momentTimeFormat from "@/utils/momentTimeFormat";
 import { Avatar } from "@mui/material";
 import { useRouter } from "next/router";
+import LastMessage from "../common/LastMessage";
 
 type Props = {
   chat: IGetChat;
@@ -28,7 +29,7 @@ const OneToOneChat = ({ chat }: Props) => {
       <div className="w-full">
         <h3 className="font-semibold">{participant?.name}</h3>
         <p className="flex justify-between w-full">
-          <small>{chat?.lastMessage?.content}</small>
+          <LastMessage lastMessage={chat?.lastMessage} />
           <small>{momentTimeFormat(chat?.lastMessage?.createdAt)}</small>
         </p>
       </div>
