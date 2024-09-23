@@ -1,5 +1,5 @@
 import { IGetMessage } from "@/interfaces/message.interface";
-import MessagePoster from "./MessagePoster";
+import MessageSender from "./MessageSender";
 import { detectLinks } from "@/utils/detectLinkFromText";
 import { formattedDate } from "@/utils/formattedDate";
 import MessageMediaManager from "./MessageMediaManager";
@@ -13,7 +13,7 @@ const MessageCard = ({ message }: Props) => {
   return (
     <div key={message?.id} className="mx-auto border-b py-6">
       <div className="flex  justify-between items-start">
-        <MessagePoster
+        <MessageSender
           sender={message?.sender}
           messageCreatedAt={message?.createdAt}
         />
