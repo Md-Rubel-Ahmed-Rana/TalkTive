@@ -25,7 +25,7 @@ class Service {
     const admin = UserService.userSanitizer(chat?.admin);
     const lastMessage = this.lastMessageSanitizer(chat?.lastMessage);
     return {
-      id: String(chat?._id || chat?.id),
+      id: chat?._id && String(chat?._id || chat?.id),
       isGroupChat: chat?.isGroupChat,
       groupName: chat?.groupName,
       groupImage: chat?.groupImage,
@@ -65,6 +65,30 @@ class Service {
 
   async getSingleChat(chatId: Types.ObjectId): Promise<IGetChat> {
     const data = await Chat.findById(chatId).populate([
+      {
+        path: "admin",
+        model: "User",
+      },
+      {
+        path: "participants",
+        model: "User",
+      },
+      {
+        path: "lastMessage",
+        model: "Message",
+      },
+    ]);
+    const chat = this.chatSanitizer(data);
+    return chat;
+  }
+
+  async getChatByTwoParticipants(
+    participant1: Types.ObjectId,
+    participant2: Types.ObjectId
+  ): Promise<IGetChat> {
+    const data = await Chat.findOne({
+      participants: [participant1, participant2],
+    }).populate([
       {
         path: "admin",
         model: "User",

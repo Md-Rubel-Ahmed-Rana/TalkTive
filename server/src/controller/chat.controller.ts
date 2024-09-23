@@ -34,6 +34,24 @@ class Controller extends RootController {
       data: chat,
     });
   });
+  getChatByTwoParticipants = this.catchAsync(
+    async (req: Request, res: Response) => {
+      const participant1 = req.params
+        ?.participant1 as unknown as Types.ObjectId;
+      const participant2 = req.params
+        ?.participant2 as unknown as Types.ObjectId;
+      const chat = await ChatService.getChatByTwoParticipants(
+        participant1,
+        participant2
+      );
+      this.apiResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Chat found!",
+        data: chat,
+      });
+    }
+  );
 }
 
 export const ChatController = new Controller();

@@ -32,7 +32,7 @@ class Service {
         const admin = user_service_1.UserService.userSanitizer(chat === null || chat === void 0 ? void 0 : chat.admin);
         const lastMessage = this.lastMessageSanitizer(chat === null || chat === void 0 ? void 0 : chat.lastMessage);
         return {
-            id: String((chat === null || chat === void 0 ? void 0 : chat._id) || (chat === null || chat === void 0 ? void 0 : chat.id)),
+            id: (chat === null || chat === void 0 ? void 0 : chat._id) && String((chat === null || chat === void 0 ? void 0 : chat._id) || (chat === null || chat === void 0 ? void 0 : chat.id)),
             isGroupChat: chat === null || chat === void 0 ? void 0 : chat.isGroupChat,
             groupName: chat === null || chat === void 0 ? void 0 : chat.groupName,
             groupImage: chat === null || chat === void 0 ? void 0 : chat.groupImage,
@@ -68,6 +68,48 @@ class Service {
             const chats = chatList.map((chat) => this.chatSanitizer(chat));
             const sortedChats = (0, chatSorter_1.sortChatsByLastMessage)(chats);
             return sortedChats;
+        });
+    }
+    getSingleChat(chatId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = yield chat_model_1.Chat.findById(chatId).populate([
+                {
+                    path: "admin",
+                    model: "User",
+                },
+                {
+                    path: "participants",
+                    model: "User",
+                },
+                {
+                    path: "lastMessage",
+                    model: "Message",
+                },
+            ]);
+            const chat = this.chatSanitizer(data);
+            return chat;
+        });
+    }
+    getChatByTwoParticipants(participant1, participant2) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = yield chat_model_1.Chat.findOne({
+                participants: [participant1, participant2],
+            }).populate([
+                {
+                    path: "admin",
+                    model: "User",
+                },
+                {
+                    path: "participants",
+                    model: "User",
+                },
+                {
+                    path: "lastMessage",
+                    model: "Message",
+                },
+            ]);
+            const chat = this.chatSanitizer(data);
+            return chat;
         });
     }
 }
