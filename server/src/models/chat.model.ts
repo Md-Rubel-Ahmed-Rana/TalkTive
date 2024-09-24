@@ -16,6 +16,11 @@ const chatSchema = new Schema<IChat>(
       type: String,
       default: null,
     },
+    groupDescription: {
+      type: String,
+      default: null,
+    },
+    groupRules: [String],
     admin: {
       type: Schema.Types.ObjectId,
       ref: "User",

@@ -68,7 +68,7 @@ const SearchUserList = () => {
   }, [closeDropDown]);
 
   return (
-    <div className="my-2 mx-1 w-[98%] relative">
+    <div className="my-2 w-[97%] mx-auto relative">
       <TextField
         label="Search user..."
         variant="outlined"

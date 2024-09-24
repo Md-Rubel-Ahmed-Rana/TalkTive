@@ -9,12 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useUpdateUserInfoMutation } from "@/features/user";
 import toast from "react-hot-toast";
 import SmallLoaderSpinner from "../shared/SmallLoaderSpinner";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 type Props = {
   open: boolean;

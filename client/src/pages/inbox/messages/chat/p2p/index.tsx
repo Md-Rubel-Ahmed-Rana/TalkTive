@@ -3,11 +3,9 @@ import Sidebar from "@/components/messages/Sidebar";
 import { SocketContext } from "@/context/SocketContext";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
-import InboxLayoutLarge from "@/layout/InboxLayoutLarge";
-import InboxLayoutSmall from "@/layout/InboxLayoutSmall";
 import GetHead from "@/utils/Head";
 import { useRouter } from "next/router";
-import React, { ReactElement, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 
 const OneToOneMessagesPage = () => {
   const { query } = useRouter();

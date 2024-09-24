@@ -4,14 +4,9 @@ import SearchUserList from "./SearchUserList";
 import ChatList from "./chatList";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutButton from "../shared/LogoutButton";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { useGetLoggedInUserQuery } from "@/features/auth";
-import { IGetUser } from "@/interfaces/user.interface";
+import InboxActions from "./InboxActions";
 
 const Sidebar = () => {
-  const { data: userData } = useGetLoggedInUserQuery({});
-  const user = userData?.data as IGetUser;
-  const settingLink = `/user/settings/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
   return (
     <>
       <aside className="w-1/5 lg:w-2/5 bg-gray-200 flex flex-col h-screen">
@@ -22,9 +17,7 @@ const Sidebar = () => {
               My Chats
             </h1>
           </div>
-          <Link href={settingLink}>
-            <SettingsIcon className="cursor-pointer" />
-          </Link>
+          <InboxActions />
         </div>
         <div className="flex-grow overflow-y-auto">
           <div className="flex flex-col justify-between h-full">

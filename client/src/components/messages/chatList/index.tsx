@@ -27,7 +27,7 @@ const ChatList = () => {
   }, [socket, refetch]);
 
   return (
-    <div className="px-1">
+    <div className="px-2">
       {chats.map((chat) => (
         <ChatCard key={chat.id} chat={chat} />
       ))}

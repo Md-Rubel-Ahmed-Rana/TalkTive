@@ -6,6 +6,8 @@ export type IChat = {
   participants: string[];
   groupName?: string | null;
   groupImage?: string | null;
+  groupDescription?: string | null;
+  groupRules?: string[] | null;
   admin?: string | null;
 };
 
