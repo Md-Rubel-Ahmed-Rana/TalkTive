@@ -9,6 +9,7 @@ import { RootRoutes } from "./routes/root.routes";
 import handle404NotFoundError from "./errors/notFoundError";
 import { ErrorInstance } from "./errors/globalErrorHandler";
 import socketConnection from "./config/socket";
+import { config } from "./config/environment";
 dotenv.config();
 
 const app = express();
@@ -19,7 +20,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://talktive-beryl.vercel.app"],
+    origin: ["http://localhost:3000", config.app.frontendDomain],
     credentials: true,
   })
 );
@@ -27,7 +28,7 @@ app.use(
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://talktive-beryl.vercel.app"],
+    origin: ["http://localhost:3000", config.app.frontendDomain],
   },
 });
 

@@ -14,6 +14,7 @@ const root_routes_1 = require("./routes/root.routes");
 const notFoundError_1 = __importDefault(require("./errors/notFoundError"));
 const globalErrorHandler_1 = require("./errors/globalErrorHandler");
 const socket_1 = __importDefault(require("./config/socket"));
+const environment_1 = require("./config/environment");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -21,13 +22,13 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, cors_1.default)({
-    origin: ["http://localhost:3000", "https://talktive-beryl.vercel.app"],
+    origin: ["http://localhost:3000", environment_1.config.app.frontendDomain],
     credentials: true,
 }));
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: ["http://localhost:3000", "https://talktive-beryl.vercel.app"],
+        origin: ["http://localhost:3000", environment_1.config.app.frontendDomain],
     },
 });
 global.io = io;
