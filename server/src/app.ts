@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { RootRoutes } from "./routes/root.routes";
 import handle404NotFoundError from "./errors/notFoundError";
 import { ErrorInstance } from "./errors/globalErrorHandler";
+import socketConnection from "./config/socket";
 dotenv.config();
 
 const app = express();
@@ -46,6 +47,9 @@ app.use(RootRoutes);
 
 // 404 not found error
 handle404NotFoundError(app);
+
+// socket.io initiate
+socketConnection(io);
 
 // global error handler
 app.use(ErrorInstance.globalErrorHandler);

@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { IUser } from "../interfaces/user.interface";
+import { IGetUser, IUser } from "../interfaces/user.interface";
 import { IJwtPayload } from "../interfaces/utils";
 import { JwtInstance } from "../middleware/jwt";
 import { UserService } from "./user.service";
@@ -37,7 +37,7 @@ class Service {
   async login(
     email: string,
     password: string
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string; user: IGetUser }> {
     const isExist = await UserService.findUserByEmailWithPassword(email);
     if (!isExist) {
       throw new ApiError(httpStatus.NOT_FOUND, "User not found!");
@@ -58,7 +58,8 @@ class Service {
 
     const accessToken = await JwtInstance.generateAccessToken(jwtPayload);
     const refreshToken = await JwtInstance.generateRefreshToken(jwtPayload);
-    return { accessToken, refreshToken };
+    const user = UserService.userSanitizer(isExist);
+    return { accessToken, refreshToken, user };
   }
 }
 

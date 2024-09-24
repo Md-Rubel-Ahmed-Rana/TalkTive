@@ -9,6 +9,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
 import ProfilePictureChange from "../userInfos/ProfilePictureChange";
+import UpdateUserInfo from "../userInfos/UpdateUserInfo";
 
 type Props = {
   expanded: string | boolean;
@@ -18,6 +19,7 @@ type Props = {
 const UserPreferences = ({ expanded, handleAccordionChange }: Props) => {
   const [lastSeen, setLastSeen] = useState("On");
   const [isChangeImage, setIsChangeImage] = useState(false);
+  const [isEditInfo, setIsEditInfo] = useState(false);
   return (
     <>
       <Accordion
@@ -41,7 +43,11 @@ const UserPreferences = ({ expanded, handleAccordionChange }: Props) => {
           >
             Change image
           </Button>
-          <Button className="my-2 w-full" variant="outlined">
+          <Button
+            onClick={() => setIsEditInfo(true)}
+            className="my-2 w-full"
+            variant="outlined"
+          >
             Update user info
           </Button>
           <p className="flex justify-between items-center">
@@ -57,6 +63,7 @@ const UserPreferences = ({ expanded, handleAccordionChange }: Props) => {
         </AccordionDetails>
       </Accordion>
       <ProfilePictureChange open={isChangeImage} setOpen={setIsChangeImage} />
+      <UpdateUserInfo open={isEditInfo} setOpen={setIsEditInfo} />
     </>
   );
 };

@@ -3,9 +3,9 @@ import detectFileExtensionFromLink from "@/utils/detectFileExtensionFromLink";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { materialOceanic } from "react-syntax-highlighter/dist/esm/styles/prism";
 import DoneIcon from "@mui/icons-material/Done";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { codeViewerStylesMaterialOceanic } from "@/utils/codeViewerStyles";
 
 const getLanguage = (extension: string) => {
   const languageMap: { [key: string]: string } = {
@@ -69,7 +69,10 @@ const CodeDocumentViewer = ({ document }: Props) => {
               </span>
             )}
           </button>
-          <SyntaxHighlighter language={language} style={materialOceanic}>
+          <SyntaxHighlighter
+            language={language}
+            style={codeViewerStylesMaterialOceanic}
+          >
             {docContent}
           </SyntaxHighlighter>
         </div>

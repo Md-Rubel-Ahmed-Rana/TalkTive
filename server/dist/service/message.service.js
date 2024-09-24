@@ -38,13 +38,20 @@ class Service {
     }
     sendMessage(receiver, data) {
         return __awaiter(this, void 0, void 0, function* () {
+<<<<<<< HEAD
             console.log({ receiver, data });
+=======
+>>>>>>> 5b2ebb31d0762f62a04fc375ea7785cd3c12bf89
             if (data === null || data === void 0 ? void 0 : data.chatId) {
                 const result = yield message_model_1.Message.create(data);
                 const newMessage = yield result.populate("sender");
                 const message = this.messageSanitizer(newMessage);
+<<<<<<< HEAD
                 console.log(`Emit message: ${message}`);
                 return null;
+=======
+                return message;
+>>>>>>> 5b2ebb31d0762f62a04fc375ea7785cd3c12bf89
             }
             else {
                 const chat = yield chat_service_1.ChatService.addNewChat({
@@ -54,8 +61,12 @@ class Service {
                 const result = yield message_model_1.Message.create(Object.assign(Object.assign({}, data), { chatId: (chat === null || chat === void 0 ? void 0 : chat._id) || (chat === null || chat === void 0 ? void 0 : chat.id) }));
                 const newMessage = yield result.populate("sender");
                 const message = this.messageSanitizer(newMessage);
+<<<<<<< HEAD
                 console.log(`Emit message: ${message}`);
                 return { chatId: (chat === null || chat === void 0 ? void 0 : chat._id) || (chat === null || chat === void 0 ? void 0 : chat.id) };
+=======
+                return message;
+>>>>>>> 5b2ebb31d0762f62a04fc375ea7785cd3c12bf89
             }
         });
     }

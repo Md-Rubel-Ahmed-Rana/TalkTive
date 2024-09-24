@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import UserPreferences from "./userPreferences";
+import UserPreferences from "./UserPreferences";
 import ThemeSettings from "./ThemeSettings";
 import ChatSettings from "./ChatSettings";
 import GroupChatSettings from "./GroupChatSettings";
@@ -7,6 +7,7 @@ import AudioSettings from "./AudioSettings";
 import VideoSettings from "./VideoSettings";
 import CallFeatures from "./CallFeatures";
 import LanguageSettings from "./LanguageSettings";
+import { Typography } from "@mui/material";
 
 const Settings: React.FC = () => {
   const [expanded, setExpanded] = useState<string | false>(false);
@@ -52,7 +53,11 @@ const Settings: React.FC = () => {
           handleAccordionChange={handleAccordionChange}
         />
       </div>
-      <div className="w-3/5 lg:w-4/5">individual setting actions</div>
+      <div className="w-3/5 lg:w-4/5 flex justify-center items-center">
+        <Typography className="font-bold text-2xl">
+          individual setting actions
+        </Typography>
+      </div>
     </section>
   );
 };
