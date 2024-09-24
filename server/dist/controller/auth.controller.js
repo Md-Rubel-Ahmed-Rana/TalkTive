@@ -32,13 +32,13 @@ class Controller extends rootController_1.default {
         }));
         this.login = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
-            const { accessToken, refreshToken } = yield auth_service_1.AuthService.login(email, password);
+            const { accessToken, refreshToken, user } = yield auth_service_1.AuthService.login(email, password);
             cookie_1.cookieManager.setTokens(res, accessToken, refreshToken);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.OK,
                 success: true,
                 message: "Login successful",
-                data: null,
+                data: user,
             });
         }));
         this.logout = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {

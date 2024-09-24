@@ -5,9 +5,13 @@ import ChatList from "./chatList";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutButton from "../shared/LogoutButton";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useState } from "react";
+import { useGetLoggedInUserQuery } from "@/features/auth";
+import { IGetUser } from "@/interfaces/user.interface";
 
 const Sidebar = () => {
+  const { data: userData } = useGetLoggedInUserQuery({});
+  const user = userData?.data as IGetUser;
+  const settingLink = `/user/settings/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
   return (
     <>
       <aside className="w-1/5 lg:w-2/5 bg-gray-200 flex flex-col h-screen">
@@ -18,7 +22,7 @@ const Sidebar = () => {
               My Chats
             </h1>
           </div>
-          <Link href={"/user/settings"}>
+          <Link href={settingLink}>
             <SettingsIcon className="cursor-pointer" />
           </Link>
         </div>

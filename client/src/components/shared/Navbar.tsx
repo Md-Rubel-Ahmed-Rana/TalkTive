@@ -1,4 +1,3 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -14,10 +13,12 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import { Button } from "@mui/material";
 import LogoutButton from "./LogoutButton";
+import { useContext, useEffect, useState } from "react";
+import { SocketContext } from "@/context/SocketContext";
 
 const settings = [
   { name: "Profile", url: "/user/profile" },
-  { name: "Inbox", url: "inbox" },
+  { name: "Inbox", url: "/inbox" },
   { name: "Friends", url: "/user/friends" },
   { name: "Settings", url: "/user/settings" },
 ];
@@ -27,12 +28,11 @@ const addParamsToPath = (url: string): string => {
 };
 
 const Navbar = () => {
+  const { setCurrentUser } = useContext(SocketContext);
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
 
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -40,6 +40,14 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  useEffect(() => {
+    if (user && user?.id) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
+    }
+  }, [setCurrentUser, user]);
 
   return (
     <AppBar position="static" className="bg-blue-600 w-full">
@@ -92,7 +100,7 @@ const Navbar = () => {
                 {settings.map((setting) => (
                   <Link
                     key={setting?.name}
-                    href={`/${addParamsToPath(
+                    href={`${addParamsToPath(
                       `${setting?.url}/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
                     )}`}
                   >

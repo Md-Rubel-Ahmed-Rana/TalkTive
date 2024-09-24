@@ -17,7 +17,7 @@ class Controller extends RootController {
   });
   login = this.catchAsync(async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const { accessToken, refreshToken } = await AuthService.login(
+    const { accessToken, refreshToken, user } = await AuthService.login(
       email,
       password
     );
@@ -26,7 +26,7 @@ class Controller extends RootController {
       statusCode: httpStatus.OK,
       success: true,
       message: "Login successful",
-      data: null,
+      data: user,
     });
   });
   logout = this.catchAsync(async (req: Request, res: Response) => {
