@@ -9,3 +9,9 @@
     text-wrap: balance;
   }
 }
+
+
+html, body{
+  background-color: rgb(243 244 246);
+  color: rgb(32, 25, 25);
+}

@@ -9,11 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+import CloseIcon from "@mui/icons-material/Close";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useUpdateUserInfoMutation } from "@/features/user";
 import toast from "react-hot-toast";
 import SmallLoaderSpinner from "../shared/SmallLoaderSpinner";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type Props = {
   open: boolean;
@@ -85,15 +86,18 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box className="absolute h-[90%] overflow-y-auto top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 rounded-md bg-white shadow-lg p-4">
-        <Typography
-          id="userinfo-update-modal"
-          variant="h6"
-          component="h2"
-          className="mb-4"
-        >
-          Update Profile Information
-        </Typography>
+      <Box className="absolute h-[90%] overflow-y-auto top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-1/2 rounded-md bg-white shadow-lg p-4">
+        <div className="flex justify-between items-center mb-4">
+          <Typography
+            id="userinfo-update-modal"
+            variant="h6"
+            component="h2"
+            className="text-sm lg:text-xl"
+          >
+            Update Profile Information
+          </Typography>
+          <CloseIcon className="cursor-pointer" onClick={handleClose} />
+        </div>
         <form
           onSubmit={handleSubmit(handleUpdateUserInfo)}
           className="flex flex-col justify-between h-[80%]"
@@ -173,7 +177,10 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
               Links
             </Typography>
             {fields.map((link, index) => (
-              <Box key={link.id} className="flex items-center space-x-2 mb-2">
+              <Box
+                key={link.id}
+                className="flex flex-col lg:flex-row gap-2 items-center lg:space-x-2 mb-4 border-b-2 lg:border-0"
+              >
                 <Controller
                   name={`links.${index}.name`}
                   control={control}
@@ -204,7 +211,7 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
                   onClick={() => remove(index)}
                   aria-label="remove link"
                 >
-                  <RemoveIcon />
+                  <DeleteIcon className="text-red-600" />
                 </IconButton>
               </Box>
             ))}
@@ -219,22 +226,31 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
             </Button>
           </div>
 
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className="bg-blue-600 -mt-12"
-            fullWidth
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <p className="flex items-center gap-2">
-                <span>Saving...</span> <SmallLoaderSpinner />
-              </p>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
+          <div className="flex justify-between -mt-12">
+            <Button
+              disabled={isLoading}
+              onClick={handleClose}
+              variant="outlined"
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className="bg-blue-600"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <p className="flex items-center gap-2">
+                  <span>Saving...</span> <SmallLoaderSpinner />
+                </p>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          </div>
         </form>
       </Box>
     </Modal>

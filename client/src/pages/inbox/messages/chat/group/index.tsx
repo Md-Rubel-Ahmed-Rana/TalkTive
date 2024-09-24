@@ -1,11 +1,11 @@
 import GroupMessages from "@/components/messages/group";
+import Sidebar from "@/components/messages/Sidebar";
 import { SocketContext } from "@/context/SocketContext";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
-import InboxLayoutLarge from "@/layout/InboxLayoutLarge";
 import GetHead from "@/utils/Head";
 import { useRouter } from "next/router";
-import { ReactElement, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 
 const GroupMessagesPage = () => {
   const { query } = useRouter();
@@ -26,13 +26,17 @@ const GroupMessagesPage = () => {
         description="TalkTive inbox page"
         keywords="talktive, message, audio, video"
       />
-      <GroupMessages />
+      <div className="hidden lg:block">
+        <div className="flex justify-center items-center h-screen w-full bg-gray-100">
+          <Sidebar />
+          <GroupMessages />
+        </div>
+      </div>
+      <div className="block lg:hidden">
+        <GroupMessages />
+      </div>
     </>
   );
 };
 
 export default GroupMessagesPage;
-
-GroupMessagesPage.getLayout = function (page: ReactElement) {
-  return <InboxLayoutLarge>{page}</InboxLayoutLarge>;
-};

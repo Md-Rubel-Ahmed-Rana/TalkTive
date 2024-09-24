@@ -1,8 +1,10 @@
 import OneToOneMessages from "@/components/messages/p2p";
+import Sidebar from "@/components/messages/Sidebar";
 import { SocketContext } from "@/context/SocketContext";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import InboxLayoutLarge from "@/layout/InboxLayoutLarge";
+import InboxLayoutSmall from "@/layout/InboxLayoutSmall";
 import GetHead from "@/utils/Head";
 import { useRouter } from "next/router";
 import React, { ReactElement, useContext, useEffect } from "react";
@@ -27,13 +29,17 @@ const OneToOneMessagesPage = () => {
         description="TalkTive inbox page"
         keywords="talktive, message, audio, video"
       />
-      <OneToOneMessages />
+      <div className="hidden lg:block">
+        <div className="flex justify-center items-center h-screen w-full bg-gray-100">
+          <Sidebar />
+          <OneToOneMessages />
+        </div>
+      </div>
+      <div className="block lg:hidden">
+        <OneToOneMessages />
+      </div>
     </>
   );
 };
 
 export default OneToOneMessagesPage;
-
-OneToOneMessagesPage.getLayout = function (page: ReactElement) {
-  return <InboxLayoutLarge>{page}</InboxLayoutLarge>;
-};

@@ -1,13 +1,12 @@
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 
 type Props = {
-  setOpen: (value: boolean) => void;
+  handleClosePopover: () => void;
   setFiles: (values: any) => void;
 };
 
-const VideoUploader = ({ setOpen, setFiles }: Props) => {
+const VideoUploader = ({ handleClosePopover, setFiles }: Props) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOpen(false);
     const newVideos = e.target.files;
 
     if (newVideos) {
@@ -16,13 +15,11 @@ const VideoUploader = ({ setOpen, setFiles }: Props) => {
         const newFiles = Array.from(newVideos);
         return [...prevFiles, ...newFiles];
       });
+      handleClosePopover();
     }
   };
   return (
-    <label
-      htmlFor="videos"
-      className="cursor-pointer w-full border-b border-gray-400 pb-1"
-    >
+    <label htmlFor="videos" className="cursor-pointer w-full pb-1">
       <span className="flex items-center gap-2 w-full">
         <VideoLibraryIcon className={`text-blue-500 text-lg lg:text-2xl`} />
         <small className="font-sans text-lg">Video</small>

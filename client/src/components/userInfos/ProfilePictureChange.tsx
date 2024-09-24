@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import SmallLoaderSpinner from "../shared/SmallLoaderSpinner";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ImagePreviewContainer = styled("div")({
   display: "flex",
@@ -112,10 +113,17 @@ const ProfilePictureChange = ({ open, setOpen }: Props) => {
       }}
     >
       <Fade in={open}>
-        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 rounded-md bg-white shadow-lg p-4">
-          <Typography variant="h6" component="h2">
-            Change profile picture
-          </Typography>
+        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-96 rounded-md bg-white shadow-lg p-4">
+          <div className="flex justify-between items-center">
+            <Typography
+              className="text-md lg:text-xl"
+              variant="h6"
+              component="h2"
+            >
+              Change profile picture
+            </Typography>
+            <CloseIcon className="cursor-pointer" onClick={handleClose} />
+          </div>
           {newImage && imagePreview ? (
             <ImagePreviewContainer>
               <Button className="" onClick={handleReUpload} variant="outlined">

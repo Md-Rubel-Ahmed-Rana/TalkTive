@@ -69,7 +69,7 @@ const MessageEditButton = ({ message }: Props) => {
         }}
       >
         <Fade in={open}>
-          <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 rounded-md bg-white shadow-lg p-4">
+          <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-96 rounded-md bg-white shadow-lg p-4">
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Edit message
             </Typography>

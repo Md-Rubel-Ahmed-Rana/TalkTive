@@ -60,9 +60,11 @@ const MessageFilePreviews = ({ files, setFiles }: Props) => {
     setFiles(updatedFilesList);
   };
 
+  console.log(filePreviews, files);
+
   return (
     <>
-      {filePreviews.length > 0 && (
+      {filePreviews?.length > 0 && (
         <div className="mb-4 flex gap-2 flex-wrap">
           {files &&
             files?.length > 0 &&

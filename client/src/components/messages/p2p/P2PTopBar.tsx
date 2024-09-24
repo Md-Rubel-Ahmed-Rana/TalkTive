@@ -1,7 +1,7 @@
 import { AudioCall, VideoCall } from "@/components/calls";
 import { useGetSingleUserInfoQuery } from "@/features/user";
 import { IGetUser } from "@/interfaces/user.interface";
-import { Avatar } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
 import { useRouter } from "next/router";
 import P2PActions from "./P2PActions";
 import ParticipantStatus from "./ParticipantStatus";
@@ -14,10 +14,15 @@ const P2PTopBar = () => {
   const { data: userData } = useGetSingleUserInfoQuery(userId);
   const participant = userData?.data as IGetUser;
 
+  const detailsLink = `/user/profile/${participant?.id}?userName=${participant?.name}&userEmail=${participant?.email}&userImage=${participant?.image}`;
+
   return (
     <div className="flex justify-between items-center p-2 bg-gray-200">
       <div className="flex gap-3">
-        <div>
+        <div
+          className="cursor-pointer"
+          onClick={() => router.push(detailsLink)}
+        >
           {participant?.image || userImage ? (
             <Avatar
               className="h-12 w-12 rounded-full ring-1"
@@ -32,9 +37,20 @@ const P2PTopBar = () => {
         </div>
         <ParticipantStatus participant={participant} />
       </div>
-      <div className="flex gap-3">
-        <AudioCall />
-        <VideoCall />
+      <div className="hidden lg:block">
+        <div className="flex gap-3">
+          <Button variant="outlined">
+            <AudioCall />
+          </Button>
+          <Button variant="outlined">
+            <VideoCall />
+          </Button>
+          <Button variant="outlined">
+            <P2PActions />
+          </Button>
+        </div>
+      </div>
+      <div className="lg:hidden block">
         <P2PActions />
       </div>
     </div>

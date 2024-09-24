@@ -1,3 +1,5 @@
+import { AudioCall, VideoCall } from "@/components/calls";
+import BackNavigationButton from "@/components/shared/BackNavigationButton";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import {
   Button,
@@ -100,6 +102,17 @@ const GroupActions = () => {
         }}
       >
         <div className="flex flex-col gap-2 w-full">
+          <div className="block lg:hidden">
+            <div className="flex justify-between gap-1">
+              <Button className="w-full" variant="outlined">
+                <AudioCall />
+              </Button>
+              <Button className="w-full" variant="outlined">
+                <VideoCall />
+              </Button>
+            </div>
+            <BackNavigationButton />
+          </div>
           <Button
             variant="outlined"
             fullWidth

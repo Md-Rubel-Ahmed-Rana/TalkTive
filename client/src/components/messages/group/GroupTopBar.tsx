@@ -3,7 +3,7 @@ import { useGetSingleChatQuery } from "@/features/chat";
 import { IGetChat } from "@/interfaces/chat.interface";
 import { useRouter } from "next/router";
 import ParticipantList from "./ParticipantList";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Button, Typography } from "@mui/material";
 import GroupActions from "./GroupActions";
 
 const GroupTopBar = () => {
@@ -15,7 +15,7 @@ const GroupTopBar = () => {
   const chat = data?.data as IGetChat;
   return (
     <div className="flex justify-between items-center p-2 bg-gray-200">
-      <div className="flex gap-3">
+      <div className="flex items-center gap-3">
         <div>
           {chat?.groupImage || groupImage ? (
             <Avatar
@@ -34,10 +34,23 @@ const GroupTopBar = () => {
           <ParticipantList participants={chat?.participants} />
         </div>
       </div>
-      <div className="flex gap-3">
-        <AudioCall />
-        <VideoCall />
-        <GroupActions />
+      <div className="hidden lg:block">
+        <div className="flex gap-3">
+          <Button variant="outlined">
+            <AudioCall />
+          </Button>
+          <Button variant="outlined">
+            <VideoCall />
+          </Button>
+          <Button variant="outlined">
+            <GroupActions />
+          </Button>
+        </div>
+      </div>
+      <div className="lg:hidden block">
+        <Button variant="outlined">
+          <GroupActions />
+        </Button>
       </div>
     </div>
   );

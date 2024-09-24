@@ -19,7 +19,7 @@ const Settings: React.FC = () => {
 
   return (
     <section className="flex">
-      <div className="p-4 bg-white w-2/5 lg:w-1/5">
+      <div className="p-4 bg-white lg:w-1/5">
         <UserPreferences
           expanded={expanded}
           handleAccordionChange={handleAccordionChange}
@@ -53,7 +53,7 @@ const Settings: React.FC = () => {
           handleAccordionChange={handleAccordionChange}
         />
       </div>
-      <div className="w-3/5 lg:w-4/5 flex justify-center items-center">
+      <div className="w-3/5 lg:w-4/5 hidden lg:block">
         <Typography className="font-bold text-2xl">
           individual setting actions
         </Typography>

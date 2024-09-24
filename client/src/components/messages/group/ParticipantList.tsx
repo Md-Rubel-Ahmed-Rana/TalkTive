@@ -6,7 +6,11 @@ type Props = {
 
 const ParticipantList = ({ participants }: Props) => {
   const participantsName = participants?.map((p) => p?.name);
-  return <div>{participantsName?.join(", ")}</div>;
+  return (
+    <div className="hidden lg:block">
+      <p className="text-sm">{participantsName?.slice(0, 3)?.join(", ")}</p>
+    </div>
+  );
 };
 
 export default ParticipantList;

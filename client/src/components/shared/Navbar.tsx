@@ -51,12 +51,13 @@ const Navbar = () => {
 
   return (
     <AppBar position="static" className="bg-blue-600 w-full">
-      <Container maxWidth={false} className="px-4">
+      <Container maxWidth={false} className="px-1 lg:px-4">
         <Toolbar disableGutters className="flex justify-between items-center">
           <div className="flex items-center">
             <Avatar
               alt="Logo"
               src="https://res.cloudinary.com/dy4qhabxk/image/upload/v1726682979/chat_favicon_fjgl8w.png"
+              className="hidden lg:block"
             />
             <Typography
               variant="h6"

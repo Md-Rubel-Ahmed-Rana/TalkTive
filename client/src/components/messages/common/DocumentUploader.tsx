@@ -1,21 +1,20 @@
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 type Props = {
-  setOpen: (value: boolean) => void;
+  handleClosePopover: () => void;
   setFiles: (values: any) => void;
 };
 
-const DocumentUploader = ({ setOpen, setFiles }: Props) => {
+const DocumentUploader = ({ handleClosePopover, setFiles }: Props) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOpen(false);
     const newDocs = e.target.files;
-
     if (newDocs) {
       setFiles((prev: any) => {
         const prevFiles = prev ? Array.from(prev) : [];
         const newFiles = Array.from(newDocs);
         return [...prevFiles, ...newFiles];
       });
+      handleClosePopover();
     }
   };
   return (
