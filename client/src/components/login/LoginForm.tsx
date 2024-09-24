@@ -11,6 +11,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useLoginMutation } from "@/features/auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { IGetUser } from "@/interfaces/user.interface";
 
 type Inputs = {
   email: string;
@@ -34,7 +35,9 @@ const LoginForm = () => {
       const result: any = await loginUser(data);
       if (result?.data?.statusCode === 200) {
         toast.success(result?.data?.message || "User login successfully!");
-        router.push("/inbox");
+        const user = result?.data?.data as IGetUser;
+        const detailsLink = `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
+        router.push(detailsLink);
       } else {
         toast.error(
           result?.data?.message ||

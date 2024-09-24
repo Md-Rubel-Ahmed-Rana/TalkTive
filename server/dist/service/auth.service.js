@@ -65,7 +65,8 @@ class Service {
             };
             const accessToken = yield jwt_1.JwtInstance.generateAccessToken(jwtPayload);
             const refreshToken = yield jwt_1.JwtInstance.generateRefreshToken(jwtPayload);
-            return { accessToken, refreshToken };
+            const user = user_service_1.UserService.userSanitizer(isExist);
+            return { accessToken, refreshToken, user };
         });
     }
 }

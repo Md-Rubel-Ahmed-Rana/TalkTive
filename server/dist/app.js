@@ -13,6 +13,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const root_routes_1 = require("./routes/root.routes");
 const notFoundError_1 = __importDefault(require("./errors/notFoundError"));
 const globalErrorHandler_1 = require("./errors/globalErrorHandler");
+const socket_1 = __importDefault(require("./config/socket"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -42,6 +43,8 @@ app.get("/", (req, res) => {
 app.use(root_routes_1.RootRoutes);
 // 404 not found error
 (0, notFoundError_1.default)(app);
+// socket.io initiate
+(0, socket_1.default)(io);
 // global error handler
 app.use(globalErrorHandler_1.ErrorInstance.globalErrorHandler);
 exports.default = server;

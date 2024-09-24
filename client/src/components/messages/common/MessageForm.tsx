@@ -1,5 +1,5 @@
 import SendIcon from "@mui/icons-material/Send";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import FileUploadManager from "./FileUploadManager";
 import MessageFilePreviews from "./MessageFilePreviews";
 import { useRouter } from "next/router";
@@ -8,9 +8,10 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import toast from "react-hot-toast";
 import SmallLoaderSpinner from "@/components/shared/SmallLoaderSpinner";
-import { useLazyGetChatByTwoParticipantsQuery } from "@/features/chat";
+import { SocketContext } from "@/context/SocketContext";
 
 const MessageForm = () => {
+  const { socket } = useContext(SocketContext);
   const [files, setFiles] = useState<any>(null);
   const [content, setContent] = useState("");
   const { query, push } = useRouter();
@@ -50,7 +51,11 @@ const MessageForm = () => {
       });
 
       if (result?.data?.statusCode === 201) {
+        // send the new message to receiver/participant
+        socket.emit("send-message", receiver, result?.data?.data);
+        socket.emit("chat-updated");
         toast.success(result?.data?.message || "Your message has been sent!");
+
         setContent("");
         if (inputRef?.current) {
           inputRef.current.value = "";

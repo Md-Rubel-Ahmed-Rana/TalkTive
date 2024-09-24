@@ -33,14 +33,12 @@ class Service {
   async sendMessage(
     receiver: Types.ObjectId,
     data: IMessage
-  ): Promise<{ chatId: Types.ObjectId } | null> {
-    console.log({ receiver, data });
+  ): Promise<IGetMessage> {
     if (data?.chatId) {
       const result = await Message.create(data);
       const newMessage = await result.populate("sender");
       const message = this.messageSanitizer(newMessage);
-      console.log(`Emit message: ${message}`);
-      return null;
+      return message;
     } else {
       const chat = await ChatService.addNewChat({
         isGroupChat: false,
@@ -52,8 +50,7 @@ class Service {
       });
       const newMessage = await result.populate("sender");
       const message = this.messageSanitizer(newMessage);
-      console.log(`Emit message: ${message}`);
-      return { chatId: chat?._id || chat?.id };
+      return message;
     }
   }
   async getMessagesByChatId(chatId: Types.ObjectId): Promise<IGetMessage[]> {
