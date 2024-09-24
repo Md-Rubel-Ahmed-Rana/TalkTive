@@ -22,6 +22,10 @@ const settings = [
   { name: "Settings", url: "/user/settings" },
 ];
 
+const addParamsToPath = (url: string): string => {
+  return url;
+};
+
 const Navbar = () => {
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
@@ -86,7 +90,12 @@ const Navbar = () => {
                 className="mt-11"
               >
                 {settings.map((setting) => (
-                  <Link key={setting?.name} href={`/${setting?.url}`}>
+                  <Link
+                    key={setting?.name}
+                    href={`/${addParamsToPath(
+                      `${setting?.url}/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
+                    )}`}
+                  >
                     <MenuItem onClick={handleCloseUserMenu}>
                       <Typography className="text-center">
                         {setting?.name}

@@ -5,7 +5,6 @@ import {
   Typography,
   Avatar,
   Box,
-  Link as MUILink,
   Divider,
   Button,
 } from "@mui/material";
@@ -27,6 +26,7 @@ const UserInfoPopOver = ({ anchorEl, setAnchorEl, user }: Props) => {
   };
 
   const chatLink = `/inbox/messages/chat/p2p?chatId=${chatId}&userId=${user?.id}&userName=${user.name}&userEmail=${user?.email}&userImage=${user?.image}`;
+  const detailsLink = `/user/profile/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
 
   return (
     <Popover
@@ -56,7 +56,7 @@ const UserInfoPopOver = ({ anchorEl, setAnchorEl, user }: Props) => {
           sx={{ width: 56, height: 56, mr: 2 }}
         />
         <Box>
-          <Typography variant="h6" fontWeight="bold">
+          <Typography className="text-lg" variant="h6" fontWeight="bold">
             {user?.name}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
@@ -66,7 +66,9 @@ const UserInfoPopOver = ({ anchorEl, setAnchorEl, user }: Props) => {
       </Box>
 
       <Typography variant="body2" color="textSecondary" mb={2}>
-        {user?.about || "No additional information available."}
+        {user.about.length > 50
+          ? `${user?.about.slice(0, 50)}...`
+          : user?.about || "No additional information available."}
       </Typography>
 
       <Divider sx={{ my: 1 }} />
@@ -77,29 +79,8 @@ const UserInfoPopOver = ({ anchorEl, setAnchorEl, user }: Props) => {
 
       <Divider sx={{ my: 1 }} />
 
-      {user?.links?.length > 0 && (
-        <Box mt={2}>
-          <Typography variant="subtitle1" fontWeight="bold" mb={1}>
-            Links
-          </Typography>
-          {user?.links?.map((link, index) => (
-            <MUILink
-              key={index}
-              href={link?.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="body2"
-              display="block"
-              mb={0.5}
-            >
-              {link?.name}
-            </MUILink>
-          ))}
-        </Box>
-      )}
-
       <div className="flex justify-between gap-2 w-full">
-        <Link href={`/user/profile/${user.id}`} className="w-full">
+        <Link href={detailsLink} className="w-full">
           <Button variant="outlined" fullWidth>
             See Details
           </Button>
