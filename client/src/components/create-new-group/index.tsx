@@ -18,6 +18,12 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useGetLoggedInUserQuery } from "@/features/auth";
+import { IGetUser } from "@/interfaces/user.interface";
+import { useAddNewChatMutation } from "@/features/chat";
+import toast from "react-hot-toast";
+import SmallLoaderSpinner from "../shared/SmallLoaderSpinner";
+import { useRouter } from "next/router";
 
 const ImagePreviewContainer = styled("div")({
   display: "flex",
@@ -43,18 +49,23 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const CreateNewGroup = () => {
+  const { data: userData } = useGetLoggedInUserQuery({});
+  const user = userData?.data as IGetUser;
+  const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [newImage, setNewImage] = useState<File | null>(null);
+  const [createGroup, { isLoading }] = useAddNewChatMutation();
   const {
     control,
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm<IChat>({
     mode: "onChange",
     defaultValues: {
       groupName: "",
-      groupImage: "",
+      groupImage: null,
       groupDescription: "",
       groupRules: [""],
     },
@@ -65,21 +76,56 @@ const CreateNewGroup = () => {
     name: "groupRules",
   });
 
-  const handleCreateGroup: SubmitHandler<IChat> = (data: IChat) => {
-    console.log(data);
+  const handleCreateGroup: SubmitHandler<IChat> = async (data: IChat) => {
+    data.isGroupChat = true;
+    const formData = new FormData();
+    formData.append("groupName", data.groupName);
+
+    if (data.groupImage) {
+      formData.append("groupImage", data.groupImage);
+    }
+    if (data.groupDescription) {
+      formData.append("groupDescription", data.groupDescription);
+    }
+    if (data.groupRules) {
+      formData.append("groupRules", JSON.stringify(data.groupRules));
+    }
+
+    formData.append("isGroupChat", data.isGroupChat.toString());
+
+    formData.append("participants", JSON.stringify([user?.id]));
+    if (user?.id) {
+      formData.append("admin", user.id);
+    }
+    try {
+      const result: any = await createGroup(formData);
+      if (result?.data?.statusCode === 201) {
+        toast.success(result?.data?.message || "Chat created successfully!");
+        reset();
+        const inboxLink = `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
+        router.push(inboxLink);
+      } else {
+        toast.error(
+          result?.data?.message ||
+            result?.error?.data?.message ||
+            "Failed to create group"
+        );
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create group. Try again");
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setNewImage(file);
+      setValue("groupImage", file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleReUpload = () => {
     setImagePreview(null);
-    setNewImage(null);
   };
 
   return (
@@ -93,7 +139,8 @@ const CreateNewGroup = () => {
       >
         Create new group
       </Typography>
-      <form
+      <Box
+        component={"form"}
         className="flex flex-col gap-3"
         onSubmit={handleSubmit(handleCreateGroup)}
       >
@@ -119,7 +166,7 @@ const CreateNewGroup = () => {
           />
         </Box>
         <Box component={"div"}>
-          {newImage && imagePreview ? (
+          {imagePreview ? (
             <ImagePreviewContainer>
               <Button className="" onClick={handleReUpload} variant="outlined">
                 Re-upload
@@ -131,7 +178,7 @@ const CreateNewGroup = () => {
               />
             </ImagePreviewContainer>
           ) : (
-            <div className="w-full text-center">
+            <Box component={"div"} className="w-full text-center">
               <Button
                 component="label"
                 role={undefined}
@@ -148,18 +195,16 @@ const CreateNewGroup = () => {
                 <VisuallyHiddenInput
                   type="file"
                   accept="image/*"
+                  {...register("groupImage")}
                   onChange={handleImageChange}
                 />
               </Button>
-            </div>
+            </Box>
           )}
         </Box>
         <Typography className="">Group Rules</Typography>
         {fields.map((_, index) => (
-          <Box
-            key={index}
-            className="flex flex-col lg:flex-row gap-2 items-center"
-          >
+          <Box key={index} className="flex justify-between gap-1 items-center">
             <Controller
               name={`groupRules.${index}`}
               control={control}
@@ -188,14 +233,23 @@ const CreateNewGroup = () => {
           Add Rule
         </Button>
         <Button
+          disabled={isLoading}
+          type="submit"
           variant="contained"
           className="bg-blue-600 mt-10"
           size="large"
           fullWidth
         >
-          Create
+          {isLoading ? (
+            <Typography className="flex items-center gap-2" component={"p"}>
+              <Typography component={"span"}>Creating</Typography>
+              <SmallLoaderSpinner />
+            </Typography>
+          ) : (
+            "Create group"
+          )}
         </Button>
-      </form>
+      </Box>
     </Box>
   );
 };

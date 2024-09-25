@@ -54,6 +54,50 @@ const uploadProfileImage = () => {
   };
 };
 
+const uploadGroupImage = () => {
+  const folder = `${rootFolder}/group-images`;
+  return async (req: Request, res: Response, next: NextFunction) => {
+    if (req?.file) {
+      try {
+        const formData = new FormData();
+        formData.append("file", fs.createReadStream(req.file?.path));
+
+        const response = await axios.post(
+          `${config.cloudinary.cloudinaryApi}/upload/single?folderName=${folder}`,
+          formData,
+          {
+            headers: {
+              ...formData.getHeaders(),
+            },
+          }
+        );
+
+        const extension = req.file?.originalname?.split(".").pop();
+
+        const dataUrl = makeUrlFromFileObject({
+          ...response.data.data,
+          extension,
+        });
+
+        req.body.groupImage = dataUrl;
+        next();
+      } catch (error: any) {
+        return res.status(500).json({
+          success: false,
+          message: error.message,
+          data: null,
+        });
+      } finally {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error("Failed to delete uploaded file:", err);
+        });
+      }
+    } else {
+      next();
+    }
+  };
+};
+
 const uploadMessageFiles = () => {
   const folder = `${rootFolder}/messages`;
 
@@ -138,4 +182,4 @@ const handleUpload = async (
   return uploadedFiles;
 };
 
-export { upload, uploadProfileImage, uploadMessageFiles };
+export { upload, uploadProfileImage, uploadMessageFiles, uploadGroupImage };

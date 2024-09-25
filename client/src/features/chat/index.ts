@@ -4,7 +4,7 @@ import apiSlice from "../api/apiSlice";
 const chatApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     addNewChat: builder.mutation({
-      query: (data: IChat) => ({
+      query: (data: FormData) => ({
         method: "POST",
         url: "/chat/add-new-chat",
         body: data,

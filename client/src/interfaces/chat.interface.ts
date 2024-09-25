@@ -4,11 +4,11 @@ import { IGetUser } from "./user.interface";
 export type IChat = {
   isGroupChat: boolean;
   participants: string[];
-  groupName?: string | null;
-  groupImage?: string | null;
-  groupDescription?: string | null;
-  groupRules?: string[] | null;
-  admin?: string | null;
+  groupName: string;
+  groupImage?: File | null;
+  groupDescription?: string;
+  groupRules?: string[];
+  admin: string | null;
 };
 
 export type IGetLastMessage = {

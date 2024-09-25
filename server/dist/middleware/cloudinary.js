@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadMessageFiles = exports.uploadProfileImage = exports.upload = void 0;
+exports.uploadGroupImage = exports.uploadMessageFiles = exports.uploadProfileImage = exports.upload = void 0;
 const multer_1 = __importDefault(require("multer"));
 const fs_1 = __importDefault(require("fs"));
 const axios_1 = __importDefault(require("axios"));
@@ -59,6 +59,42 @@ const uploadProfileImage = () => {
     });
 };
 exports.uploadProfileImage = uploadProfileImage;
+const uploadGroupImage = () => {
+    const folder = `${rootFolder}/group-images`;
+    return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a, _b, _c;
+        if (req === null || req === void 0 ? void 0 : req.file) {
+            try {
+                const formData = new form_data_1.default();
+                formData.append("file", fs_1.default.createReadStream((_a = req.file) === null || _a === void 0 ? void 0 : _a.path));
+                const response = yield axios_1.default.post(`${environment_1.config.cloudinary.cloudinaryApi}/upload/single?folderName=${folder}`, formData, {
+                    headers: Object.assign({}, formData.getHeaders()),
+                });
+                const extension = (_c = (_b = req.file) === null || _b === void 0 ? void 0 : _b.originalname) === null || _c === void 0 ? void 0 : _c.split(".").pop();
+                const dataUrl = (0, makeUrlFromFileObject_1.default)(Object.assign(Object.assign({}, response.data.data), { extension }));
+                req.body.groupImage = dataUrl;
+                next();
+            }
+            catch (error) {
+                return res.status(500).json({
+                    success: false,
+                    message: error.message,
+                    data: null,
+                });
+            }
+            finally {
+                fs_1.default.unlink(req.file.path, (err) => {
+                    if (err)
+                        console.error("Failed to delete uploaded file:", err);
+                });
+            }
+        }
+        else {
+            next();
+        }
+    });
+};
+exports.uploadGroupImage = uploadGroupImage;
 const uploadMessageFiles = () => {
     const folder = `${rootFolder}/messages`;
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

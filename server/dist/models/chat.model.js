@@ -16,6 +16,11 @@ const chatSchema = new mongoose_1.Schema({
         type: String,
         default: null,
     },
+    groupDescription: {
+        type: String,
+        default: null,
+    },
+    groupRules: [String],
     admin: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "User",

@@ -6,14 +6,45 @@ import { Types } from "mongoose";
 
 class Controller extends RootController {
   addNewChat = this.catchAsync(async (req: Request, res: Response) => {
-    const newChat = await ChatService.addNewChat(req.body);
+    console.log("Participants before processing:", req.body.participants);
+
+    // Ensure participants is an array, even if it comes as a stringified array
+    let participants = req.body.participants;
+
+    if (typeof participants === "string") {
+      try {
+        participants = JSON.parse(participants); // Parse if it's a JSON string
+      } catch (error) {
+        throw new Error(
+          "Participants field is not a valid array or JSON string."
+        );
+      }
+    }
+
+    if (Array.isArray(participants)) {
+      req.body.participants = participants.map((user: string) => {
+        if (Types.ObjectId.isValid(user)) {
+          return new Types.ObjectId(user);
+        } else {
+          throw new Error(`Invalid ObjectId: ${user}`);
+        }
+      });
+    } else {
+      // If participants is not an array, throw an error
+      throw new Error("Participants should be an array.");
+    }
+
+    console.log("Processed body:", req.body);
+
+    await ChatService.addNewChat(req.body);
     this.apiResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
-      message: "Chat created successfully",
-      data: newChat,
+      message: "Group created successfully",
+      data: null,
     });
   });
+
   myChatList = this.catchAsync(async (req: Request, res: Response) => {
     const participantId = req.params.participantId;
     const chatList = await ChatService.myChatList(participantId);
