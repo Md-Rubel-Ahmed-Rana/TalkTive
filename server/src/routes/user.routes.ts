@@ -13,6 +13,11 @@ router.post(
 
 router.get("/", UserController.getUsers);
 
+router.get(
+  "/search-user/:chatId",
+  UserController.getUsersExceptExistingParticipants
+);
+
 router.get("/:id", UserController.getSingleUserInfo);
 
 router.patch("/update-user-info/:id", UserController.updateUserInfo);

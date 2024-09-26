@@ -9,4 +9,8 @@ router.post("/add-new-chat", cloudinary_1.upload.single("groupImage"), (0, cloud
 router.get("/my-chat-list/:participantId", chat_controller_1.ChatController.myChatList);
 router.get("/:id", chat_controller_1.ChatController.getSingleChat);
 router.get("/single/:participant1/:participant2", chat_controller_1.ChatController.getChatByTwoParticipants);
+router.patch("/add-new-participant/:chatId/:participantId", chat_controller_1.ChatController.addNewParticipant);
+router.patch("/remove-participant/:chatId/:participantId", chat_controller_1.ChatController.removeParticipant);
+router.patch("/update/:chatId", chat_controller_1.ChatController.updateChatInfo);
+router.delete("/delete/:chatId", chat_controller_1.ChatController.deleteChat);
 exports.ChatRoutes = router;

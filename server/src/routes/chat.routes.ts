@@ -20,4 +20,18 @@ router.get(
   ChatController.getChatByTwoParticipants
 );
 
+router.patch(
+  "/add-new-participant/:chatId/:participantId",
+  ChatController.addNewParticipant
+);
+
+router.patch(
+  "/remove-participant/:chatId/:participantId",
+  ChatController.removeParticipant
+);
+
+router.patch("/update/:chatId", ChatController.updateChatInfo);
+
+router.delete("/delete/:chatId", ChatController.deleteChat);
+
 export const ChatRoutes = router;

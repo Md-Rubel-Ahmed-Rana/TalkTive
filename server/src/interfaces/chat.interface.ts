@@ -29,6 +29,8 @@ export type IGetChat = {
   participants: IGetUser[];
   groupName: string;
   groupImage: string;
+  groupRules: string[];
+  groupDescription: string;
   admin: IGetUser;
   lastMessage: IGetLastMessage;
   createdAt: Date;

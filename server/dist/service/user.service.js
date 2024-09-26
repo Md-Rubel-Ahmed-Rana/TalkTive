@@ -19,8 +19,15 @@ const apiError_1 = __importDefault(require("../utils/apiError"));
 const bcrypt_1 = require("../utils/bcrypt");
 const getCloudinaryFilePublicIdFromUrl_1 = __importDefault(require("../utils/getCloudinaryFilePublicIdFromUrl"));
 const deletePreviousFileFromCloudinary_1 = require("../utils/deletePreviousFileFromCloudinary");
+const chat_service_1 = require("./chat.service");
 class Service {
     userSanitizer(user) {
+        var _a;
+        const links = (_a = user === null || user === void 0 ? void 0 : user.links) === null || _a === void 0 ? void 0 : _a.map((link) => ({
+            id: (link === null || link === void 0 ? void 0 : link._id) && String((link === null || link === void 0 ? void 0 : link._id) || (link === null || link === void 0 ? void 0 : link.id)),
+            name: link === null || link === void 0 ? void 0 : link.name,
+            url: link === null || link === void 0 ? void 0 : link.url,
+        }));
         return {
             id: (user === null || user === void 0 ? void 0 : user._id) && String(user === null || user === void 0 ? void 0 : user._id),
             name: user === null || user === void 0 ? void 0 : user.name,
@@ -28,7 +35,7 @@ class Service {
             image: user === null || user === void 0 ? void 0 : user.image,
             title: user === null || user === void 0 ? void 0 : user.title,
             about: user === null || user === void 0 ? void 0 : user.about,
-            links: user === null || user === void 0 ? void 0 : user.links,
+            links: links,
             status: user === null || user === void 0 ? void 0 : user.status,
             lastActive: user === null || user === void 0 ? void 0 : user.lastActive,
             createdAt: user === null || user === void 0 ? void 0 : user.createdAt,
@@ -70,6 +77,17 @@ class Service {
     getUsers() {
         return __awaiter(this, void 0, void 0, function* () {
             const usersData = yield user_model_1.User.find({});
+            const users = usersData === null || usersData === void 0 ? void 0 : usersData.map((user) => this.userSanitizer(user));
+            return users;
+        });
+    }
+    getUsersExceptExistingParticipants(chatId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const chat = yield chat_service_1.ChatService.getSingleChat(chatId);
+            const participantIds = chat.participants.map((participant) => participant === null || participant === void 0 ? void 0 : participant.id);
+            const usersData = yield user_model_1.User.find({
+                _id: { $nin: participantIds },
+            });
             const users = usersData === null || usersData === void 0 ? void 0 : usersData.map((user) => this.userSanitizer(user));
             return users;
         });

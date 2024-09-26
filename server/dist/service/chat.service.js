@@ -36,6 +36,8 @@ class Service {
             isGroupChat: chat === null || chat === void 0 ? void 0 : chat.isGroupChat,
             groupName: chat === null || chat === void 0 ? void 0 : chat.groupName,
             groupImage: chat === null || chat === void 0 ? void 0 : chat.groupImage,
+            groupDescription: chat === null || chat === void 0 ? void 0 : chat.groupDescription,
+            groupRules: chat === null || chat === void 0 ? void 0 : chat.groupRules,
             admin: admin,
             participants: participants,
             lastMessage: lastMessage,
@@ -110,6 +112,30 @@ class Service {
             ]);
             const chat = this.chatSanitizer(data);
             return chat;
+        });
+    }
+    deleteChat(chatId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndDelete(chatId);
+        });
+    }
+    updateChatInfo(chatId, updatedChat) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, { $set: Object.assign({}, updatedChat) });
+        });
+    }
+    addNewParticipant(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
+                $push: { participants: participantId },
+            });
+        });
+    }
+    removeParticipant(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
+                $pull: { participants: participantId },
+            });
         });
     }
 }

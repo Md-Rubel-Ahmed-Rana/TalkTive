@@ -5,9 +5,16 @@ import ApiError from "../utils/apiError";
 import { BcryptInstance } from "../utils/bcrypt";
 import extractCloudinaryPublicId from "../utils/getCloudinaryFilePublicIdFromUrl";
 import { deleteSingleFileFromCloudinary } from "../utils/deletePreviousFileFromCloudinary";
+import { ChatService } from "./chat.service";
+import { Types } from "mongoose";
 
 class Service {
   public userSanitizer(user: any): IGetUser {
+    const links = user?.links?.map((link: any) => ({
+      id: link?._id && String(link?._id || link?.id),
+      name: link?.name,
+      url: link?.url,
+    }));
     return {
       id: user?._id && String(user?._id),
       name: user?.name,
@@ -15,7 +22,7 @@ class Service {
       image: user?.image,
       title: user?.title,
       about: user?.about,
-      links: user?.links,
+      links: links,
       status: user?.status,
       lastActive: user?.lastActive,
       createdAt: user?.createdAt,
@@ -53,6 +60,23 @@ class Service {
   async getUsers(): Promise<IGetUser[]> {
     const usersData = await User.find({});
     const users = usersData?.map((user) => this.userSanitizer(user));
+    return users;
+  }
+  async getUsersExceptExistingParticipants(
+    chatId: Types.ObjectId
+  ): Promise<IGetUser[]> {
+    const chat = await ChatService.getSingleChat(chatId);
+
+    const participantIds = chat.participants.map(
+      (participant) => participant?.id
+    );
+
+    const usersData = await User.find({
+      _id: { $nin: participantIds },
+    });
+
+    const users = usersData?.map((user) => this.userSanitizer(user));
+
     return users;
   }
 
