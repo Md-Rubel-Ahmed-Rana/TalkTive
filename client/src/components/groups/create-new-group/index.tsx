@@ -22,7 +22,7 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import { useAddNewChatMutation } from "@/features/chat";
 import toast from "react-hot-toast";
-import SmallLoaderSpinner from "../shared/SmallLoaderSpinner";
+import SmallLoaderSpinner from "../../shared/SmallLoaderSpinner";
 import { useRouter } from "next/router";
 
 const ImagePreviewContainer = styled("div")({

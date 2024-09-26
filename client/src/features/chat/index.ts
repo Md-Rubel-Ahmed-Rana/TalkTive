@@ -11,6 +11,47 @@ const chatApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["chat"] as any,
     }),
+    addNewMember: builder.mutation({
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        method: "PATCH",
+        url: `/chat/add-new-participant/${chatId}/${participantId}`,
+      }),
+      invalidatesTags: ["chat", "user"] as any,
+    }),
+    deleteGroup: builder.mutation({
+      query: (chatId) => ({
+        method: "DELETE",
+        url: `/chat/delete/${chatId}`,
+      }),
+      invalidatesTags: ["chat", "user"] as any,
+    }),
+    updateGroup: builder.mutation({
+      query: ({ chatId, data }: { chatId: string; data: IChat }) => ({
+        method: "PATCH",
+        url: `/chat/update/${chatId}`,
+        body: data,
+      }),
+      invalidatesTags: ["chat", "user"] as any,
+    }),
+    removeMember: builder.mutation({
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        method: "PATCH",
+        url: `/chat/remove-participant/${chatId}/${participantId}`,
+      }),
+      invalidatesTags: ["chat", "user"] as any,
+    }),
     getMyChatList: builder.query({
       query: (participantId: string) => ({
         url: `/chat/my-chat-list/${participantId}`,
@@ -43,4 +84,8 @@ export const {
   useGetMyChatListQuery,
   useGetSingleChatQuery,
   useLazyGetChatByTwoParticipantsQuery,
+  useAddNewMemberMutation,
+  useRemoveMemberMutation,
+  useDeleteGroupMutation,
+  useUpdateGroupMutation,
 } = chatApi;

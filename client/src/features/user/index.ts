@@ -17,6 +17,12 @@ const userApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["user"] as any,
     }),
+    getUsersExceptExistingParticipants: builder.query({
+      query: (chatId: string) => ({
+        url: `/user/search-user/${chatId}`,
+      }),
+      providesTags: ["user"] as any,
+    }),
     getSingleUserInfo: builder.query({
       query: (id: string) => ({
         url: `/user/${id}`,
@@ -57,4 +63,5 @@ export const {
   useUpdateUserInfoMutation,
   useChangeProfilePictureMutation,
   useChangePasswordMutation,
+  useGetUsersExceptExistingParticipantsQuery,
 } = userApi;

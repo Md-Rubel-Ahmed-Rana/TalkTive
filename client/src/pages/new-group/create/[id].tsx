@@ -1,5 +1,5 @@
 import { description } from "@/components/common/Welcome";
-import CreateNewGroup from "@/components/create-new-group";
+import CreateNewGroup from "@/components/groups/create-new-group";
 import RootLayout from "@/layout";
 import GetHead from "@/utils/Head";
 import { ReactElement } from "react";

@@ -3,20 +3,27 @@ import { useGetSingleChatQuery } from "@/features/chat";
 import { IGetChat } from "@/interfaces/chat.interface";
 import { useRouter } from "next/router";
 import ParticipantList from "./ParticipantList";
-import { Avatar, Button, Typography } from "@mui/material";
+import { Avatar, Box, Button, Typography } from "@mui/material";
 import GroupActions from "./GroupActions";
 
 const GroupTopBar = () => {
-  const { query } = useRouter();
+  const { query, push } = useRouter();
   const chatId = query?.chatId as string;
   const groupName = query?.groupName as string;
   const groupImage = query?.groupImage as string;
   const { data } = useGetSingleChatQuery(chatId);
   const chat = data?.data as IGetChat;
+  const groupDetailsLink = `/groups/${chat?.id}?groupId=${chat?.id}&groupName=${
+    chat?.groupName
+  }&groupImage=${chat?.groupImage || ""}`;
   return (
-    <div className="flex justify-between items-center p-2 bg-gray-200">
-      <div className="flex items-center gap-3">
-        <div>
+    <Box className="flex justify-between items-center p-2 bg-gray-200">
+      <Box className="flex items-center gap-3">
+        <Box
+          onClick={() => push(groupDetailsLink)}
+          className="cursor-pointer"
+          title="See group details"
+        >
           {chat?.groupImage || groupImage ? (
             <Avatar
               className="h-12 w-12 rounded-full ring-1"
@@ -28,31 +35,29 @@ const GroupTopBar = () => {
                 groupName?.slice(0, 1).toUpperCase()}
             </Avatar>
           )}
-        </div>
-        <div>
+        </Box>
+        <Box>
           <Typography>{chat?.groupName || groupName}</Typography>
           <ParticipantList participants={chat?.participants} />
-        </div>
-      </div>
-      <div className="hidden lg:block">
-        <div className="flex gap-3">
+        </Box>
+      </Box>
+      <Box className="hidden lg:block">
+        <Box className="flex gap-3">
           <Button variant="outlined">
             <AudioCall />
           </Button>
           <Button variant="outlined">
             <VideoCall />
           </Button>
-          <Button variant="outlined">
-            <GroupActions />
-          </Button>
-        </div>
-      </div>
-      <div className="lg:hidden block">
+          <GroupActions isButton={true} chatId={chat?.id} />
+        </Box>
+      </Box>
+      <Box className="lg:hidden block">
         <Button variant="outlined">
-          <GroupActions />
+          <GroupActions isButton={true} chatId={chat?.id} />
         </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
