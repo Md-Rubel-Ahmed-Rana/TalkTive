@@ -88,6 +88,52 @@ class Controller extends rootController_1.default {
                 data: chat,
             });
         }));
+        this.deleteChat = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            yield chat_service_1.ChatService.deleteChat(chatId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Group deleted successfully!",
+                data: null,
+            });
+        }));
+        this.updateChatInfo = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            yield chat_service_1.ChatService.updateChatInfo(chatId, req.body);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Group updated successfully!",
+                data: null,
+            });
+        }));
+        this.addNewParticipant = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            const participantId = (_b = req.params) === null || _b === void 0 ? void 0 : _b.participantId;
+            yield chat_service_1.ChatService.addNewParticipant(chatId, participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Group member added!",
+                data: null,
+            });
+        }));
+        this.removeParticipant = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            const participantId = (_b = req.params) === null || _b === void 0 ? void 0 : _b.participantId;
+            yield chat_service_1.ChatService.removeParticipant(chatId, participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Group member removed!",
+                data: null,
+            });
+        }));
     }
 }
 exports.ChatController = new Controller();

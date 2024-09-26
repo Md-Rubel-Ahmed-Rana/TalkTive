@@ -46,7 +46,7 @@ class Controller extends RootController {
   });
 
   myChatList = this.catchAsync(async (req: Request, res: Response) => {
-    const participantId = req.params.participantId;
+    const participantId = req.params.participantId as unknown as Types.ObjectId;
     const chatList = await ChatService.myChatList(participantId);
     this.apiResponse(res, {
       statusCode: httpStatus.OK,
@@ -55,6 +55,7 @@ class Controller extends RootController {
       data: chatList,
     });
   });
+
   getSingleChat = this.catchAsync(async (req: Request, res: Response) => {
     const chatId = req.params?.id as unknown as Types.ObjectId;
     const chat = await ChatService.getSingleChat(chatId);
@@ -65,6 +66,7 @@ class Controller extends RootController {
       data: chat,
     });
   });
+
   getChatByTwoParticipants = this.catchAsync(
     async (req: Request, res: Response) => {
       const participant1 = req.params
@@ -83,6 +85,54 @@ class Controller extends RootController {
       });
     }
   );
+
+  deleteChat = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    await ChatService.deleteChat(chatId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Group deleted successfully!",
+      data: null,
+    });
+  });
+
+  updateChatInfo = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    await ChatService.updateChatInfo(chatId, req.body);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Group updated successfully!",
+      data: null,
+    });
+  });
+
+  addNewParticipant = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    const participantId = req.params
+      ?.participantId as unknown as Types.ObjectId;
+    await ChatService.addNewParticipant(chatId, participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Group member added!",
+      data: null,
+    });
+  });
+
+  removeParticipant = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    const participantId = req.params
+      ?.participantId as unknown as Types.ObjectId;
+    await ChatService.removeParticipant(chatId, participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Group member removed!",
+      data: null,
+    });
+  });
 }
 
 export const ChatController = new Controller();

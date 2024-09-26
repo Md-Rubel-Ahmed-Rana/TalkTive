@@ -38,6 +38,16 @@ class Controller extends rootController_1.default {
                 data: users,
             });
         }));
+        this.getUsersExceptExistingParticipants = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            const chatId = req.params.chatId;
+            const users = yield user_service_1.UserService.getUsersExceptExistingParticipants(chatId);
+            this.apiResponse(res, {
+                statusCode: 200,
+                success: true,
+                message: "Search users!",
+                data: users,
+            });
+        }));
         this.getSingleUserInfo = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const userId = req.params.id;
             const user = yield user_service_1.UserService.getSingleUserInfo(userId);

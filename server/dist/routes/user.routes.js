@@ -7,6 +7,7 @@ const cloudinary_1 = require("../middleware/cloudinary");
 const router = (0, express_1.Router)();
 router.post("/register", cloudinary_1.upload.single("image"), (0, cloudinary_1.uploadProfileImage)(), user_controller_1.UserController.register);
 router.get("/", user_controller_1.UserController.getUsers);
+router.get("/search-user/:chatId", user_controller_1.UserController.getUsersExceptExistingParticipants);
 router.get("/:id", user_controller_1.UserController.getSingleUserInfo);
 router.patch("/update-user-info/:id", user_controller_1.UserController.updateUserInfo);
 router.patch("/change-profile-picture/:id", cloudinary_1.upload.single("image"), (0, cloudinary_1.uploadProfileImage)(), user_controller_1.UserController.updateProfilePicture);

@@ -3,6 +3,7 @@ import { UserService } from "../service/user.service";
 import RootController from "./rootController";
 import httpStatus from "http-status";
 import { cookieManager } from "../utils/cookie";
+import { Types } from "mongoose";
 
 class Controller extends RootController {
   register = this.catchAsync(async (req: Request, res: Response) => {
@@ -23,6 +24,20 @@ class Controller extends RootController {
       data: users,
     });
   });
+  getUsersExceptExistingParticipants = this.catchAsync(
+    async (req: Request, res: Response) => {
+      const chatId = req.params.chatId as unknown as Types.ObjectId;
+      const users = await UserService.getUsersExceptExistingParticipants(
+        chatId
+      );
+      this.apiResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Search users!",
+        data: users,
+      });
+    }
+  );
   getSingleUserInfo = this.catchAsync(async (req: Request, res: Response) => {
     const userId = req.params.id;
     const user = await UserService.getSingleUserInfo(userId);

@@ -29,6 +29,8 @@ class Service {
       isGroupChat: chat?.isGroupChat,
       groupName: chat?.groupName,
       groupImage: chat?.groupImage,
+      groupDescription: chat?.groupDescription,
+      groupRules: chat?.groupRules,
       admin: admin,
       participants: participants,
       lastMessage: lastMessage,
@@ -42,7 +44,7 @@ class Service {
     return newChat;
   }
 
-  async myChatList(participantId: string): Promise<IGetChat[]> {
+  async myChatList(participantId: Types.ObjectId): Promise<IGetChat[]> {
     const chatList = await Chat.find({ participants: participantId }).populate([
       {
         path: "admin",
@@ -104,6 +106,35 @@ class Service {
     ]);
     const chat = this.chatSanitizer(data);
     return chat;
+  }
+
+  async deleteChat(chatId: Types.ObjectId): Promise<void> {
+    await Chat.findByIdAndDelete(chatId);
+  }
+
+  async updateChatInfo(
+    chatId: Types.ObjectId,
+    updatedChat: Partial<IChat>
+  ): Promise<void> {
+    await Chat.findByIdAndUpdate(chatId, { $set: { ...updatedChat } });
+  }
+
+  async addNewParticipant(
+    chatId: Types.ObjectId,
+    participantId: Types.ObjectId
+  ): Promise<void> {
+    await Chat.findByIdAndUpdate(chatId, {
+      $push: { participants: participantId },
+    });
+  }
+
+  async removeParticipant(
+    chatId: Types.ObjectId,
+    participantId: Types.ObjectId
+  ): Promise<void> {
+    await Chat.findByIdAndUpdate(chatId, {
+      $pull: { participants: participantId },
+    });
   }
 }
 
