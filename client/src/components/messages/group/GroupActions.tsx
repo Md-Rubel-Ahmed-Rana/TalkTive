@@ -1,5 +1,10 @@
 import { AudioCall, VideoCall } from "@/components/calls";
+import AddGroupMemberModal from "@/components/groups/common/AddGroupMemberModal";
+import DeleteGroupButton from "@/components/groups/common/DeleteGroupButton";
+import RemoveMemberModal from "@/components/groups/common/RemoveMemberModal";
 import BackNavigationButton from "@/components/shared/BackNavigationButton";
+import { useGetSingleChatQuery } from "@/features/chat";
+import { IGetChat } from "@/interfaces/chat.interface";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import {
   Button,
@@ -7,16 +12,25 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  Box,
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const GroupActions = () => {
+type Props = {
+  isButton?: boolean;
+  chatId: string;
+};
+
+const GroupActions = ({ isButton, chatId }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const { query } = useRouter();
-  const chatId = query.chatId as string;
+  const { push } = useRouter();
+  const { data, isLoading } = useGetSingleChatQuery(chatId);
+  const chat = data?.data as IGetChat;
+  const [isAddMember, setIsAddMember] = useState(false);
+  const [isRemoveMember, setIsRemoveMember] = useState(false);
 
   const handleOpen = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -48,25 +62,29 @@ const GroupActions = () => {
     handleClose();
   };
 
-  const handleDeleteGroup = () => {
-    console.log(`Deleting group: ${chatId}`);
-    toast.success("Feature unavailable. Stay with to get the feature.");
-    handleClose();
-  };
   const handleNavigateGroupDetails = () => {
-    console.log(`Chat/Group Details: ${chatId}`);
-    toast.success("Feature unavailable. Stay with to get the feature.");
+    const groupDetailsLink = `/groups/${chat?.id}?groupId=${
+      chat?.id
+    }&groupName=${chat?.groupName}&groupImage=${chat?.groupImage || ""}`;
+    push(groupDetailsLink);
     handleClose();
   };
 
   const handleAddMember = () => {
-    console.log(`Chat: ${chatId}`);
-    toast.success("Feature unavailable. Stay with to get the feature.");
+    setIsAddMember(true);
     handleClose();
   };
+
   const handleRemoveMember = () => {
-    console.log(`Chat: ${chatId}`);
-    toast.success("Feature unavailable. Stay with to get the feature.");
+    setIsRemoveMember(true);
+    handleClose();
+  };
+
+  const handleNavigateGroupEditPage = () => {
+    const groupDetailsLink = `/groups/edit/${chat?.id}?groupId=${
+      chat?.id
+    }&groupName=${chat?.groupName}&groupImage=${chat?.groupImage || ""}`;
+    push(groupDetailsLink);
     handleClose();
   };
 
@@ -74,12 +92,25 @@ const GroupActions = () => {
 
   return (
     <>
-      <MoreVertOutlinedIcon
-        className="cursor-pointer"
-        titleAccess="Chat actions"
-        aria-describedby={chatId}
-        onClick={handleOpen}
-      />
+      {isButton ? (
+        <Button
+          className="cursor-pointer"
+          title="Chat actions"
+          aria-describedby={chatId}
+          onClick={handleOpen}
+          variant="outlined"
+        >
+          <MoreVertOutlinedIcon />
+        </Button>
+      ) : (
+        <MoreVertOutlinedIcon
+          className="cursor-pointer"
+          titleAccess="Chat actions"
+          aria-describedby={chatId}
+          onClick={handleOpen}
+        />
+      )}
+
       <Popover
         id={chatId}
         open={open}
@@ -101,18 +132,18 @@ const GroupActions = () => {
           },
         }}
       >
-        <div className="flex flex-col gap-2 w-full">
-          <div className="block lg:hidden">
-            <div className="flex justify-between gap-1">
+        <Box className="flex flex-col gap-2 w-full">
+          <Box className="block lg:hidden">
+            <Box className="flex justify-between gap-1">
               <Button className="w-full" variant="outlined">
                 <AudioCall />
               </Button>
               <Button className="w-full" variant="outlined">
                 <VideoCall />
               </Button>
-            </div>
+            </Box>
             <BackNavigationButton />
-          </div>
+          </Box>
           <Button
             variant="outlined"
             fullWidth
@@ -127,6 +158,13 @@ const GroupActions = () => {
             Remove member
           </Button>
           <Button
+            onClick={handleNavigateGroupEditPage}
+            variant="outlined"
+            fullWidth
+          >
+            Edit group
+          </Button>
+          <Button
             variant="outlined"
             fullWidth
             onClick={handleOpenConfirmDialog}
@@ -136,10 +174,8 @@ const GroupActions = () => {
           <Button variant="outlined" fullWidth onClick={handleLeaveGroup}>
             Leave group
           </Button>
-          <Button variant="outlined" fullWidth onClick={handleDeleteGroup}>
-            Delete
-          </Button>
-        </div>
+          <DeleteGroupButton btnText="Delete" groupId={chat?.id} />
+        </Box>
       </Popover>
 
       <Dialog
@@ -159,6 +195,21 @@ const GroupActions = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* add new member to group/chat modal  */}
+      <AddGroupMemberModal
+        groupId={chat?.id}
+        groupName={chat?.groupName}
+        open={isAddMember}
+        setOpen={setIsAddMember}
+      />
+
+      {/* remove member from group/chat modal  */}
+      <RemoveMemberModal
+        group={chat}
+        open={isRemoveMember}
+        setOpen={setIsRemoveMember}
+      />
     </>
   );
 };

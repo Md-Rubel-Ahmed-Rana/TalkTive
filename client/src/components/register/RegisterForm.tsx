@@ -185,7 +185,6 @@ const RegisterForm = () => {
       <Button
         type="submit"
         variant="contained"
-        color="secondary"
         className="bg-blue-600 py-4"
         endIcon={!isLoading && <PersonAddAltOutlinedIcon />}
         disabled={isLoading}

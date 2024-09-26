@@ -36,8 +36,8 @@ const LoginForm = () => {
       if (result?.data?.statusCode === 200) {
         toast.success(result?.data?.message || "User login successfully!");
         const user = result?.data?.data as IGetUser;
-        const detailsLink = `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
-        router.push(detailsLink);
+        const inboxLink = `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
+        router.push(inboxLink);
       } else {
         toast.error(
           result?.data?.message ||
@@ -101,7 +101,6 @@ const LoginForm = () => {
       <Button
         type="submit"
         variant="contained"
-        color="secondary"
         className="bg-blue-600 py-4"
         endIcon={!isLoading && <LockIcon />}
         disabled={isLoading}

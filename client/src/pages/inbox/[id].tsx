@@ -41,7 +41,7 @@ const Inbox = () => {
           </Box>
         </Box>
       </Box>
-      <Box component={"section"}>
+      <Box className="block lg:hidden" component={"section"}>
         <InboxLayoutSmall />
       </Box>
     </>
