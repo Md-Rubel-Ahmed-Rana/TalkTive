@@ -1,4 +1,4 @@
-import { IChat } from "@/interfaces/chat.interface";
+import { IChat, IEditGroup } from "@/interfaces/chat.interface";
 import apiSlice from "../api/apiSlice";
 
 const chatApi = apiSlice.injectEndpoints({
@@ -32,10 +32,18 @@ const chatApi = apiSlice.injectEndpoints({
       invalidatesTags: ["chat", "user"] as any,
     }),
     updateGroup: builder.mutation({
-      query: ({ chatId, data }: { chatId: string; data: IChat }) => ({
+      query: ({ chatId, data }: { chatId: string; data: IEditGroup }) => ({
         method: "PATCH",
         url: `/chat/update/${chatId}`,
         body: data,
+      }),
+      invalidatesTags: ["chat", "user"] as any,
+    }),
+    changeGroupImage: builder.mutation({
+      query: ({ chatId, image }: { chatId: string; image: FormData }) => ({
+        method: "PATCH",
+        url: `/chat/change-group-image/${chatId}`,
+        body: image,
       }),
       invalidatesTags: ["chat", "user"] as any,
     }),
@@ -88,4 +96,5 @@ export const {
   useRemoveMemberMutation,
   useDeleteGroupMutation,
   useUpdateGroupMutation,
+  useChangeGroupImageMutation,
 } = chatApi;

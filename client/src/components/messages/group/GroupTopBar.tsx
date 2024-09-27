@@ -43,19 +43,13 @@ const GroupTopBar = () => {
       </Box>
       <Box className="hidden lg:block">
         <Box className="flex gap-3">
-          <Button variant="outlined">
-            <AudioCall />
-          </Button>
-          <Button variant="outlined">
-            <VideoCall />
-          </Button>
+          <AudioCall />
+          <VideoCall />
           <GroupActions isButton={true} chatId={chat?.id} />
         </Box>
       </Box>
       <Box className="lg:hidden block">
-        <Button variant="outlined">
-          <GroupActions isButton={true} chatId={chat?.id} />
-        </Button>
+        <GroupActions chatId={chat?.id} />
       </Box>
     </Box>
   );

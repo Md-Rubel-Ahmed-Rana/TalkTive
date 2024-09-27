@@ -6,36 +6,12 @@ import { Types } from "mongoose";
 
 class Controller extends RootController {
   addNewChat = this.catchAsync(async (req: Request, res: Response) => {
-    console.log("Participants before processing:", req.body.participants);
-
-    // Ensure participants is an array, even if it comes as a stringified array
-    let participants = req.body.participants;
-
-    if (typeof participants === "string") {
-      try {
-        participants = JSON.parse(participants); // Parse if it's a JSON string
-      } catch (error) {
-        throw new Error(
-          "Participants field is not a valid array or JSON string."
-        );
-      }
+    if (typeof req.body.participants === "string") {
+      req.body.participants = JSON.parse(req.body.participants);
     }
-
-    if (Array.isArray(participants)) {
-      req.body.participants = participants.map((user: string) => {
-        if (Types.ObjectId.isValid(user)) {
-          return new Types.ObjectId(user);
-        } else {
-          throw new Error(`Invalid ObjectId: ${user}`);
-        }
-      });
-    } else {
-      // If participants is not an array, throw an error
-      throw new Error("Participants should be an array.");
+    if (typeof req.body.groupRules === "string") {
+      req.body.groupRules = JSON.parse(req.body.groupRules);
     }
-
-    console.log("Processed body:", req.body);
-
     await ChatService.addNewChat(req.body);
     this.apiResponse(res, {
       statusCode: httpStatus.CREATED,
@@ -104,6 +80,17 @@ class Controller extends RootController {
       statusCode: httpStatus.OK,
       success: true,
       message: "Group updated successfully!",
+      data: null,
+    });
+  });
+
+  changeGroupImage = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    await ChatService.changeGroupImage(chatId, req.body?.groupImage);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Group image changed successfully!",
       data: null,
     });
   });

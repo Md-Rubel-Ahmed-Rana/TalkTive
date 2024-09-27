@@ -22,7 +22,7 @@ const GroupMessagesPage = () => {
   return (
     <>
       <GetHead
-        title={`Messages - ${groupName}`}
+        title={`Messages - ${groupName || "Group name"}`}
         description="TalkTive inbox page"
         keywords="talktive, message, audio, video"
       />

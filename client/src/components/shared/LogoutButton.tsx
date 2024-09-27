@@ -1,16 +1,15 @@
 import { useLogoutMutation } from "@/features/auth";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useRouter } from "next/router";
+import { Button } from "@mui/material";
 import toast from "react-hot-toast";
 const LogoutButton = () => {
   const [logout] = useLogoutMutation();
-  const router = useRouter();
   const handleLogout = async () => {
     try {
       const result: any = await logout({});
       if (result?.data?.statusCode === 200) {
         toast.success(result?.data?.message || "User logged out!");
-        router.push("/");
+        window.location.replace("/");
       } else {
         toast.error(
           result?.data?.message ||
@@ -23,13 +22,14 @@ const LogoutButton = () => {
     }
   };
   return (
-    <button
+    <Button
+      variant="text"
       onClick={handleLogout}
-      className="flex items-center gap-2 font-semibold"
+      className="flex items-center justify-start gap-2 font-semibold w-full"
     >
       <LogoutIcon />
-      <small className="hidden lg:block">Logout</small>
-    </button>
+      <small>Logout</small>
+    </Button>
   );
 };
 

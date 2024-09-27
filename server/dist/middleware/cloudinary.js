@@ -63,6 +63,7 @@ const uploadGroupImage = () => {
     const folder = `${rootFolder}/group-images`;
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b, _c;
+        console.log(req.file);
         if (req === null || req === void 0 ? void 0 : req.file) {
             try {
                 const formData = new form_data_1.default();

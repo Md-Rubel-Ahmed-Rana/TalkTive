@@ -8,11 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatService = void 0;
 const chat_model_1 = require("../models/chat.model");
 const chatSorter_1 = require("../utils/chatSorter");
 const user_service_1 = require("./user.service");
+const apiError_1 = __importDefault(require("../utils/apiError"));
+const http_status_1 = __importDefault(require("http-status"));
+const getCloudinaryFilePublicIdFromUrl_1 = __importDefault(require("../utils/getCloudinaryFilePublicIdFromUrl"));
+const deletePreviousFileFromCloudinary_1 = require("../utils/deletePreviousFileFromCloudinary");
 class Service {
     lastMessageSanitizer(message) {
         return {
@@ -121,7 +128,37 @@ class Service {
     }
     updateChatInfo(chatId, updatedChat) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield chat_model_1.Chat.findByIdAndUpdate(chatId, { $set: Object.assign({}, updatedChat) });
+            const chat = yield chat_model_1.Chat.findById(chatId);
+            if (!chat) {
+                throw new apiError_1.default(http_status_1.default.NOT_FOUND, "Chat was not found!");
+            }
+            else {
+                yield chat_model_1.Chat.findByIdAndUpdate(chatId, { $set: Object.assign({}, updatedChat) });
+            }
+        });
+    }
+    changeGroupImage(chatId, imageLink) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (imageLink) {
+                const chat = yield chat_model_1.Chat.findById(chatId);
+                if (!chat) {
+                    throw new apiError_1.default(http_status_1.default.NOT_FOUND, "Chat was not found!");
+                }
+                else {
+                    if (chat === null || chat === void 0 ? void 0 : chat.groupImage) {
+                        const publicId = (0, getCloudinaryFilePublicIdFromUrl_1.default)(chat === null || chat === void 0 ? void 0 : chat.groupImage);
+                        if (publicId) {
+                            yield (0, deletePreviousFileFromCloudinary_1.deleteSingleFileFromCloudinary)(publicId);
+                        }
+                        yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
+                            $set: { groupImage: imageLink },
+                        });
+                    }
+                }
+            }
+            else {
+                throw new apiError_1.default(http_status_1.default.BAD_REQUEST, "Group image was not provided");
+            }
         });
     }
     addNewParticipant(chatId, participantId) {

@@ -32,6 +32,13 @@ router.patch(
 
 router.patch("/update/:chatId", ChatController.updateChatInfo);
 
+router.patch(
+  "/change-group-image/:chatId",
+  upload.single("groupImage"),
+  uploadGroupImage(),
+  ChatController.changeGroupImage
+);
+
 router.delete("/delete/:chatId", ChatController.deleteChat);
 
 export const ChatRoutes = router;

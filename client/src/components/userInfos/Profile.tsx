@@ -36,10 +36,10 @@ const Profile = () => {
 
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 p-2 lg:p-4">
-        <Card className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
-          <div className="flex flex-col md:flex-row items-center p-4 md:p-6">
-            <div className="relative">
+      <Box className="h-screen bg-gray-100 p-2 lg:p-4">
+        <Card className="w-full max-w-4xl mx-auto  bg-white shadow-lg rounded-lg overflow-hidden">
+          <Box className="flex flex-col justify-center md:flex-row items-center p-4 md:p-6">
+            <Box className="relative">
               <Avatar
                 alt={user?.name}
                 src={user?.image}
@@ -52,9 +52,9 @@ const Profile = () => {
                   className="absolute text-2xl -bottom-4 left-1/2 bg-gray-500 w-10 p-2 rounded-full text-white cursor-pointer h-10 transform -translate-x-1/2 -translate-y-1/2"
                 />
               )}
-            </div>
-            <div className="md:ml-6 flex-1 w-full mt-4 md:mt-0 text-center md:text-left">
-              <Box className="flex justify-between items-center mb-4">
+            </Box>
+            <Box className="md:ml-6 flex-1 w-full mt-4 md:mt-0 text-center md:text-left">
+              <Box className="flex justify-center lg:justify-between items-center mb-4">
                 <Typography
                   variant="h5"
                   component="h2"
@@ -88,9 +88,9 @@ const Profile = () => {
 
               <Divider className="my-4" />
 
-              <div className="flex flex-wrap gap-2 mt-2 justify-center md:justify-start">
+              <Box className="flex flex-wrap gap-2 mt-2 justify-center md:justify-start">
                 {user?.links?.map((link, index) => (
-                  <div key={index} className="flex items-center space-x-2">
+                  <Box key={index} className="flex items-center space-x-2">
                     <Link
                       href={link?.url}
                       target="_blank"
@@ -101,20 +101,22 @@ const Profile = () => {
                       <Typography>{link?.name}</Typography>
                     </Link>
                     {index !== user?.links?.length - 1 && (
-                      <span className="text-gray-400">|</span>
+                      <Box component={"span"} className="text-gray-400">
+                        |
+                      </Box>
                     )}
-                  </div>
+                  </Box>
                 ))}
                 {user?.links?.length <= 0 && <Typography>No links</Typography>}
-              </div>
+              </Box>
 
               <Divider className="my-4" />
 
               <Typography variant="caption" color="textSecondary">
                 Last active: {new Date(user?.lastActive).toLocaleString()}
               </Typography>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           <CardContent className="bg-gray-50">
             <Typography variant="caption" color="textSecondary">
@@ -122,7 +124,7 @@ const Profile = () => {
             </Typography>
           </CardContent>
         </Card>
-      </div>
+      </Box>
       <UpdateUserInfo open={isEditInfo} setOpen={setIsEditInfo} />
       <ProfilePictureChange open={isChangeImage} setOpen={setIsChangeImage} />
     </>

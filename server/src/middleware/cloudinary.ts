@@ -57,6 +57,7 @@ const uploadProfileImage = () => {
 const uploadGroupImage = () => {
   const folder = `${rootFolder}/group-images`;
   return async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.file);
     if (req?.file) {
       try {
         const formData = new FormData();

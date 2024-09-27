@@ -11,6 +11,12 @@ export type IChat = {
   admin: string | null;
 };
 
+export type IEditGroup = {
+  groupName: string;
+  groupDescription: string;
+  groupRules: string[];
+};
+
 export type IGetLastMessage = {
   id: string;
   chatId: string;

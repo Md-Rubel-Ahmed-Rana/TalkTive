@@ -16,37 +16,16 @@ exports.ChatController = void 0;
 const rootController_1 = __importDefault(require("./rootController"));
 const chat_service_1 = require("../service/chat.service");
 const http_status_1 = __importDefault(require("http-status"));
-const mongoose_1 = require("mongoose");
 class Controller extends rootController_1.default {
     constructor() {
         super(...arguments);
         this.addNewChat = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
-            console.log("Participants before processing:", req.body.participants);
-            // Ensure participants is an array, even if it comes as a stringified array
-            let participants = req.body.participants;
-            if (typeof participants === "string") {
-                try {
-                    participants = JSON.parse(participants); // Parse if it's a JSON string
-                }
-                catch (error) {
-                    throw new Error("Participants field is not a valid array or JSON string.");
-                }
+            if (typeof req.body.participants === "string") {
+                req.body.participants = JSON.parse(req.body.participants);
             }
-            if (Array.isArray(participants)) {
-                req.body.participants = participants.map((user) => {
-                    if (mongoose_1.Types.ObjectId.isValid(user)) {
-                        return new mongoose_1.Types.ObjectId(user);
-                    }
-                    else {
-                        throw new Error(`Invalid ObjectId: ${user}`);
-                    }
-                });
+            if (typeof req.body.groupRules === "string") {
+                req.body.groupRules = JSON.parse(req.body.groupRules);
             }
-            else {
-                // If participants is not an array, throw an error
-                throw new Error("Participants should be an array.");
-            }
-            console.log("Processed body:", req.body);
             yield chat_service_1.ChatService.addNewChat(req.body);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.CREATED,
@@ -107,6 +86,17 @@ class Controller extends rootController_1.default {
                 statusCode: http_status_1.default.OK,
                 success: true,
                 message: "Group updated successfully!",
+                data: null,
+            });
+        }));
+        this.changeGroupImage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            yield chat_service_1.ChatService.changeGroupImage(chatId, (_b = req.body) === null || _b === void 0 ? void 0 : _b.groupImage);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Group image changed successfully!",
                 data: null,
             });
         }));
