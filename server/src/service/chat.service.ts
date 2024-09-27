@@ -7,6 +7,7 @@ import ApiError from "../utils/apiError";
 import httpStatus from "http-status";
 import extractCloudinaryPublicId from "../utils/getCloudinaryFilePublicIdFromUrl";
 import { deleteSingleFileFromCloudinary } from "../utils/deletePreviousFileFromCloudinary";
+import { MessageService } from "./message.service";
 
 class Service {
   public lastMessageSanitizer(message: any): IGetLastMessage {
@@ -113,7 +114,20 @@ class Service {
   }
 
   async deleteChat(chatId: Types.ObjectId): Promise<void> {
-    await Chat.findByIdAndDelete(chatId);
+    const isExist = await Chat.findById(chatId);
+    if (!isExist) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Chat was not found!");
+    } else {
+      // delete group image from cloudinary if exist
+      if (isExist.groupImage) {
+        const publicId = extractCloudinaryPublicId(isExist?.groupImage);
+        if (publicId) {
+          await deleteSingleFileFromCloudinary(publicId);
+        }
+      }
+      await Chat.findByIdAndDelete(chatId);
+      await MessageService.deleteMessagesByChatId(chatId);
+    }
   }
 
   async updateChatInfo(
@@ -150,6 +164,10 @@ class Service {
         "Group image was not provided"
       );
     }
+  }
+
+  async updateLastMessageId(chatId: string, messageId: Types.ObjectId | null) {
+    await Chat.findByIdAndUpdate(chatId, { $set: { lastMessage: messageId } });
   }
 
   async addNewParticipant(

@@ -30,7 +30,7 @@ const messageApi = apiSlice.injectEndpoints({
         url: `/message/delete/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["message"] as any,
+      invalidatesTags: ["message", "chat"] as any,
     }),
     editMessage: builder.mutation({
       query: ({ id, content }: { id: string; content: string }) => ({

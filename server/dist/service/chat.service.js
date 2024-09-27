@@ -20,6 +20,7 @@ const apiError_1 = __importDefault(require("../utils/apiError"));
 const http_status_1 = __importDefault(require("http-status"));
 const getCloudinaryFilePublicIdFromUrl_1 = __importDefault(require("../utils/getCloudinaryFilePublicIdFromUrl"));
 const deletePreviousFileFromCloudinary_1 = require("../utils/deletePreviousFileFromCloudinary");
+const message_service_1 = require("./message.service");
 class Service {
     lastMessageSanitizer(message) {
         return {
@@ -123,7 +124,21 @@ class Service {
     }
     deleteChat(chatId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield chat_model_1.Chat.findByIdAndDelete(chatId);
+            const isExist = yield chat_model_1.Chat.findById(chatId);
+            if (!isExist) {
+                throw new apiError_1.default(http_status_1.default.NOT_FOUND, "Chat was not found!");
+            }
+            else {
+                // delete group image from cloudinary if exist
+                if (isExist.groupImage) {
+                    const publicId = (0, getCloudinaryFilePublicIdFromUrl_1.default)(isExist === null || isExist === void 0 ? void 0 : isExist.groupImage);
+                    if (publicId) {
+                        yield (0, deletePreviousFileFromCloudinary_1.deleteSingleFileFromCloudinary)(publicId);
+                    }
+                }
+                yield chat_model_1.Chat.findByIdAndDelete(chatId);
+                yield message_service_1.MessageService.deleteMessagesByChatId(chatId);
+            }
         });
     }
     updateChatInfo(chatId, updatedChat) {
@@ -159,6 +174,11 @@ class Service {
             else {
                 throw new apiError_1.default(http_status_1.default.BAD_REQUEST, "Group image was not provided");
             }
+        });
+    }
+    updateLastMessageId(chatId, messageId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, { $set: { lastMessage: messageId } });
         });
     }
     addNewParticipant(chatId, participantId) {
