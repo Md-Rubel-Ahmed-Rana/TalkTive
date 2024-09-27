@@ -1,10 +1,13 @@
 import { AudioCall, VideoCall } from "@/components/calls";
 import AddGroupMemberModal from "@/components/groups/common/AddGroupMemberModal";
 import DeleteGroupButton from "@/components/groups/common/DeleteGroupButton";
+import GroupImageChange from "@/components/groups/common/GroupImageChange";
 import RemoveMemberModal from "@/components/groups/common/RemoveMemberModal";
 import BackNavigationButton from "@/components/shared/BackNavigationButton";
+import { useGetLoggedInUserQuery } from "@/features/auth";
 import { useGetSingleChatQuery } from "@/features/chat";
 import { IGetChat } from "@/interfaces/chat.interface";
+import { IGetUser } from "@/interfaces/user.interface";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import {
   Button,
@@ -27,10 +30,13 @@ const GroupActions = ({ isButton, chatId }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const { push } = useRouter();
-  const { data, isLoading } = useGetSingleChatQuery(chatId);
+  const { data } = useGetSingleChatQuery(chatId);
+  const { data: userData } = useGetLoggedInUserQuery({});
+  const user = userData?.data as IGetUser;
   const chat = data?.data as IGetChat;
   const [isAddMember, setIsAddMember] = useState(false);
   const [isRemoveMember, setIsRemoveMember] = useState(false);
+  const [isChangeImage, setIsChangeImage] = useState(false);
 
   const handleOpen = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -90,6 +96,8 @@ const GroupActions = ({ isButton, chatId }: Props) => {
 
   const open = Boolean(anchorEl);
 
+  console.log(chat?.admin?.id, user?.id);
+
   return (
     <>
       {isButton ? (
@@ -134,13 +142,9 @@ const GroupActions = ({ isButton, chatId }: Props) => {
       >
         <Box className="flex flex-col gap-2 w-full">
           <Box className="block lg:hidden">
-            <Box className="flex justify-between gap-1">
-              <Button className="w-full" variant="outlined">
-                <AudioCall />
-              </Button>
-              <Button className="w-full" variant="outlined">
-                <VideoCall />
-              </Button>
+            <Box className="flex justify-between gap-1 mb-2">
+              <AudioCall />
+              <VideoCall />
             </Box>
             <BackNavigationButton />
           </Box>
@@ -151,19 +155,6 @@ const GroupActions = ({ isButton, chatId }: Props) => {
           >
             Group Details
           </Button>
-          <Button onClick={handleAddMember} variant="outlined" fullWidth>
-            Add member
-          </Button>
-          <Button onClick={handleRemoveMember} variant="outlined" fullWidth>
-            Remove member
-          </Button>
-          <Button
-            onClick={handleNavigateGroupEditPage}
-            variant="outlined"
-            fullWidth
-          >
-            Edit group
-          </Button>
           <Button
             variant="outlined"
             fullWidth
@@ -171,10 +162,40 @@ const GroupActions = ({ isButton, chatId }: Props) => {
           >
             Clear chat
           </Button>
-          <Button variant="outlined" fullWidth onClick={handleLeaveGroup}>
-            Leave group
-          </Button>
-          <DeleteGroupButton btnText="Delete" groupId={chat?.id} />
+          {chat?.admin?.id === user?.id ? (
+            <>
+              <Button onClick={handleAddMember} variant="outlined" fullWidth>
+                Add member
+              </Button>
+              <Button onClick={handleRemoveMember} variant="outlined" fullWidth>
+                Remove member
+              </Button>
+              <Button
+                onClick={handleNavigateGroupEditPage}
+                variant="outlined"
+                fullWidth
+              >
+                Edit group
+              </Button>
+              <Button
+                onClick={() => {
+                  setIsChangeImage(true);
+                  handleClose();
+                }}
+                variant="outlined"
+                fullWidth
+              >
+                Change image
+              </Button>
+              <DeleteGroupButton btnText="Delete" groupId={chat?.id} />
+            </>
+          ) : (
+            <>
+              <Button variant="outlined" fullWidth onClick={handleLeaveGroup}>
+                Leave group
+              </Button>
+            </>
+          )}
         </Box>
       </Popover>
 
@@ -209,6 +230,11 @@ const GroupActions = ({ isButton, chatId }: Props) => {
         group={chat}
         open={isRemoveMember}
         setOpen={setIsRemoveMember}
+      />
+      <GroupImageChange
+        chatId={chat?.id}
+        open={isChangeImage}
+        setOpen={setIsChangeImage}
       />
     </>
   );

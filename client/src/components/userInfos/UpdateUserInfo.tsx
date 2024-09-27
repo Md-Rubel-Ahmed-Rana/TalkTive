@@ -7,6 +7,7 @@ import {
   Button,
   IconButton,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,7 +15,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useUpdateUserInfoMutation } from "@/features/user";
 import toast from "react-hot-toast";
-import SmallLoaderSpinner from "../shared/SmallLoaderSpinner";
 
 type Props = {
   open: boolean;
@@ -87,7 +87,7 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
       aria-describedby="modal-modal-description"
     >
       <Box className="absolute h-[90%] overflow-y-auto top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-1/2 rounded-md bg-white shadow-lg p-4">
-        <div className="flex justify-between items-center mb-4">
+        <Box className="flex justify-between items-center mb-4">
           <Typography
             id="userinfo-update-modal"
             variant="h6"
@@ -97,12 +97,13 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
             Update Profile Information
           </Typography>
           <CloseIcon className="cursor-pointer" onClick={handleClose} />
-        </div>
-        <form
+        </Box>
+        <Box
+          component={"form"}
           onSubmit={handleSubmit(handleUpdateUserInfo)}
           className="flex flex-col justify-between h-[80%]"
         >
-          <div>
+          <Box className="space-y-4">
             <Controller
               name="name"
               control={control}
@@ -220,13 +221,12 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
               variant="outlined"
               startIcon={<AddIcon />}
               onClick={() => append({ name: "", url: "" })}
-              className="mb-20"
             >
               Add Link
             </Button>
-          </div>
+          </Box>
 
-          <div className="flex justify-between -mt-12">
+          <Box className="flex justify-between mt-3 pb-4">
             <Button
               disabled={isLoading}
               onClick={handleClose}
@@ -243,15 +243,13 @@ const UpdateUserInfo = ({ open, setOpen }: Props) => {
               disabled={isLoading}
             >
               {isLoading ? (
-                <p className="flex items-center gap-2">
-                  <span>Saving...</span> <SmallLoaderSpinner />
-                </p>
+                <CircularProgress size={24} color="inherit" />
               ) : (
                 "Save Changes"
               )}
             </Button>
-          </div>
-        </form>
+          </Box>
+        </Box>
       </Box>
     </Modal>
   );

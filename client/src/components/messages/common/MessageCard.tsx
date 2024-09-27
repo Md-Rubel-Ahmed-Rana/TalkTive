@@ -11,7 +11,7 @@ type Props = {
 
 const MessageCard = ({ message }: Props) => {
   return (
-    <div key={message?.id} className="mx-auto border-b py-6">
+    <div key={message?.id} className="mx-auto border-b py-6 overflow-hidden">
       <div className="flex  justify-between items-start">
         <MessageSender
           sender={message?.sender}

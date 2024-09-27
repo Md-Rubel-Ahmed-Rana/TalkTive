@@ -3,6 +3,10 @@ import { IChat, IGetChat, IGetLastMessage } from "../interfaces/chat.interface";
 import { Chat } from "../models/chat.model";
 import { sortChatsByLastMessage } from "../utils/chatSorter";
 import { UserService } from "./user.service";
+import ApiError from "../utils/apiError";
+import httpStatus from "http-status";
+import extractCloudinaryPublicId from "../utils/getCloudinaryFilePublicIdFromUrl";
+import { deleteSingleFileFromCloudinary } from "../utils/deletePreviousFileFromCloudinary";
 
 class Service {
   public lastMessageSanitizer(message: any): IGetLastMessage {
@@ -116,7 +120,36 @@ class Service {
     chatId: Types.ObjectId,
     updatedChat: Partial<IChat>
   ): Promise<void> {
-    await Chat.findByIdAndUpdate(chatId, { $set: { ...updatedChat } });
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Chat was not found!");
+    } else {
+      await Chat.findByIdAndUpdate(chatId, { $set: { ...updatedChat } });
+    }
+  }
+
+  async changeGroupImage(chatId: Types.ObjectId, imageLink: string) {
+    if (imageLink) {
+      const chat = await Chat.findById(chatId);
+      if (!chat) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Chat was not found!");
+      } else {
+        if (chat?.groupImage) {
+          const publicId = extractCloudinaryPublicId(chat?.groupImage);
+          if (publicId) {
+            await deleteSingleFileFromCloudinary(publicId);
+          }
+          await Chat.findByIdAndUpdate(chatId, {
+            $set: { groupImage: imageLink },
+          });
+        }
+      }
+    } else {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Group image was not provided"
+      );
+    }
   }
 
   async addNewParticipant(

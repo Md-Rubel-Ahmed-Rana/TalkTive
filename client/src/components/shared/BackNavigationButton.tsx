@@ -7,7 +7,7 @@ const BackNavigationButton = () => {
     <Button
       variant="outlined"
       onClick={() => router.back()}
-      className="flex items-center gap-1 my-2 w-full"
+      className="flex items-center gap-1 w-full"
     >
       <ArrowBackIcon />
       <span>Back</span>

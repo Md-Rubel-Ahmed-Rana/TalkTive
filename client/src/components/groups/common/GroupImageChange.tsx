@@ -5,14 +5,13 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { Avatar, Backdrop, Fade } from "@mui/material";
+import { Avatar, Backdrop, CircularProgress, Fade } from "@mui/material";
 import { useState } from "react";
-import { useChangeProfilePictureMutation } from "@/features/user";
 import toast from "react-hot-toast";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
-import SmallLoaderSpinner from "../shared/SmallLoaderSpinner";
 import CloseIcon from "@mui/icons-material/Close";
+import { useChangeGroupImageMutation } from "@/features/chat";
 
 const ImagePreviewContainer = styled("div")({
   display: "flex",
@@ -38,29 +37,28 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 type Props = {
+  chatId: string;
   open: boolean;
   setOpen: (value: boolean) => void;
 };
 
-const ProfilePictureChange = ({ open, setOpen }: Props) => {
-  const { data: userData } = useGetLoggedInUserQuery({});
-  const user = userData?.data as IGetUser;
+const GroupImageChange = ({ chatId, open, setOpen }: Props) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [newImage, setNewImage] = useState<File | null>(null);
-  const [uploadImage, { isLoading }] = useChangeProfilePictureMutation();
+  const [uploadImage, { isLoading }] = useChangeGroupImageMutation();
 
   const handleUploadImage = async () => {
     const formData = new FormData();
     if (newImage) {
-      formData.append("image", newImage);
+      formData.append("groupImage", newImage);
       try {
         const result: any = await uploadImage({
-          id: user?.id,
+          chatId: chatId,
           image: formData,
         });
         if (result?.data?.statusCode === 200) {
           toast.success(
-            result?.data?.message || "Your profile picture has been changed!"
+            result?.data?.message || "Group image has been changed!"
           );
           handleClose();
         } else {
@@ -120,7 +118,7 @@ const ProfilePictureChange = ({ open, setOpen }: Props) => {
               variant="h6"
               component="h2"
             >
-              Change profile picture
+              Change group image
             </Typography>
             <CloseIcon className="cursor-pointer" onClick={handleClose} />
           </Box>
@@ -167,7 +165,11 @@ const ProfilePictureChange = ({ open, setOpen }: Props) => {
               className="bg-blue-600"
               onClick={handleUploadImage}
             >
-              {isLoading ? <SmallLoaderSpinner /> : "Upload"}
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Upload"
+              )}
             </Button>
           </Box>
         </Box>
@@ -176,4 +178,4 @@ const ProfilePictureChange = ({ open, setOpen }: Props) => {
   );
 };
 
-export default ProfilePictureChange;
+export default GroupImageChange;

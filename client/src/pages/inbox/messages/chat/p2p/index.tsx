@@ -23,7 +23,7 @@ const OneToOneMessagesPage = () => {
   return (
     <>
       <GetHead
-        title={`Messages - ${participantName}`}
+        title={`Messages - ${participantName || "User name"}`}
         description="TalkTive inbox page"
         keywords="talktive, message, audio, video"
       />

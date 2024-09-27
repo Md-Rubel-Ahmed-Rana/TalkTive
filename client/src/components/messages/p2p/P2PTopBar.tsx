@@ -39,12 +39,8 @@ const P2PTopBar = () => {
       </div>
       <div className="hidden lg:block">
         <div className="flex gap-3">
-          <Button variant="outlined">
-            <AudioCall />
-          </Button>
-          <Button variant="outlined">
-            <VideoCall />
-          </Button>
+          <AudioCall />
+          <VideoCall />
           <Button variant="outlined">
             <P2PActions />
           </Button>
