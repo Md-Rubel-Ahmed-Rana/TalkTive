@@ -12,14 +12,6 @@ const ParticipantStatus: React.FC<ParticipantStatusProps> = ({
   const isOnline = participant?.status === "online";
   const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    const typingEvent = setTimeout(() => {
-      setIsTyping(false);
-    }, 3000);
-
-    return () => clearTimeout(typingEvent);
-  }, []);
-
   return (
     <div>
       <h2>{participant?.name}</h2>

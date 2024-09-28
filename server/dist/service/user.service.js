@@ -118,5 +118,21 @@ class Service {
             yield user_model_1.User.findByIdAndUpdate(id, { $set: { password: hashedPassword } });
         });
     }
+    makeOnlineStatusActive(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("Make online", userId);
+            yield user_model_1.User.findByIdAndUpdate(userId, {
+                $set: { status: "online", lastActive: null },
+            });
+        });
+    }
+    makeOnlineStatusDeActive(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("Make offline", userId);
+            yield user_model_1.User.findByIdAndUpdate(userId, {
+                $set: { status: "offline", lastActive: new Date().toISOString() },
+            });
+        });
+    }
 }
 exports.UserService = new Service();
