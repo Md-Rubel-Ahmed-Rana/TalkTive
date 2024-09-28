@@ -19,7 +19,7 @@ const MessageContainer = () => {
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    socket.on("new-message", (newMessage: IGetMessage) => {
+    socket?.on("new-message", (newMessage: IGetMessage) => {
       try {
         console.log("NewMessage object:", newMessage);
 
@@ -38,7 +38,7 @@ const MessageContainer = () => {
     });
 
     return () => {
-      socket.off("new-message");
+      socket?.off("new-message");
     };
   }, [socket, chatId, setRealTimeMessages, user?.id]);
 

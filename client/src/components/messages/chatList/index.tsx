@@ -15,14 +15,14 @@ const ChatList = () => {
   const chats = (chatData?.data as IGetChat[]) || [];
 
   useEffect(() => {
-    socket.on("chat-updated", () => {
+    socket?.on("chat-updated", () => {
       refetch().then(() => {
         toast.success("Got new message and chat list updated!");
       });
     });
 
     return () => {
-      socket.off("chat-updated");
+      socket?.off("chat-updated");
     };
   }, [socket, refetch]);
 

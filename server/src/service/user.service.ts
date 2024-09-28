@@ -101,6 +101,20 @@ class Service {
     const hashedPassword = await BcryptInstance.hash(newPassword);
     await User.findByIdAndUpdate(id, { $set: { password: hashedPassword } });
   }
+
+  async makeOnlineStatusActive(userId: Types.ObjectId) {
+    console.log("Make online", userId);
+    await User.findByIdAndUpdate(userId, {
+      $set: { status: "online", lastActive: null },
+    });
+  }
+
+  async makeOnlineStatusDeActive(userId: Types.ObjectId) {
+    console.log("Make offline", userId);
+    await User.findByIdAndUpdate(userId, {
+      $set: { status: "offline", lastActive: new Date().toISOString() },
+    });
+  }
 }
 
 export const UserService = new Service();

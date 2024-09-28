@@ -96,8 +96,6 @@ const GroupActions = ({ isButton, chatId }: Props) => {
 
   const open = Boolean(anchorEl);
 
-  console.log(chat?.admin?.id, user?.id);
-
   return (
     <>
       {isButton ? (

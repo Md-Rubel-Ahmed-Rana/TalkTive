@@ -24,9 +24,9 @@ const GroupDetails = () => {
 
   return (
     <>
-      <Box className="p-2 lg:p-4 max-w-2xl mx-auto">
-        <Paper elevation={3} className="p-6 rounded-lg shadow-lg bg-white">
-          <Box className="flex gap-2">
+      <Box className="p-2 lg:p-4 max-w-2xl mx-auto bg-white lg:bg-inherit">
+        <Box className="lg:p-6 lg:rounded-lg border-0 lg:shadow-lg bg-white">
+          <Box className="flex flex-col lg:flex-row gap-2">
             <Box className="flex flex-col justify-center items-center gap-2">
               <Avatar
                 src={group?.groupImage}
@@ -43,11 +43,16 @@ const GroupDetails = () => {
               </Typography>
             </Box>
             <Box className="w-full">
-              <Box className="flex justify-between w-full">
-                <Typography variant="h5" className="font-bold">
+              <Box className="flex justify-between items-center w-full my-4 lg:my-0">
+                <Typography className="font-bold text- lg:text-xl">
                   {group?.groupName}
                 </Typography>
-                <GroupActions chatId={group?.id} isButton={true} />
+                <Box className="hidden lg:block">
+                  <GroupActions chatId={group?.id} isButton={true} />
+                </Box>
+                <Box className="lg:hidden block">
+                  <GroupActions chatId={group?.id} />
+                </Box>
               </Box>
               <Typography variant="subtitle1">
                 {group?.groupDescription}
@@ -59,13 +64,15 @@ const GroupDetails = () => {
             <Typography variant="h6" className="font-semibold">
               Members:
             </Typography>
-            <Button
-              onClick={() => setIsAddMember(true)}
-              size="small"
-              variant="outlined"
-            >
-              Add Member
-            </Button>
+            {user?.id === group?.admin?.id && (
+              <Button
+                onClick={() => setIsAddMember(true)}
+                size="small"
+                variant="outlined"
+              >
+                Add Member
+              </Button>
+            )}
           </Box>
           <Box className="flex flex-col gap-5">
             {group?.participants?.map((participant) => (
@@ -76,11 +83,11 @@ const GroupDetails = () => {
                 <Box className="flex justify-between items-center gap-2 w-full">
                   <Box className="flex justify-between items-center gap-2">
                     <Avatar
-                      className="h-14 w-14 rounded-full ring-2"
+                      className="h-10 lg:h-14 w-10 lg:w-14 rounded-full ring-2"
                       src={participant?.image}
                       alt={participant?.name}
                     />
-                    <Typography className="text-lg">
+                    <Typography className="text-sm lg:text-lg">
                       {participant?.name}
                     </Typography>
                   </Box>
@@ -112,7 +119,7 @@ const GroupDetails = () => {
               ))}
             </Box>
           </Box>
-        </Paper>
+        </Box>
       </Box>
       <AddGroupMemberModal
         groupId={group?.id}

@@ -1,24 +1,11 @@
 import OneToOneMessages from "@/components/messages/p2p";
 import Sidebar from "@/components/messages/Sidebar";
-import { SocketContext } from "@/context/SocketContext";
-import { useGetLoggedInUserQuery } from "@/features/auth";
-import { IGetUser } from "@/interfaces/user.interface";
 import GetHead from "@/utils/Head";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect } from "react";
 
 const OneToOneMessagesPage = () => {
   const { query } = useRouter();
   const participantName = query?.userName as string;
-  const { socket } = useContext(SocketContext);
-  const { data: userData } = useGetLoggedInUserQuery({});
-  const user = userData?.data as IGetUser;
-
-  useEffect(() => {
-    if (user && user?.id) {
-      socket.emit("join-room", user?.id);
-    }
-  }, [socket, user]);
 
   return (
     <>
