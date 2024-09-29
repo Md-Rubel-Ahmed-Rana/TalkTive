@@ -8,6 +8,7 @@ const chatSchema = new mongoose_1.Schema({
         default: false,
     },
     participants: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
+    deletedBy: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
     groupName: {
         type: String,
         default: null,

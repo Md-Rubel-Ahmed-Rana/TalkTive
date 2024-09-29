@@ -11,20 +11,43 @@ const socketConnection = (io: SocketIOServer) => {
       socket.join(userId);
       console.log(`User ${userId} has joined their own room.`);
       await UserService.makeOnlineStatusActive(userId);
+
       // Notify other users that this user is online
       socket.broadcast.emit("user-status", { userId, status: "online" });
 
-      // Send a new message to a specific user room
-      socket.on(
-        "send-message",
-        (targetUserId: string, message: IGetMessage) => {
-          io.to(targetUserId).emit("new-message", message);
-          io.emit("chat-updated");
-          console.log(
-            `Message sent from ${message?.sender?.id} to user ${targetUserId}`
-          );
-        }
-      );
+      // start-typing-message event
+      socket.on("start-typing-message", ({ chatId, receiver, sender }) => {
+        socket.broadcast.emit("start-typing-message", {
+          chatId,
+          receiver,
+          sender,
+        });
+      });
+      socket.on("stop-typing-message", ({ chatId, receiver, sender }) => {
+        socket.broadcast.emit("stop-typing-message", {
+          chatId,
+          receiver,
+          sender,
+        });
+      });
+      // Send a new message
+      socket.on("send-message", (message: IGetMessage) => {
+        socket.broadcast.emit("new-message", message);
+        io.emit("chat-updated");
+      });
+
+      // Send edited message
+      socket.on("edited-message", (message: IGetMessage) => {
+        console.log("Got edited message", message);
+        socket.broadcast.emit("edited-message", message);
+        io.emit("chat-updated");
+      });
+      // Send edited message
+      socket.on("deleted-message", (messageId: string) => {
+        console.log("Got deleted message", messageId);
+        socket.broadcast.emit("deleted-message", messageId);
+        io.emit("chat-updated");
+      });
 
       // Handle user-disconnect event
       socket.on("user-disconnect", async (disconnectedUser) => {

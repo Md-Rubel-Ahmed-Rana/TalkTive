@@ -4,6 +4,8 @@ import { IGetUser } from "./user.interface";
 export type IMessage = {
   chatId: Types.ObjectId;
   sender: Types.ObjectId;
+  clearedBy?: Types.ObjectId[];
+  readBy?: Types.ObjectId[];
   content?: string;
   media?: {
     type: "image" | "audio" | "video" | "document";

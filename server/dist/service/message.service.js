@@ -50,6 +50,9 @@ class Service {
                 const result = yield message_model_1.Message.create(data);
                 const newMessage = yield result.populate("sender");
                 const message = this.messageSanitizer(newMessage);
+                if ((receiver === null || receiver === void 0 ? void 0 : receiver.toString()) !== "undefined") {
+                    yield chat_service_1.ChatService.reAddChatListOnNewMessageOneToOne(data === null || data === void 0 ? void 0 : data.chatId, receiver);
+                }
                 return message;
             }
             else {
@@ -64,16 +67,57 @@ class Service {
             }
         });
     }
-    getMessagesByChatId(chatId) {
+    getMessagesByChatId(chatId, participantId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const data = yield message_model_1.Message.find({ chatId: chatId }).populate("sender");
+            const data = yield message_model_1.Message.find({
+                chatId: chatId,
+                clearedBy: { $ne: participantId },
+            }).populate("sender");
             const messages = data === null || data === void 0 ? void 0 : data.map((msg) => this.messageSanitizer(msg));
             return messages;
         });
     }
+    getUnreadMessageCount(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const unreadCount = yield message_model_1.Message.find({
+                chatId: chatId,
+                readBy: { $ne: participantId },
+            }).countDocuments();
+            return unreadCount;
+        });
+    }
     updateMessage(id, updatedContent) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield message_model_1.Message.findByIdAndUpdate(id, { $set: { content: updatedContent } });
+            const updatedMessage = yield message_model_1.Message.findByIdAndUpdate(id, { $set: { content: updatedContent } }, { new: true }).populate("sender");
+            const message = this.messageSanitizer(updatedMessage);
+            return message;
+        });
+    }
+    readMessages(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield message_model_1.Message.updateMany({
+                chatId: chatId,
+                readBy: { $nin: participantId },
+            }, {
+                $push: { readBy: participantId },
+            });
+        });
+    }
+    clearChat(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield message_model_1.Message.updateMany({ chatId: chatId }, { $push: { clearedBy: participantId } });
+        });
+    }
+    restoreClearChatMessages(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            yield message_model_1.Message.updateMany({ chatId: chatId }, { $pull: { clearedBy: participantId } });
+            const lastMessage = yield message_model_1.Message.find({ chatId: chatId })
+                .sort({
+                createdAt: -1,
+            })
+                .limit(1);
+            return (_a = lastMessage[0]) === null || _a === void 0 ? void 0 : _a._id;
         });
     }
     deleteMessage(id) {
@@ -97,6 +141,7 @@ class Service {
                     yield this.deleteMediaFromAMessage(message);
                 }
             }
+            return id;
         });
     }
     deleteMessagesByChatId(chatId) {

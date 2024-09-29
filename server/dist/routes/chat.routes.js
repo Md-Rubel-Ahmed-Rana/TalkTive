@@ -7,6 +7,7 @@ const cloudinary_1 = require("../middleware/cloudinary");
 const router = (0, express_1.Router)();
 router.post("/add-new-chat", cloudinary_1.upload.single("groupImage"), (0, cloudinary_1.uploadGroupImage)(), chat_controller_1.ChatController.addNewChat);
 router.get("/my-chat-list/:participantId", chat_controller_1.ChatController.myChatList);
+router.get("/my-deleted-chat-list/:participantId", chat_controller_1.ChatController.getDeletedChatList);
 router.get("/:id", chat_controller_1.ChatController.getSingleChat);
 router.get("/single/:participant1/:participant2", chat_controller_1.ChatController.getChatByTwoParticipants);
 router.patch("/add-new-participant/:chatId/:participantId", chat_controller_1.ChatController.addNewParticipant);
@@ -14,4 +15,8 @@ router.patch("/remove-participant/:chatId/:participantId", chat_controller_1.Cha
 router.patch("/update/:chatId", chat_controller_1.ChatController.updateChatInfo);
 router.patch("/change-group-image/:chatId", cloudinary_1.upload.single("groupImage"), (0, cloudinary_1.uploadGroupImage)(), chat_controller_1.ChatController.changeGroupImage);
 router.delete("/delete/:chatId", chat_controller_1.ChatController.deleteChat);
+router.patch("/delete-chat/:chatId/:participantId", chat_controller_1.ChatController.chatDeletedBy);
+router.patch("/clear-chat/:chatId/:participantId", chat_controller_1.ChatController.clearChat);
+router.patch("/restore-chat/:chatId/:participantId", chat_controller_1.ChatController.restoreDeletedChat);
+router.patch("/restore-clear-chat/:chatId/:participantId", chat_controller_1.ChatController.restoreClearChat);
 exports.ChatRoutes = router;

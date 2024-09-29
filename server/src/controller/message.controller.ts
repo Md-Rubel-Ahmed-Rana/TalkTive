@@ -6,7 +6,7 @@ import { Types } from "mongoose";
 
 class Controller extends RootController {
   sendMessage = this.catchAsync(async (req: Request, res: Response) => {
-    const receiver = req.params.receiver as unknown as Types.ObjectId;
+    const receiver = req.params?.receiver as unknown as Types.ObjectId;
     const result = await MessageService.sendMessage(receiver, req.body);
     this.apiResponse(res, {
       statusCode: httpStatus.CREATED,
@@ -17,7 +17,11 @@ class Controller extends RootController {
   });
   getMessagesByChatId = this.catchAsync(async (req: Request, res: Response) => {
     const chatId = req.params.chatId as unknown as Types.ObjectId;
-    const messages = await MessageService.getMessagesByChatId(chatId);
+    const participantId = req.params.participantId as unknown as Types.ObjectId;
+    const messages = await MessageService.getMessagesByChatId(
+      chatId,
+      participantId
+    );
     this.apiResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -27,22 +31,36 @@ class Controller extends RootController {
   });
   updateMessage = this.catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id as unknown as Types.ObjectId;
-    await MessageService.updateMessage(id, req.body.content);
+    const updatedMessage = await MessageService.updateMessage(
+      id,
+      req.body.content
+    );
     this.apiResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: "Message updated!",
+      data: updatedMessage,
+    });
+  });
+  readMessages = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params.chatId as unknown as Types.ObjectId;
+    const participantId = req.params.participantId as unknown as Types.ObjectId;
+    await MessageService.readMessages(chatId, participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Marked all the unread messages as read!",
       data: null,
     });
   });
   deleteMessage = this.catchAsync(async (req: Request, res: Response) => {
     const id = req.params?.id as unknown as Types.ObjectId;
-    await MessageService.deleteMessage(id);
+    const messageId = await MessageService.deleteMessage(id);
     this.apiResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: "Message deleted!",
-      data: null,
+      data: messageId,
     });
   });
 }

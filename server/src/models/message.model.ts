@@ -18,6 +18,8 @@ const messageSchema = new Schema<IMessage>(
       type: String,
       require: false,
     },
+    clearedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    readBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
     media: [
       {
         type: {

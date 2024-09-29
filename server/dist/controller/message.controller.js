@@ -20,7 +20,8 @@ class Controller extends rootController_1.default {
     constructor() {
         super(...arguments);
         this.sendMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const receiver = req.params.receiver;
+            var _a;
+            const receiver = (_a = req.params) === null || _a === void 0 ? void 0 : _a.receiver;
             const result = yield message_service_1.MessageService.sendMessage(receiver, req.body);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.CREATED,
@@ -31,7 +32,8 @@ class Controller extends rootController_1.default {
         }));
         this.getMessagesByChatId = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const chatId = req.params.chatId;
-            const messages = yield message_service_1.MessageService.getMessagesByChatId(chatId);
+            const participantId = req.params.participantId;
+            const messages = yield message_service_1.MessageService.getMessagesByChatId(chatId, participantId);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.OK,
                 success: true,
@@ -41,23 +43,34 @@ class Controller extends rootController_1.default {
         }));
         this.updateMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
-            yield message_service_1.MessageService.updateMessage(id, req.body.content);
+            const updatedMessage = yield message_service_1.MessageService.updateMessage(id, req.body.content);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.OK,
                 success: true,
                 message: "Message updated!",
+                data: updatedMessage,
+            });
+        }));
+        this.readMessages = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            const chatId = req.params.chatId;
+            const participantId = req.params.participantId;
+            yield message_service_1.MessageService.readMessages(chatId, participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Marked all the unread messages as read!",
                 data: null,
             });
         }));
         this.deleteMessage = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             const id = (_a = req.params) === null || _a === void 0 ? void 0 : _a.id;
-            yield message_service_1.MessageService.deleteMessage(id);
+            const messageId = yield message_service_1.MessageService.deleteMessage(id);
             this.apiResponse(res, {
                 statusCode: http_status_1.default.OK,
                 success: true,
                 message: "Message deleted!",
-                data: null,
+                data: messageId,
             });
         }));
     }

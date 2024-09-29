@@ -4,6 +4,7 @@ import { IGetUser } from "./user.interface";
 export type IChat = {
   isGroupChat: boolean;
   participants: Types.ObjectId[];
+  deletedBy?: Types.ObjectId[];
   groupName?: string | null;
   groupImage?: string | null;
   groupDescription?: string | null;
@@ -32,6 +33,7 @@ export type IGetChat = {
   groupRules: string[];
   groupDescription: string;
   admin: IGetUser;
+  unreadMessage: number;
   lastMessage: IGetLastMessage;
   createdAt: Date;
   updatedAt: Date;
