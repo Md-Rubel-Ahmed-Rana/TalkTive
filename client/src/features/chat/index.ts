@@ -84,6 +84,64 @@ const chatApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["chat"] as any,
     }),
+    myDeletedChatList: builder.query({
+      query: (participantId: string) => ({
+        url: `/chat/my-deleted-chat-list/${participantId}`,
+      }),
+      providesTags: ["chat"] as any,
+    }),
+    deleteChat: builder.mutation({
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        method: "PATCH",
+        url: `/chat/delete-chat/${chatId}/${participantId}`,
+      }),
+      invalidatesTags: ["chat", "user"] as any,
+    }),
+    restoreDeletedChat: builder.mutation({
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        method: "PATCH",
+        url: `/chat/restore-chat/${chatId}/${participantId}`,
+      }),
+      invalidatesTags: ["chat", "user"] as any,
+    }),
+    clearChat: builder.mutation({
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        method: "PATCH",
+        url: `/chat/clear-chat/${chatId}/${participantId}`,
+      }),
+      invalidatesTags: ["chat", "user", "message"] as any,
+    }),
+    restoreClearChat: builder.mutation({
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        method: "PATCH",
+        url: `/chat/restore-clear-chat/${chatId}/${participantId}`,
+      }),
+      invalidatesTags: ["chat", "user", "message"] as any,
+    }),
   }),
 });
 
@@ -97,4 +155,9 @@ export const {
   useDeleteGroupMutation,
   useUpdateGroupMutation,
   useChangeGroupImageMutation,
+  useMyDeletedChatListQuery,
+  useDeleteChatMutation,
+  useRestoreDeletedChatMutation,
+  useClearChatMutation,
+  useRestoreClearChatMutation,
 } = chatApi;

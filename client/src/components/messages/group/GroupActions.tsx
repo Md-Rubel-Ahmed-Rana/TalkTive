@@ -9,17 +9,13 @@ import { useGetSingleChatQuery } from "@/features/chat";
 import { IGetChat } from "@/interfaces/chat.interface";
 import { IGetUser } from "@/interfaces/user.interface";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import {
-  Button,
-  Popover,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Box,
-} from "@mui/material";
+import { Button, Popover, Box } from "@mui/material";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import LeaveGroupButton from "../../groups/common/LeaveGroupButton";
+import ClearChatButton from "../chatList/ClearChatButton";
+import RestoreClearChatButton from "../chatList/RestoreClearChatButton";
+import DeleteChatButton from "../chatList/DeleteChatButton";
 
 type Props = {
   isButton?: boolean;
@@ -28,7 +24,6 @@ type Props = {
 
 const GroupActions = ({ isButton, chatId }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const { push } = useRouter();
   const { data } = useGetSingleChatQuery(chatId);
   const { data: userData } = useGetLoggedInUserQuery({});
@@ -44,28 +39,6 @@ const GroupActions = ({ isButton, chatId }: Props) => {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleOpenConfirmDialog = () => {
-    setOpenConfirmDialog(true);
-  };
-
-  const handleCloseConfirmDialog = () => {
-    setOpenConfirmDialog(false);
-    handleClose();
-  };
-
-  const handleClearChat = () => {
-    console.log(`Clearing chat for group: ${chatId}`);
-    handleCloseConfirmDialog();
-    toast.success("Feature unavailable. Stay with to get the feature.");
-    handleClose();
-  };
-
-  const handleLeaveGroup = () => {
-    console.log(`Leaving group: ${chatId}`);
-    toast.success("Feature unavailable. Stay with to get the feature.");
-    handleClose();
   };
 
   const handleNavigateGroupDetails = () => {
@@ -153,13 +126,9 @@ const GroupActions = ({ isButton, chatId }: Props) => {
           >
             Group Details
           </Button>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={handleOpenConfirmDialog}
-          >
-            Clear chat
-          </Button>
+          <ClearChatButton chat={chat} />
+          <RestoreClearChatButton chat={chat} />
+          <DeleteChatButton chat={chat} />
           {chat?.admin?.id === user?.id ? (
             <>
               <Button onClick={handleAddMember} variant="outlined" fullWidth>
@@ -185,35 +154,15 @@ const GroupActions = ({ isButton, chatId }: Props) => {
               >
                 Change image
               </Button>
-              <DeleteGroupButton btnText="Delete" groupId={chat?.id} />
+              <DeleteGroupButton btnText="Delete Group" groupId={chat?.id} />
             </>
           ) : (
             <>
-              <Button variant="outlined" fullWidth onClick={handleLeaveGroup}>
-                Leave group
-              </Button>
+              <LeaveGroupButton chatId={chat?.id} />
             </>
           )}
         </Box>
       </Popover>
-
-      <Dialog
-        open={openConfirmDialog}
-        onClose={handleCloseConfirmDialog}
-        aria-labelledby="confirm-clear-chat"
-      >
-        <DialogTitle id="confirm-clear-chat">
-          Are you sure you want to clear the chat?
-        </DialogTitle>
-        <DialogActions>
-          <Button onClick={handleCloseConfirmDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClearChat} color="secondary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       {/* add new member to group/chat modal  */}
       <AddGroupMemberModal

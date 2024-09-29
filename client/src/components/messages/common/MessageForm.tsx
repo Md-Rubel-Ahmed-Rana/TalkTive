@@ -24,6 +24,7 @@ const MessageForm = () => {
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
   const inputRef = useRef<any>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSendNewMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +53,7 @@ const MessageForm = () => {
 
       if (result?.data?.statusCode === 201) {
         // send the new message to receiver/participant
-        socket.emit("send-message", receiver, result?.data?.data);
+        socket.emit("send-message", result?.data?.data);
         socket.emit("chat-updated");
         toast.success(result?.data?.message || "Your message has been sent!");
 
@@ -80,6 +81,23 @@ const MessageForm = () => {
 
   const handleContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
+    handleTyping();
+  };
+
+  const handleTyping = () => {
+    socket.emit("start-typing-message", { chatId, receiver, sender: user?.id });
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stop-typing-message", {
+        chatId,
+        receiver,
+        sender: user?.id,
+      });
+    }, 2000);
   };
 
   return (

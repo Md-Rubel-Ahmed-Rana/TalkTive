@@ -1,13 +1,13 @@
 import React from "react";
-import MessageContainer from "../MessageContainer";
 import MessageForm from "../common/MessageForm";
 import GroupTopBar from "./GroupTopBar";
+import GroupMessageContainer from "./GroupMessageContainer";
 
 const GroupMessages = () => {
   return (
     <div className="h-screen lg:h-full w-full border flex flex-col justify-between">
       <GroupTopBar />
-      <MessageContainer />
+      <GroupMessageContainer />
       <MessageForm />
     </div>
   );

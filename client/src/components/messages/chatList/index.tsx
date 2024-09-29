@@ -13,6 +13,7 @@ const ChatList = () => {
   const user: IGetUser = userData?.data;
   const { data: chatData, refetch } = useGetMyChatListQuery(user?.id);
   const chats = (chatData?.data as IGetChat[]) || [];
+  console.log(chats);
 
   useEffect(() => {
     socket?.on("chat-updated", () => {

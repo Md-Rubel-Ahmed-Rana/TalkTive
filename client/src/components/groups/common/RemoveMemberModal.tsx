@@ -24,7 +24,7 @@ const RemoveMemberModal = ({ open, setOpen, group }: Props) => {
       aria-describedby="modal-modal-description"
     >
       <Fade in={open}>
-        <Box className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[98%] lg:w-1/3 rounded-md bg-white shadow-lg p-4">
+        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[98%] lg:w-1/3 h-2/3 overflow-y-auto rounded-md bg-white shadow-lg p-4">
           <Typography component={"h2"} variant="h6">
             Remove Member
           </Typography>
