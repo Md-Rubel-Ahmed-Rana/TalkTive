@@ -27,6 +27,8 @@ const messageSchema = new mongoose_1.Schema({
         type: String,
         require: false,
     },
+    clearedBy: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
+    readBy: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
     media: [
         {
             type: {

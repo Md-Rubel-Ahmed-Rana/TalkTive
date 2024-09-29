@@ -8,6 +8,7 @@ const chatSchema = new Schema<IChat>(
       default: false,
     },
     participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    deletedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
     groupName: {
       type: String,
       default: null,

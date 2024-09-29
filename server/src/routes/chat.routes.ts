@@ -13,6 +13,11 @@ router.post(
 
 router.get("/my-chat-list/:participantId", ChatController.myChatList);
 
+router.get(
+  "/my-deleted-chat-list/:participantId",
+  ChatController.getDeletedChatList
+);
+
 router.get("/:id", ChatController.getSingleChat);
 
 router.get(
@@ -40,5 +45,22 @@ router.patch(
 );
 
 router.delete("/delete/:chatId", ChatController.deleteChat);
+
+router.patch(
+  "/delete-chat/:chatId/:participantId",
+  ChatController.chatDeletedBy
+);
+
+router.patch("/clear-chat/:chatId/:participantId", ChatController.clearChat);
+
+router.patch(
+  "/restore-chat/:chatId/:participantId",
+  ChatController.restoreDeletedChat
+);
+
+router.patch(
+  "/restore-clear-chat/:chatId/:participantId",
+  ChatController.restoreClearChat
+);
 
 export const ChatRoutes = router;

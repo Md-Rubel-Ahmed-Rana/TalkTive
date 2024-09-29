@@ -10,7 +10,9 @@ router.post(
   MessageController.sendMessage
 );
 
-router.get("/:chatId", MessageController.getMessagesByChatId);
+router.get("/:chatId/:participantId", MessageController.getMessagesByChatId);
+
+router.patch("/read/:chatId/:participantId", MessageController.readMessages);
 
 router.patch("/update/:id", MessageController.updateMessage);
 

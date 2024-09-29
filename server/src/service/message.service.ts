@@ -42,6 +42,13 @@ class Service {
       const result = await Message.create(data);
       const newMessage = await result.populate("sender");
       const message = this.messageSanitizer(newMessage);
+      if (receiver?.toString() !== "undefined") {
+        await ChatService.reAddChatListOnNewMessageOneToOne(
+          data?.chatId,
+          receiver
+        );
+      }
+
       return message;
     } else {
       const chat = await ChatService.addNewChat({
@@ -57,15 +64,73 @@ class Service {
       return message;
     }
   }
-  async getMessagesByChatId(chatId: Types.ObjectId): Promise<IGetMessage[]> {
-    const data = await Message.find({ chatId: chatId }).populate("sender");
+  async getMessagesByChatId(
+    chatId: Types.ObjectId,
+    participantId: Types.ObjectId
+  ): Promise<IGetMessage[]> {
+    const data = await Message.find({
+      chatId: chatId,
+      clearedBy: { $ne: participantId },
+    }).populate("sender");
     const messages = data?.map((msg) => this.messageSanitizer(msg));
     return messages;
   }
-  async updateMessage(id: Types.ObjectId, updatedContent: string) {
-    await Message.findByIdAndUpdate(id, { $set: { content: updatedContent } });
+  async getUnreadMessageCount(
+    chatId: Types.ObjectId,
+    participantId: Types.ObjectId
+  ): Promise<number> {
+    const unreadCount = await Message.find({
+      chatId: chatId,
+      readBy: { $ne: participantId },
+    }).countDocuments();
+    return unreadCount;
   }
-  async deleteMessage(id: Types.ObjectId) {
+  async updateMessage(
+    id: Types.ObjectId,
+    updatedContent: string
+  ): Promise<IGetMessage> {
+    const updatedMessage = await Message.findByIdAndUpdate(
+      id,
+      { $set: { content: updatedContent } },
+      { new: true }
+    ).populate("sender");
+
+    const message = this.messageSanitizer(updatedMessage);
+    return message;
+  }
+  async readMessages(chatId: Types.ObjectId, participantId: Types.ObjectId) {
+    await Message.updateMany(
+      {
+        chatId: chatId,
+        readBy: { $nin: participantId },
+      },
+      {
+        $push: { readBy: participantId },
+      }
+    );
+  }
+  async clearChat(chatId: Types.ObjectId, participantId: Types.ObjectId) {
+    await Message.updateMany(
+      { chatId: chatId },
+      { $push: { clearedBy: participantId } }
+    );
+  }
+  async restoreClearChatMessages(
+    chatId: Types.ObjectId,
+    participantId: Types.ObjectId
+  ): Promise<Types.ObjectId> {
+    await Message.updateMany(
+      { chatId: chatId },
+      { $pull: { clearedBy: participantId } }
+    );
+    const lastMessage = await Message.find({ chatId: chatId })
+      .sort({
+        createdAt: -1,
+      })
+      .limit(1);
+    return lastMessage[0]?._id;
+  }
+  async deleteMessage(id: Types.ObjectId): Promise<Types.ObjectId> {
     const data = await Message.findById(id);
     const message = this.messageSanitizer(data);
     if (!message) {
@@ -88,6 +153,7 @@ class Service {
         await this.deleteMediaFromAMessage(message);
       }
     }
+    return id;
   }
   async deleteMessagesByChatId(chatId: Types.ObjectId) {
     const messages = await Message.find({ chatId: chatId });

@@ -44,6 +44,16 @@ class Controller extends rootController_1.default {
                 data: chatList,
             });
         }));
+        this.getDeletedChatList = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            const participantId = req.params.participantId;
+            const chatList = yield chat_service_1.ChatService.getDeletedChatList(participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Deleted chat list found!",
+                data: chatList,
+            });
+        }));
         this.getSingleChat = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.id;
@@ -121,6 +131,54 @@ class Controller extends rootController_1.default {
                 statusCode: http_status_1.default.OK,
                 success: true,
                 message: "Group member removed!",
+                data: null,
+            });
+        }));
+        this.chatDeletedBy = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            const participantId = (_b = req.params) === null || _b === void 0 ? void 0 : _b.participantId;
+            yield chat_service_1.ChatService.chatDeletedBy(chatId, participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Chat deleted successfully!!",
+                data: null,
+            });
+        }));
+        this.restoreDeletedChat = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            const participantId = (_b = req.params) === null || _b === void 0 ? void 0 : _b.participantId;
+            yield chat_service_1.ChatService.restoreDeletedChat(chatId, participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Chat restored successfully!!",
+                data: null,
+            });
+        }));
+        this.clearChat = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            const participantId = (_b = req.params) === null || _b === void 0 ? void 0 : _b.participantId;
+            yield chat_service_1.ChatService.clearChat(chatId, participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Chat cleared successfully!!",
+                data: null,
+            });
+        }));
+        this.restoreClearChat = this.catchAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const chatId = (_a = req.params) === null || _a === void 0 ? void 0 : _a.chatId;
+            const participantId = (_b = req.params) === null || _b === void 0 ? void 0 : _b.participantId;
+            yield chat_service_1.ChatService.restoreClearChat(chatId, participantId);
+            this.apiResponse(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: "Chat restored successfully!!",
                 data: null,
             });
         }));

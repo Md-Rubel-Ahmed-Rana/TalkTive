@@ -48,6 +48,7 @@ class Service {
             groupRules: chat === null || chat === void 0 ? void 0 : chat.groupRules,
             admin: admin,
             participants: participants,
+            unreadMessage: chat === null || chat === void 0 ? void 0 : chat.unreadMessage,
             lastMessage: lastMessage,
             createdAt: chat === null || chat === void 0 ? void 0 : chat.createdAt,
             updatedAt: chat === null || chat === void 0 ? void 0 : chat.updatedAt,
@@ -61,7 +62,36 @@ class Service {
     }
     myChatList(participantId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const chatList = yield chat_model_1.Chat.find({ participants: participantId }).populate([
+            const chatList = yield chat_model_1.Chat.find({
+                participants: participantId,
+                deletedBy: { $ne: participantId },
+            }).populate([
+                {
+                    path: "admin",
+                    model: "User",
+                },
+                {
+                    path: "participants",
+                    model: "User",
+                },
+                {
+                    path: "lastMessage",
+                    model: "Message",
+                },
+            ]);
+            const chatWithUnread = yield Promise.all(chatList.map((chat) => __awaiter(this, void 0, void 0, function* () {
+                return (Object.assign(Object.assign({}, chat.toObject()), { unreadMessage: yield message_service_1.MessageService.getUnreadMessageCount(chat === null || chat === void 0 ? void 0 : chat.id, participantId) }));
+            })));
+            const chats = chatWithUnread.map((chat) => this.chatSanitizer(chat));
+            const sortedChats = (0, chatSorter_1.sortChatsByLastMessage)(chats);
+            return sortedChats;
+        });
+    }
+    getDeletedChatList(participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const chatList = yield chat_model_1.Chat.find({
+                deletedBy: participantId,
+            }).populate([
                 {
                     path: "admin",
                     model: "User",
@@ -192,6 +222,41 @@ class Service {
         return __awaiter(this, void 0, void 0, function* () {
             yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
                 $pull: { participants: participantId },
+            });
+        });
+    }
+    chatDeletedBy(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
+                $push: { deletedBy: participantId },
+            });
+        });
+    }
+    restoreDeletedChat(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
+                $pull: { deletedBy: participantId },
+            });
+        });
+    }
+    reAddChatListOnNewMessageOneToOne(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
+                $pull: { deletedBy: participantId },
+            });
+        });
+    }
+    clearChat(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, { $set: { lastMessage: null } });
+            yield message_service_1.MessageService.clearChat(chatId, participantId);
+        });
+    }
+    restoreClearChat(chatId, participantId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const lastMessageId = yield message_service_1.MessageService.restoreClearChatMessages(chatId, participantId);
+            yield chat_model_1.Chat.findByIdAndUpdate(chatId, {
+                $set: { lastMessage: lastMessageId },
             });
         });
     }

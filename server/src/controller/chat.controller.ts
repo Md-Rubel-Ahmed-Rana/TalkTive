@@ -31,6 +31,16 @@ class Controller extends RootController {
       data: chatList,
     });
   });
+  getDeletedChatList = this.catchAsync(async (req: Request, res: Response) => {
+    const participantId = req.params.participantId as unknown as Types.ObjectId;
+    const chatList = await ChatService.getDeletedChatList(participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Deleted chat list found!",
+      data: chatList,
+    });
+  });
 
   getSingleChat = this.catchAsync(async (req: Request, res: Response) => {
     const chatId = req.params?.id as unknown as Types.ObjectId;
@@ -117,6 +127,56 @@ class Controller extends RootController {
       statusCode: httpStatus.OK,
       success: true,
       message: "Group member removed!",
+      data: null,
+    });
+  });
+
+  chatDeletedBy = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    const participantId = req.params
+      ?.participantId as unknown as Types.ObjectId;
+    await ChatService.chatDeletedBy(chatId, participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Chat deleted successfully!!",
+      data: null,
+    });
+  });
+
+  restoreDeletedChat = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    const participantId = req.params
+      ?.participantId as unknown as Types.ObjectId;
+    await ChatService.restoreDeletedChat(chatId, participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Chat restored successfully!!",
+      data: null,
+    });
+  });
+  clearChat = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    const participantId = req.params
+      ?.participantId as unknown as Types.ObjectId;
+    await ChatService.clearChat(chatId, participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Chat cleared successfully!!",
+      data: null,
+    });
+  });
+  restoreClearChat = this.catchAsync(async (req: Request, res: Response) => {
+    const chatId = req.params?.chatId as unknown as Types.ObjectId;
+    const participantId = req.params
+      ?.participantId as unknown as Types.ObjectId;
+    await ChatService.restoreClearChat(chatId, participantId);
+    this.apiResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Chat restored successfully!!",
       data: null,
     });
   });

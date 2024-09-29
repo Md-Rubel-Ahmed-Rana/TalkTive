@@ -20,12 +20,37 @@ const socketConnection = (io) => {
             yield user_service_1.UserService.makeOnlineStatusActive(userId);
             // Notify other users that this user is online
             socket.broadcast.emit("user-status", { userId, status: "online" });
-            // Send a new message to a specific user room
-            socket.on("send-message", (targetUserId, message) => {
-                var _a;
-                io.to(targetUserId).emit("new-message", message);
+            // start-typing-message event
+            socket.on("start-typing-message", ({ chatId, receiver, sender }) => {
+                socket.broadcast.emit("start-typing-message", {
+                    chatId,
+                    receiver,
+                    sender,
+                });
+            });
+            socket.on("stop-typing-message", ({ chatId, receiver, sender }) => {
+                socket.broadcast.emit("stop-typing-message", {
+                    chatId,
+                    receiver,
+                    sender,
+                });
+            });
+            // Send a new message
+            socket.on("send-message", (message) => {
+                socket.broadcast.emit("new-message", message);
                 io.emit("chat-updated");
-                console.log(`Message sent from ${(_a = message === null || message === void 0 ? void 0 : message.sender) === null || _a === void 0 ? void 0 : _a.id} to user ${targetUserId}`);
+            });
+            // Send edited message
+            socket.on("edited-message", (message) => {
+                console.log("Got edited message", message);
+                socket.broadcast.emit("edited-message", message);
+                io.emit("chat-updated");
+            });
+            // Send edited message
+            socket.on("deleted-message", (messageId) => {
+                console.log("Got deleted message", messageId);
+                socket.broadcast.emit("deleted-message", messageId);
+                io.emit("chat-updated");
             });
             // Handle user-disconnect event
             socket.on("user-disconnect", (disconnectedUser) => __awaiter(void 0, void 0, void 0, function* () {
