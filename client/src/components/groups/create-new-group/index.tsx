@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   IconButton,
   styled,
   TextField,
@@ -22,7 +23,6 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import { useAddNewChatMutation } from "@/features/chat";
 import toast from "react-hot-toast";
-import SmallLoaderSpinner from "../../shared/SmallLoaderSpinner";
 import { useRouter } from "next/router";
 
 const ImagePreviewContainer = styled("div")({
@@ -241,10 +241,7 @@ const CreateNewGroup = () => {
           fullWidth
         >
           {isLoading ? (
-            <Typography className="flex items-center gap-2" component={"p"}>
-              <Typography component={"span"}>Creating</Typography>
-              <SmallLoaderSpinner />
-            </Typography>
+            <CircularProgress size={24} color="inherit" />
           ) : (
             "Create group"
           )}

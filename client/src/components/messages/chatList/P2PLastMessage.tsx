@@ -6,6 +6,7 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { Typography } from "@mui/material";
 
 type Props = {
   lastMessage: IGetLastMessage;
@@ -17,7 +18,7 @@ const LastMessage = ({ lastMessage }: Props) => {
   return (
     <>
       {lastMessage?.content ? (
-        <p>
+        <Typography component={"p"}>
           {lastMessage?.status === "sent" ? (
             <DoneIcon className="text-md text-blue-500" />
           ) : (
@@ -25,10 +26,14 @@ const LastMessage = ({ lastMessage }: Props) => {
               <DoneAllIcon className="text-md text-blue-500" />
             )
           )}
-          <small>{lastMessage?.content}</small>
-        </p>
+          <Typography component={"span"}>
+            {lastMessage?.content?.length > 20
+              ? `${lastMessage?.content?.slice(0, 20)} ...`
+              : lastMessage?.content}
+          </Typography>
+        </Typography>
       ) : (
-        <p>
+        <Typography component={"p"}>
           {lastMessage?.status === "sent" ? (
             <DoneIcon className="text-md text-blue-500" />
           ) : (
@@ -45,8 +50,8 @@ const LastMessage = ({ lastMessage }: Props) => {
           ) : (
             <DescriptionIcon />
           )}
-          <span>{lastMedia?.type}</span>
-        </p>
+          <Typography component={"span"}>{lastMedia?.type}</Typography>
+        </Typography>
       )}
     </>
   );

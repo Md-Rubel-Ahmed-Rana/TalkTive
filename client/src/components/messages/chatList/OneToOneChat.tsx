@@ -2,38 +2,93 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetChat } from "@/interfaces/chat.interface";
 import { IGetUser } from "@/interfaces/user.interface";
 import momentTimeFormat from "@/utils/momentTimeFormat";
-import { Avatar } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import { useRouter } from "next/router";
-import LastMessage from "../common/LastMessage";
+import LastMessage from "./P2PLastMessage";
+import CircleIcon from "@mui/icons-material/Circle";
+import { useReadMessagesMutation } from "@/features/message";
+import { useContext } from "react";
+import { SocketContext } from "@/context/SocketContext";
 
 type Props = {
   chat: IGetChat;
+  typingChats: string[];
 };
 
-const OneToOneChat = ({ chat }: Props) => {
+const OneToOneChat = ({ chat, typingChats }: Props) => {
+  const { socket } = useContext(SocketContext);
   const { data: userData } = useGetLoggedInUserQuery({});
   const user: IGetUser = userData?.data;
   const router = useRouter();
   const participant = chat?.participants?.filter(
     (participant) => participant?.id !== user?.id
   )[0];
+  const [readMessages] = useReadMessagesMutation();
 
-  const handleSelectChat = () => {
+  const isOnline = participant?.status === "online";
+
+  const handleSelectChat = async () => {
     const path = `/inbox/messages/chat/p2p?chatId=${chat?.id}&userId=${participant?.id}&userName=${participant?.name}&userEmail=${participant?.email}&userImage=${participant?.image}`;
     router.push(path);
+    if (chat?.unreadMessage > 0) {
+      await readMessages({ chatId: chat?.id, participantId: user?.id });
+      socket.emit("chat-updated");
+    }
   };
 
   return (
-    <div onClick={handleSelectChat} className="flex gap-2 w-full">
-      <Avatar src={participant?.image as string} />
-      <div className="w-full">
-        <h3 className="font-semibold">{participant?.name}</h3>
-        <p className="flex justify-between w-full">
-          <LastMessage lastMessage={chat?.lastMessage} />
-          <small>{momentTimeFormat(chat?.lastMessage?.createdAt)}</small>
-        </p>
-      </div>
-    </div>
+    <Box onClick={handleSelectChat} className="flex gap-2 w-full">
+      <Box component={"div"} className="relative">
+        {participant?.image ? (
+          <Avatar
+            className="ring-2 ring-inherit"
+            src={participant?.image as string}
+          />
+        ) : (
+          <Avatar className="ring-2 ring-inherit">
+            {participant?.name?.slice(0, 1).toUpperCase()}
+          </Avatar>
+        )}
+        <Box component={"span"} className="absolute bottom-0 right-1">
+          <CircleIcon
+            className={`text-sm  ${
+              isOnline ? "text-green-500" : "text-gray-500"
+            }`}
+          />
+        </Box>
+      </Box>
+
+      <Box className="w-full">
+        <Typography
+          component={"p"}
+          className="font-semibold flex justify-between"
+        >
+          <Typography component={"span"}>{participant?.name}</Typography>
+          {chat?.unreadMessage > 0 ? (
+            <Typography
+              component={"span"}
+              className="bg-green-500 rounded-full w-2 h-2 p-2 flex justify-center items-center"
+            >
+              <Typography component={"small"} className="text-xs">
+                {chat?.unreadMessage}
+              </Typography>
+            </Typography>
+          ) : null}
+        </Typography>
+        {typingChats?.includes(chat?.id) ? (
+          <Typography className="text-green-500 text-sm" component={"p"}>
+            Typing...
+          </Typography>
+        ) : (
+          <Typography component={"p"} className="flex justify-between w-full">
+            <LastMessage lastMessage={chat?.lastMessage} />
+            <Typography className="text-xs z-50" component={"small"}>
+              {momentTimeFormat(chat?.lastMessage?.createdAt)}
+            </Typography>
+          </Typography>
+        )}
+      </Box>
+    </Box>
   );
 };
 

@@ -1,23 +1,21 @@
 import { AudioCall, VideoCall } from "@/components/calls";
 import BackNavigationButton from "@/components/shared/BackNavigationButton";
+import { useGetSingleChatQuery } from "@/features/chat";
+import { IGetChat } from "@/interfaces/chat.interface";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Popover,
-} from "@mui/material";
+import { Box, Popover } from "@mui/material";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import DeleteChatButton from "../chatList/DeleteChatButton";
+import ClearChatButton from "../chatList/ClearChatButton";
+import RestoreClearChatButton from "../chatList/RestoreClearChatButton";
 
 const P2PActions = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { query } = useRouter();
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const chatId = query.chatId as string;
+  const chatId = query?.chatId as string;
+  const { data } = useGetSingleChatQuery(chatId);
+  const chat = data?.data as IGetChat;
 
   const handleOpen = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -26,28 +24,6 @@ const P2PActions = () => {
   const open = Boolean(anchorEl);
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleCloseConfirmDialog = () => {
-    setOpenConfirmDialog(false);
-    handleClose();
-  };
-
-  const handleClearChat = () => {
-    console.log(`Clearing chat for group: ${chatId}`);
-    handleCloseConfirmDialog();
-    toast.success("Feature unavailable. Stay with to get the feature.");
-    handleClose();
-  };
-
-  const handleOpenConfirmDialog = () => {
-    setOpenConfirmDialog(true);
-  };
-
-  const handleDeleteGroup = () => {
-    console.log(`Deleting chat: ${chatId}`);
-    toast.success("Feature unavailable. Stay with to get the feature.");
-    handleClose();
   };
 
   return (
@@ -87,35 +63,11 @@ const P2PActions = () => {
             </Box>
             <BackNavigationButton />
           </Box>
-          <Button
-            onClick={handleOpenConfirmDialog}
-            variant="outlined"
-            fullWidth
-          >
-            Clear chat
-          </Button>
-          <Button onClick={handleDeleteGroup} variant="outlined" fullWidth>
-            Delete chat
-          </Button>
+          <ClearChatButton chat={chat} />
+          <RestoreClearChatButton chat={chat} />
+          <DeleteChatButton chat={chat} />
         </Box>
       </Popover>
-      <Dialog
-        open={openConfirmDialog}
-        onClose={handleCloseConfirmDialog}
-        aria-labelledby="confirm-clear-chat"
-      >
-        <DialogTitle id="confirm-clear-chat">
-          Are you sure you want to clear the chat?
-        </DialogTitle>
-        <DialogActions>
-          <Button onClick={handleCloseConfirmDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClearChat} color="secondary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };

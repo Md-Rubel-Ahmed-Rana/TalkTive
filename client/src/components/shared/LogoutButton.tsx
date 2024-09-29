@@ -1,6 +1,6 @@
 import { useLogoutMutation } from "@/features/auth";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import toast from "react-hot-toast";
 const LogoutButton = () => {
   const [logout] = useLogoutMutation();
@@ -23,12 +23,12 @@ const LogoutButton = () => {
   };
   return (
     <Button
-      variant="text"
+      variant="outlined"
       onClick={handleLogout}
-      className="flex items-center justify-start gap-2 font-semibold w-full"
+      className="flex items-center gap-2 font-semibold w-full"
     >
       <LogoutIcon />
-      <small>Logout</small>
+      <Box component={"span"}>Logout</Box>
     </Button>
   );
 };

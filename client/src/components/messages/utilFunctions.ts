@@ -1,12 +1,14 @@
+import { IGetMessage } from "@/interfaces/message.interface";
+
 // Function to handle new messages
 export const handleNewMessage = (
-  data: any,
-  setRealTimeMessages: React.Dispatch<React.SetStateAction<any[]>>
+  data: IGetMessage,
+  setRealTimeMessages: React.Dispatch<React.SetStateAction<IGetMessage[]>>
 ) => {
-  setRealTimeMessages((prevMessages: any[]) => {
+  setRealTimeMessages((prevMessages: IGetMessage[]) => {
     // Check if the message is already in the state
     const isMessageExists = prevMessages.some(
-      (message) => message.id === data.id
+      (message) => message?.id === data?.id
     );
     if (!isMessageExists) {
       return [...prevMessages, data];
@@ -17,11 +19,11 @@ export const handleNewMessage = (
 
 // Function to handle updated messages
 export const handleUpdatedMessage = (
-  data: any,
-  setRealTimeMessages: React.Dispatch<React.SetStateAction<any[]>>
+  data: IGetMessage,
+  setRealTimeMessages: React.Dispatch<React.SetStateAction<IGetMessage[]>>
 ) => {
-  setRealTimeMessages((prevMessages: any[]) => {
-    const findIndex = prevMessages.findIndex(
+  setRealTimeMessages((prevMessages: IGetMessage[]) => {
+    const findIndex = prevMessages?.findIndex(
       (message) => message?.id === data?.id
     );
     if (findIndex !== -1) {
@@ -36,9 +38,9 @@ export const handleUpdatedMessage = (
 // Function to handle deleted messages
 export const handleDeletedMessage = (
   messageId: string,
-  setRealTimeMessages: React.Dispatch<React.SetStateAction<any[]>>
+  setRealTimeMessages: React.Dispatch<React.SetStateAction<IGetMessage[]>>
 ) => {
-  setRealTimeMessages((prevMessages: any[]) =>
-    prevMessages.filter((message) => message.id !== messageId)
+  setRealTimeMessages((prevMessages: IGetMessage[]) =>
+    prevMessages?.filter((message) => message?.id !== messageId)
   );
 };

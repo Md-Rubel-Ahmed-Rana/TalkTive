@@ -6,26 +6,29 @@ import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useDeleteMessageMutation } from "@/features/message";
 import SmallLoaderSpinner from "@/components/shared/SmallLoaderSpinner";
 import DangerousIcon from "@mui/icons-material/Dangerous";
+import { SocketContext } from "@/context/SocketContext";
 
 type Props = {
   message: IGetMessage;
 };
 const MessageDeleteButton = ({ message }: Props) => {
+  const { socket } = useContext(SocketContext);
   const [open, setOpen] = useState(false);
   const [deleteMessage, { isLoading }] = useDeleteMessageMutation();
 
   const handleDeleteMessage = async () => {
-    console.log({ messageId: message?.id });
     try {
       const result: any = await deleteMessage(message?.id);
+      console.log(result?.data?.data);
       if (result?.data?.statusCode === 200) {
         toast.success(result?.data?.message || "Your message deleted!");
         setOpen(false);
+        socket.emit("deleted-message", result?.data?.data);
       } else {
         toast.error(
           result?.data?.message ||

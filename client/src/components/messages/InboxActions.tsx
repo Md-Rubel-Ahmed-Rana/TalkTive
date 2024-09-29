@@ -6,12 +6,17 @@ import { useState } from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useRouter } from "next/router";
 import GroupsIcon from "@mui/icons-material/Groups";
+import LogoutButton from "../shared/LogoutButton";
+import HomeIcon from "@mui/icons-material/Home";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import DeletedChatList from "./chatList/DeletedChatList";
 
 const inboxActionId = "inbox-action-id";
 
 const InboxActions = () => {
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
+  const [showDeletedChats, setShowDeletedChats] = useState(false);
   const router = useRouter();
   const settingLink = `/user/settings/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
   const groupCreateLink = `/new-group/create/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
@@ -24,6 +29,10 @@ const InboxActions = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleNavigateToHome = () => {
+    router.push("/");
   };
 
   return (
@@ -60,6 +69,14 @@ const InboxActions = () => {
         <Box className="flex flex-col gap-2">
           <Button
             variant="outlined"
+            onClick={handleNavigateToHome}
+            className="flex items-center gap-2 w-full"
+          >
+            <HomeIcon className="cursor-pointer" />
+            <Typography>Home</Typography>
+          </Button>
+          <Button
+            variant="outlined"
             onClick={() => router.push(groupCreateLink)}
             className="flex items-center gap-2 w-full"
           >
@@ -74,8 +91,21 @@ const InboxActions = () => {
             <SettingsIcon className="cursor-pointer" />
             <Typography>Settings</Typography>
           </Button>
+          <Button
+            onClick={() => {
+              setShowDeletedChats(true);
+              handleClose();
+            }}
+            variant="outlined"
+            className="flex items-center gap-2 w-full"
+          >
+            <ChatBubbleIcon className="cursor-pointer" />
+            <Typography>Deleted chats</Typography>
+          </Button>
+          <LogoutButton />
         </Box>
       </Popover>
+      <DeletedChatList open={showDeletedChats} setOpen={setShowDeletedChats} />
     </>
   );
 };

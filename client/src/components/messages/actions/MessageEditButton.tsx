@@ -9,17 +9,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import SmallLoaderSpinner from "@/components/shared/SmallLoaderSpinner";
 import { useEditMessageMutation } from "@/features/message";
 import toast from "react-hot-toast";
+import { SocketContext } from "@/context/SocketContext";
 
 type Props = {
   message: IGetMessage;
 };
 
 const MessageEditButton = ({ message }: Props) => {
+  const { socket } = useContext(SocketContext);
   const [open, setOpen] = useState(false);
   const [editMessage, { isLoading }] = useEditMessageMutation();
   const [newContent, setNewContent] = useState(message?.content);
@@ -33,6 +35,7 @@ const MessageEditButton = ({ message }: Props) => {
       if (result?.data?.statusCode === 200) {
         toast.success(result?.data?.message || "Your message updated!");
         setOpen(false);
+        socket.emit("edited-message", result?.data?.data);
       } else {
         toast.error(
           result?.data?.message ||
@@ -73,7 +76,7 @@ const MessageEditButton = ({ message }: Props) => {
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Edit message
             </Typography>
-            <div className="my-4">
+            <Box className="my-4">
               <TextField
                 id="edit-message"
                 multiline
@@ -82,8 +85,8 @@ const MessageEditButton = ({ message }: Props) => {
                 fullWidth
                 onChange={(e) => setNewContent(e.target?.value)}
               />
-            </div>
-            <div className="flex justify-between items-center mt-5">
+            </Box>
+            <Box className="flex justify-between items-center mt-5">
               <Button
                 disabled={isLoading}
                 onClick={() => setOpen(false)}
@@ -105,7 +108,7 @@ const MessageEditButton = ({ message }: Props) => {
                   {isLoading ? <SmallLoaderSpinner /> : "Save changes"}
                 </Button>
               )}
-            </div>
+            </Box>
           </Box>
         </Fade>
       </Modal>

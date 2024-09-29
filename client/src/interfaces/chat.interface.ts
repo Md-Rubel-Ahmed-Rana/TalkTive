@@ -37,6 +37,7 @@ export type IGetChat = {
   groupDescription: string;
   groupRules: string[];
   admin: IGetUser;
+  unreadMessage: number;
   lastMessage: IGetLastMessage;
   createdAt: Date;
   updatedAt: Date;

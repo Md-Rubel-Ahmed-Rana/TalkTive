@@ -20,8 +20,14 @@ const messageApi = apiSlice.injectEndpoints({
       invalidatesTags: ["message", "chat"] as any,
     }),
     getMessagesByChatId: builder.query({
-      query: (chatId: string) => ({
-        url: `/message/${chatId}`,
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        url: `/message/${chatId}/${participantId}`,
       }),
       providesTags: ["message"] as any,
     }),
@@ -40,6 +46,19 @@ const messageApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["message"] as any,
     }),
+    readMessages: builder.mutation({
+      query: ({
+        chatId,
+        participantId,
+      }: {
+        chatId: string;
+        participantId: string;
+      }) => ({
+        method: "PATCH",
+        url: `/message/read/${chatId}/${participantId}`,
+      }),
+      invalidatesTags: ["message", "chat"] as any,
+    }),
   }),
 });
 
@@ -48,4 +67,5 @@ export const {
   useGetMessagesByChatIdQuery,
   useDeleteMessageMutation,
   useEditMessageMutation,
+  useReadMessagesMutation,
 } = messageApi;
