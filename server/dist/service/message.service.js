@@ -46,6 +46,7 @@ class Service {
     }
     sendMessage(receiver, data) {
         return __awaiter(this, void 0, void 0, function* () {
+            data.readBy = [data === null || data === void 0 ? void 0 : data.sender];
             if (data === null || data === void 0 ? void 0 : data.chatId) {
                 const result = yield message_model_1.Message.create(data);
                 const newMessage = yield result.populate("sender");

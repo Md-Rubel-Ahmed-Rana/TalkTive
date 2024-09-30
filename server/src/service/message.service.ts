@@ -38,6 +38,7 @@ class Service {
     receiver: Types.ObjectId,
     data: IMessage
   ): Promise<IGetMessage> {
+    data.readBy = [data?.sender];
     if (data?.chatId) {
       const result = await Message.create(data);
       const newMessage = await result.populate("sender");
