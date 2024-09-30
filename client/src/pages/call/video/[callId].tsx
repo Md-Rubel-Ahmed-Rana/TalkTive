@@ -1,7 +1,5 @@
 import VideoCallRoom from "@/components/calls/VideoCallRoom";
-import RootLayout from "@/layout";
 import GetHead from "@/utils/Head";
-import { ReactElement } from "react";
 
 const VideoCallPage = () => {
   return (
@@ -17,7 +15,3 @@ const VideoCallPage = () => {
 };
 
 export default VideoCallPage;
-
-VideoCallPage.getLayout = function (page: ReactElement) {
-  return <RootLayout>{page}</RootLayout>;
-};
