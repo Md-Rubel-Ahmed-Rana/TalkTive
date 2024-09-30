@@ -4,7 +4,7 @@ import P2PTopBar from "./P2PTopBar";
 
 const OneToOneMessages = () => {
   return (
-    <div className="h-screen lg:h-full w-full border flex flex-col justify-between">
+    <div className="h-screen lg:h-full w-full overflow-hidden border flex flex-col justify-between">
       <P2PTopBar />
       <P2PMessageContainer />
       <MessageForm />

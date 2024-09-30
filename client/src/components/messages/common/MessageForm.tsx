@@ -121,7 +121,7 @@ const MessageForm = () => {
         />
         <button
           className={`px-3 py-2 rounded-full lg:rounded-md ${
-            !isLoading || content || (files && files.length > 0)
+            !isLoading || content || (files && files?.length > 0)
               ? "bg-blue-500"
               : "bg-gray-500 cursor-not-allowed"
           }`}
