@@ -10,7 +10,7 @@ type Props = {
 
 const MessageMediaManager = ({ media }: Props) => {
   return (
-    <div>
+    <>
       {media?.map((file) => {
         if (file?.type === "image") {
           return <MessageImage image={file} key={file?.id} />;
@@ -25,7 +25,7 @@ const MessageMediaManager = ({ media }: Props) => {
           return <MessageDocumentViewer key={file?.id} document={file} />;
         }
       })}
-    </div>
+    </>
   );
 };
 

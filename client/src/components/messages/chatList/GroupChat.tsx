@@ -7,6 +7,7 @@ import momentTimeFormat from "@/utils/momentTimeFormat";
 import { Avatar, Box, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
+import { getSenderName } from "../utilFunctions";
 
 type Props = {
   chat: IGetChat;
@@ -64,7 +65,10 @@ const GroupChat = ({ chat }: Props) => {
   }, [chat?.id, chat?.participants, socket]);
 
   return (
-    <Box onClick={handleSelectChat} className="flex gap-2 w-full">
+    <Box
+      onClick={handleSelectChat}
+      className="flex gap-2 w-full overflow-hidden"
+    >
       {chat?.groupImage ? (
         <Avatar
           className="ring-2 ring-inherit"
@@ -75,45 +79,40 @@ const GroupChat = ({ chat }: Props) => {
           {chat?.groupName?.slice(0, 1).toUpperCase()}
         </Avatar>
       )}
-      <Box className="w-full">
-        <Box component={"div"} className="font-semibold flex justify-between">
+      <Box className="w-full overflow-hidden">
+        <Box
+          component={"div"}
+          className="font-semibold flex justify-between items-center"
+        >
           <Typography className="font-semibold">{chat?.groupName}</Typography>
-          {chat?.unreadMessage > 0 ? (
-            <Typography
-              component={"span"}
-              className="bg-green-500 rounded-full w-2 h-2 p-2 flex justify-center items-center"
-            >
-              <Typography component={"small"} className="text-xs">
-                {chat?.unreadMessage}
-              </Typography>
-            </Typography>
-          ) : null}
+          <Typography className="text-xs" component={"small"}>
+            {momentTimeFormat(chat?.lastMessage?.createdAt)}
+          </Typography>
         </Box>
         {lastTypingUser && lastTypingUser?.id ? (
           <Typography className="text-green-500 text-sm">{`${lastTypingUser?.name} is typing...`}</Typography>
         ) : (
           <>
             {chat?.lastMessage && chat?.lastMessage?.id ? (
-              <Box className="flex justify-between w-full">
+              <Box className="flex justify-between w-full overflow-hidden">
                 <Typography
-                  component={"p"}
-                  className="flex items-center justify-between gap-2"
+                  component={"span"}
+                  className="text-ellipsis truncate"
                 >
+                  {`${getSenderName(sender?.name as string)} : ${
+                    chat?.lastMessage?.content
+                  }`}
+                </Typography>
+                {chat?.unreadMessage > 0 ? (
                   <Typography
-                    className="text-xs whitespace-nowrap overflow-hidden text-ellipsis block"
-                    component={"small"}
+                    component={"span"}
+                    className="bg-green-500 rounded-full w-2 h-2 p-2 flex justify-center items-center"
                   >
-                    {sender?.name}:
+                    <Typography component={"small"} className="text-xs">
+                      {chat?.unreadMessage}
+                    </Typography>
                   </Typography>
-                  <Typography component={"span"}>
-                    {chat?.lastMessage?.content?.length > 10
-                      ? `${chat?.lastMessage?.content?.slice(0, 10)} ...`
-                      : chat?.lastMessage?.content}
-                  </Typography>
-                </Typography>
-                <Typography className="text-xs z-50" component={"small"}>
-                  {momentTimeFormat(chat?.lastMessage?.createdAt)}
-                </Typography>
+                ) : null}
               </Box>
             ) : (
               <Typography>No message</Typography>

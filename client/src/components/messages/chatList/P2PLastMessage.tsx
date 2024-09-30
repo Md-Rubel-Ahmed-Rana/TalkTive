@@ -6,7 +6,7 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 type Props = {
   lastMessage: IGetLastMessage;
@@ -16,9 +16,9 @@ const LastMessage = ({ lastMessage }: Props) => {
   const lastMedia: IGetMedia =
     lastMessage?.media && lastMessage?.media[lastMessage?.media?.length - 1];
   return (
-    <>
+    <Box component={"div"} className="overflow-hidden">
       {lastMessage?.content ? (
-        <Typography component={"p"}>
+        <Typography component={"p"} className="flex items-center">
           {lastMessage?.status === "sent" ? (
             <DoneIcon className="text-md text-blue-500" />
           ) : (
@@ -26,10 +26,8 @@ const LastMessage = ({ lastMessage }: Props) => {
               <DoneAllIcon className="text-md text-blue-500" />
             )
           )}
-          <Typography component={"span"}>
-            {lastMessage?.content?.length > 20
-              ? `${lastMessage?.content?.slice(0, 20)} ...`
-              : lastMessage?.content}
+          <Typography component={"span"} className="text-ellipsis truncate">
+            {lastMessage?.content}
           </Typography>
         </Typography>
       ) : (
@@ -53,7 +51,7 @@ const LastMessage = ({ lastMessage }: Props) => {
           <Typography component={"span"}>{lastMedia?.type}</Typography>
         </Typography>
       )}
-    </>
+    </Box>
   );
 };
 

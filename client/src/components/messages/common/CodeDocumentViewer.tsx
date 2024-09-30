@@ -6,6 +6,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import DoneIcon from "@mui/icons-material/Done";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { codeViewerStylesMaterialOceanic } from "@/utils/codeViewerStyles";
+import { Box, Button, Typography } from "@mui/material";
 
 const getLanguage = (extension: string) => {
   const languageMap: { [key: string]: string } = {
@@ -50,36 +51,56 @@ const CodeDocumentViewer = ({ document }: Props) => {
   };
 
   return (
-    <div>
+    <Box component={"div"}>
       {docContent ? (
-        <div className="relative">
-          <button
+        <Box component={"div"} className="relative">
+          <Button
+            variant="outlined"
             className="absolute right-1 top-1 py-1 px-2 rounded-md z-50 text-white bg-purple-700"
             onClick={handleCopy}
           >
             {isCodeCopied ? (
-              <span className="flex gap-1 items-center">
+              <Typography
+                component={"span"}
+                className="flex gap-1 items-center"
+              >
                 <DoneIcon className="text-sm" />
-                <small>Copied</small>
-              </span>
+                <Typography className="text-xs" component={"small"}>
+                  Copied
+                </Typography>
+              </Typography>
             ) : (
-              <span className="flex gap-1 items-center">
+              <Typography
+                component={"span"}
+                className="flex gap-1 items-center"
+              >
                 <ContentCopyIcon className="text-sm" />
-                <small>Copy Code</small>
-              </span>
+                <Typography className="text-xs" component={"small"}>
+                  Copy Code
+                </Typography>
+              </Typography>
             )}
-          </button>
-          <SyntaxHighlighter
-            language={language}
-            style={codeViewerStylesMaterialOceanic}
+          </Button>
+          <Box
+            component={"div"}
+            className="relative max-h-[400px] overflow-auto border border-gray-300 rounded-md"
           >
-            {docContent}
-          </SyntaxHighlighter>
-        </div>
+            <SyntaxHighlighter
+              language={language}
+              style={codeViewerStylesMaterialOceanic}
+              showLineNumbers
+              wrapLongLines
+              wrapLines
+              className="m-0 p-0"
+            >
+              {docContent}
+            </SyntaxHighlighter>
+          </Box>
+        </Box>
       ) : (
         <p>Loading code content...</p>
       )}
-    </div>
+    </Box>
   );
 };
 
