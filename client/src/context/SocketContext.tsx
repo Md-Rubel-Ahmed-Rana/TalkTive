@@ -9,6 +9,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import IncomingCall from "@/components/calls/IncomingCall";
 
 export const SocketContext = createContext<any>(null);
 
@@ -22,6 +23,9 @@ const SocketProvider = ({ children }: Props) => {
   const [realTimeMessages, setRealTimeMessages] = useState<IGetMessage[]>([]);
   const [currentUser, setCurrentUser] = useState<IGetUser | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isIncomingCall, setIsIncomingCall] = useState(false);
+  const [callerInfo, setCallerInfo] = useState<any>({});
+  const [videoCallDataPack, setVideoCallDataPack] = useState(null);
 
   useEffect(() => {
     if (currentUser && currentUser?.id) {
@@ -52,6 +56,26 @@ const SocketProvider = ({ children }: Props) => {
     setIsDialogOpen(false);
   };
 
+  useEffect(() => {
+    socket?.on(
+      "receive-video-call",
+      (data: {
+        sender: { id: string; name: string; image: string };
+        receiver: string;
+        videoOffer: any;
+      }) => {
+        console.log("Got a video call", data);
+        setIsIncomingCall(true);
+        setCallerInfo(data?.sender);
+        setVideoCallDataPack(data?.videoOffer);
+      }
+    );
+
+    return () => {
+      socket?.off("receive-video-call");
+    };
+  }, [socket]);
+
   const values = {
     socket,
     realTimeMessages,
@@ -59,8 +83,6 @@ const SocketProvider = ({ children }: Props) => {
     currentUser,
     setCurrentUser,
   };
-
-  console.log("Hello, I am from Socket context");
 
   return (
     <SocketContext.Provider value={values}>
@@ -82,6 +104,15 @@ const SocketProvider = ({ children }: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      {
+        <IncomingCall
+          callerInfo={callerInfo}
+          isIncomingCall={isIncomingCall}
+          setIsIncomingCall={setIsIncomingCall}
+          currentUser={currentUser as IGetUser}
+          videoCallDataPack={videoCallDataPack}
+        />
+      }
     </SocketContext.Provider>
   );
 };

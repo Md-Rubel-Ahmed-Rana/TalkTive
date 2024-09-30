@@ -29,6 +29,7 @@ const P2PMessageContainer = () => {
 
   useEffect(() => {
     socket?.on("new-message", (newMessage: IGetMessage) => {
+      console.log("Got new message", newMessage);
       if (chatId === newMessage?.chatId) {
         handleNewMessage(newMessage, setRealTimeMessages);
       }

@@ -23,6 +23,7 @@ const socketConnection = (io: SocketIOServer) => {
           sender,
         });
       });
+
       socket.on("stop-typing-message", ({ chatId, receiver, sender }) => {
         socket.broadcast.emit("stop-typing-message", {
           chatId,
@@ -42,11 +43,37 @@ const socketConnection = (io: SocketIOServer) => {
         socket.broadcast.emit("edited-message", message);
         io.emit("chat-updated");
       });
+
       // Send edited message
       socket.on("deleted-message", (messageId: string) => {
         console.log("Got deleted message", messageId);
         socket.broadcast.emit("deleted-message", messageId);
         io.emit("chat-updated");
+      });
+
+      // video calling events
+      socket.on("send-video-call", (data) => {
+        console.log("receive-video-call");
+        socket.broadcast.emit("receive-video-call", data);
+      });
+
+      socket.on("decline-video-call", (data) => {
+        console.log("decline-video-call");
+        socket.broadcast.emit("decline-video-call", data);
+      });
+      socket.on("cancel-video-call", (data) => {
+        console.log("cancel-video-call");
+        socket.broadcast.emit("cancel-video-call", data);
+      });
+
+      socket.on("video-call-accepted", (data) => {
+        console.log("video-call-accepted");
+        socket.broadcast.emit("video-call-accepted", data);
+      });
+
+      socket.on("ice-candidate", (data) => {
+        console.log("Got ice-candidate");
+        socket.broadcast.emit("ice-candidate", data);
       });
 
       // Handle user-disconnect event

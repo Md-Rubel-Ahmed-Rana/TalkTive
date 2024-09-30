@@ -15,6 +15,7 @@ import { Button } from "@mui/material";
 import LogoutButton from "./LogoutButton";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "@/context/SocketContext";
+import { useRouter } from "next/router";
 
 const settings = [
   { name: "Profile", url: "/user/profile" },
@@ -31,6 +32,7 @@ const Navbar = () => {
   const { setCurrentUser } = useContext(SocketContext);
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
+  const router = useRouter();
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -99,22 +101,25 @@ const Navbar = () => {
                 className="mt-11"
               >
                 {settings.map((setting) => (
-                  <Link
-                    key={setting?.name}
-                    href={`${addParamsToPath(
-                      `${setting?.url}/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
-                    )}`}
-                  >
-                    <MenuItem onClick={handleCloseUserMenu}>
-                      <Typography className="text-center">
-                        {setting?.name}
-                      </Typography>
-                    </MenuItem>
-                  </Link>
+                  <MenuItem key={setting?.name} onClick={handleCloseUserMenu}>
+                    <Button
+                      className="w-full"
+                      variant="outlined"
+                      onClick={() =>
+                        router.push(
+                          `${addParamsToPath(
+                            `${setting?.url}/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
+                          )}`
+                        )
+                      }
+                    >
+                      {setting?.name}
+                    </Button>
+                  </MenuItem>
                 ))}
-                <Button>
+                <MenuItem onClick={handleCloseUserMenu}>
                   <LogoutButton />
-                </Button>
+                </MenuItem>
               </Menu>
             </Box>
           ) : (
