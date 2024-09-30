@@ -58,33 +58,38 @@ const OneToOneChat = ({ chat, typingChats }: Props) => {
         </Box>
       </Box>
 
-      <Box className="w-full">
-        <Typography
-          component={"p"}
-          className="font-semibold flex justify-between"
+      <Box className="w-full overflow-hidden">
+        <Box
+          component={"div"}
+          className="font-semibold flex justify-between items-center"
         >
-          <Typography component={"span"}>{participant?.name}</Typography>
-          {chat?.unreadMessage > 0 ? (
-            <Typography
-              component={"span"}
-              className="bg-green-500 rounded-full w-2 h-2 p-2 flex justify-center items-center"
-            >
-              <Typography component={"small"} className="text-xs">
-                {chat?.unreadMessage}
-              </Typography>
-            </Typography>
-          ) : null}
-        </Typography>
+          <Typography variant="inherit" component={"h2"}>
+            {participant?.name}
+          </Typography>
+          <Typography className="text-xs z-50" component={"small"}>
+            {momentTimeFormat(chat?.lastMessage?.createdAt)}
+          </Typography>
+        </Box>
         {typingChats?.includes(chat?.id) ? (
           <Typography className="text-green-500 text-sm" component={"p"}>
             Typing...
           </Typography>
         ) : (
-          <Typography component={"p"} className="flex justify-between w-full">
+          <Typography
+            component={"p"}
+            className="flex justify-between w-[99%] overflow-hidden"
+          >
             <LastMessage lastMessage={chat?.lastMessage} />
-            <Typography className="text-xs z-50" component={"small"}>
-              {momentTimeFormat(chat?.lastMessage?.createdAt)}
-            </Typography>
+            {chat?.unreadMessage > 0 ? (
+              <Typography
+                component={"span"}
+                className="bg-green-500 rounded-full w-2 h-2 p-2 flex justify-center items-center"
+              >
+                <Typography component={"small"} className="text-xs">
+                  {chat?.unreadMessage}
+                </Typography>
+              </Typography>
+            ) : null}
           </Typography>
         )}
       </Box>
