@@ -2,11 +2,15 @@ import { useRouter } from "next/router";
 import { useEffect, useContext, useState } from "react";
 import { SocketContext } from "@/context/SocketContext";
 import { Box, Button, Typography, Paper } from "@mui/material";
+import { useGetLoggedInUserQuery } from "@/features/auth";
+import { IGetUser } from "@/interfaces/user.interface";
 
 const VideoCallRoom = () => {
   const { socket } = useContext(SocketContext);
   const router = useRouter();
   const callId = router.query?.callId;
+  const { data: userData } = useGetLoggedInUserQuery({});
+  const user = userData?.data as IGetUser;
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [peerConnection, setPeerConnection] =
@@ -15,14 +19,13 @@ const VideoCallRoom = () => {
   useEffect(() => {
     if (!callId) return;
 
-    // Create a new peer connection
     const newPeerConnection = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
     setPeerConnection(newPeerConnection);
 
-    // Listen for ICE candidates and send them to the server
+    // Handle ICE candidate gathering and send them to the server
     newPeerConnection.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit("ice-candidate", {
@@ -32,11 +35,10 @@ const VideoCallRoom = () => {
       }
     };
 
-    // Handle incoming tracks
+    // Handle incoming tracks (remote stream)
     newPeerConnection.ontrack = (event) => {
       const [remoteStream] = event.streams;
       setRemoteStream(remoteStream);
-
       const remoteVideo = document.getElementById(
         "remoteVideo"
       ) as HTMLVideoElement;
@@ -45,11 +47,30 @@ const VideoCallRoom = () => {
       }
     };
 
-    // Listen for ICE candidates from the server and add them to the peer connection
+    // Listen for ICE candidates from the server
     socket.on("ice-candidate", (data: any) => {
       if (data?.candidate) {
         newPeerConnection.addIceCandidate(new RTCIceCandidate(data?.candidate));
       }
+    });
+
+    // Listen for an offer from the server
+    socket.on("offer", async (data: any) => {
+      await newPeerConnection.setRemoteDescription(
+        new RTCSessionDescription(data.offer)
+      );
+      const answer = await newPeerConnection.createAnswer();
+      await newPeerConnection.setLocalDescription(answer);
+
+      // Send the answer back to the server
+      socket.emit("answer", { answer, receiver: callId });
+    });
+
+    // Listen for an answer from the server
+    socket.on("answer", async (data: any) => {
+      await newPeerConnection.setRemoteDescription(
+        new RTCSessionDescription(data.answer)
+      );
     });
 
     // Get user media (camera + microphone)
@@ -69,21 +90,27 @@ const VideoCallRoom = () => {
         if (localVideo) {
           localVideo.srcObject = stream;
         }
-      })
-      .catch((error) => {
-        console.error("Error accessing media devices:", error);
+
+        // If the user is the caller, create an offer
+        if (callId === user?.id) {
+          newPeerConnection.createOffer().then((offer) => {
+            newPeerConnection.setLocalDescription(offer);
+            socket.emit("offer", { offer, receiver: callId });
+          });
+        }
       });
 
     return () => {
-      // Clean up the peer connection
       newPeerConnection.close();
       socket.off("ice-candidate");
+      socket.off("offer");
+      socket.off("answer");
     };
-  }, [callId, socket]);
+  }, [callId, socket, user?.id]);
 
   const handleEndCall = () => {
     if (peerConnection) {
-      peerConnection.close(); // Close the peer connection
+      peerConnection.close();
     }
     router.push("/"); // Navigate back to the home page
   };

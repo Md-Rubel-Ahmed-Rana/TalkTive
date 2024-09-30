@@ -52,7 +52,7 @@ const socketConnection = (io) => {
                 socket.broadcast.emit("deleted-message", messageId);
                 io.emit("chat-updated");
             });
-            // video calling events
+            // video calling events start here
             socket.on("send-video-call", (data) => {
                 console.log("receive-video-call");
                 socket.broadcast.emit("receive-video-call", data);
@@ -69,10 +69,24 @@ const socketConnection = (io) => {
                 console.log("video-call-accepted");
                 socket.broadcast.emit("video-call-accepted", data);
             });
+            // Handle ICE candidate event
             socket.on("ice-candidate", (data) => {
                 console.log("Got ice-candidate");
                 socket.broadcast.emit("ice-candidate", data);
             });
+            // Handle offer event for WebRTC
+            socket.on("offer", (data) => {
+                console.log("Received WebRTC offer");
+                // Emit the offer to the target user
+                socket.broadcast.emit("offer", data);
+            });
+            // Handle answer event for WebRTC
+            socket.on("answer", (data) => {
+                console.log("Received WebRTC answer");
+                // Emit the answer to the target user
+                socket.broadcast.emit("answer", data);
+            });
+            // video calling events end here
             // Handle user-disconnect event
             socket.on("user-disconnect", (disconnectedUser) => __awaiter(void 0, void 0, void 0, function* () {
                 console.log("User disconnected:", disconnectedUser);
