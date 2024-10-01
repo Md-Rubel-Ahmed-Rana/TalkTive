@@ -7,6 +7,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { codeViewerStylesMaterialOceanic } from "@/utils/codeViewerStyles";
 import { Box, Button, Typography } from "@mui/material";
+import CodeLoadingSkeleton from "@/components/skeletons/CodeLoadingSkeleton";
 
 const getLanguage = (extension: string) => {
   const languageMap: { [key: string]: string } = {
@@ -98,7 +99,7 @@ const CodeDocumentViewer = ({ document }: Props) => {
           </Box>
         </Box>
       ) : (
-        <p>Loading code content...</p>
+        <CodeLoadingSkeleton />
       )}
     </Box>
   );
