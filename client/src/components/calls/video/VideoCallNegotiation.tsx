@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const VideoCall = () => {
+const VideoCallNegotiation = () => {
   const { socket } = useContext(SocketContext);
   const [isVideoCalling, setIsVideoCalling] = useState(false);
   const { query, push } = useRouter();
@@ -27,7 +27,9 @@ const VideoCall = () => {
 
     socket.on("video-call-accepted", (data: any) => {
       setIsVideoCalling(false);
-      push(`/call/video/${user?.id}`);
+      push(
+        `/call/video/${user?.id}?sender=${user?.id}&receiver=${participantId}`
+      );
       toast.success(`${participant?.name} has accepted your call!`);
     });
 
@@ -131,4 +133,4 @@ const VideoCall = () => {
   );
 };
 
-export default VideoCall;
+export default VideoCallNegotiation;

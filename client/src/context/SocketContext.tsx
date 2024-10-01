@@ -9,7 +9,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import IncomingCall from "@/components/calls/IncomingCall";
+import IncomingVideoCall from "@/components/calls/video/IncomingVideoCall";
 
 export const SocketContext = createContext<any>(null);
 
@@ -25,7 +25,6 @@ const SocketProvider = ({ children }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isIncomingCall, setIsIncomingCall] = useState(false);
   const [callerInfo, setCallerInfo] = useState<any>({});
-  const [videoCallDataPack, setVideoCallDataPack] = useState(null);
 
   useEffect(() => {
     if (currentUser && currentUser?.id) {
@@ -67,7 +66,6 @@ const SocketProvider = ({ children }: Props) => {
         console.log("Got a video call", data);
         setIsIncomingCall(true);
         setCallerInfo(data?.sender);
-        setVideoCallDataPack(data?.videoOffer);
       }
     );
 
@@ -105,12 +103,11 @@ const SocketProvider = ({ children }: Props) => {
         </DialogActions>
       </Dialog>
       {
-        <IncomingCall
+        <IncomingVideoCall
           callerInfo={callerInfo}
           isIncomingCall={isIncomingCall}
           setIsIncomingCall={setIsIncomingCall}
           currentUser={currentUser as IGetUser}
-          videoCallDataPack={videoCallDataPack}
         />
       }
     </SocketContext.Provider>

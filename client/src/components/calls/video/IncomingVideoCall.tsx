@@ -9,16 +9,14 @@ type Props = {
   callerInfo: { id: string; name: string; image: string };
   isIncomingCall: boolean;
   currentUser: IGetUser;
-  videoCallDataPack: any;
   setIsIncomingCall: (value: boolean) => void;
 };
 
-const IncomingCall = ({
+const IncomingVideoCall = ({
   isIncomingCall,
   setIsIncomingCall,
   callerInfo,
   currentUser,
-  videoCallDataPack,
 }: Props) => {
   const { socket } = useContext(SocketContext);
   const router = useRouter();
@@ -49,7 +47,9 @@ const IncomingCall = ({
       },
       receiver: callerInfo?.id,
     });
-    router.push(`/call/video/${callerInfo?.id}`);
+    router.push(
+      `/call/video/${callerInfo?.id}?sender=${callerInfo?.id}&receiver=${currentUser?.id}`
+    );
     toast.success("You have accepted video call!");
   };
 
@@ -80,11 +80,19 @@ const IncomingCall = ({
         >
           {callerInfo?.name} is calling...
         </Typography>
-        <Box className="flex justify-center items-center w-full my-5">
+        <Box className="flex flex-col justify-center items-center w-full my-5">
           <Avatar
             src={callerInfo?.image}
             className="h-24 w-24 ring-2 rounded-full"
           />
+          <Typography
+            className="text-center"
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+          >
+            Video call
+          </Typography>
         </Box>
         <Box className="flex justify-between w-full gap-5 mt-5">
           <Button
@@ -107,4 +115,4 @@ const IncomingCall = ({
   );
 };
 
-export default IncomingCall;
+export default IncomingVideoCall;

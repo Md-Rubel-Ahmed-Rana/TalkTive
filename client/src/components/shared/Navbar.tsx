@@ -11,11 +11,12 @@ import MenuItem from "@mui/material/MenuItem";
 import Link from "next/link";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
-import { Button } from "@mui/material";
+import { Button, CircularProgress, LinearProgress } from "@mui/material";
 import LogoutButton from "./LogoutButton";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "@/context/SocketContext";
 import { useRouter } from "next/router";
+import DnsIcon from "@mui/icons-material/Dns";
 
 const settings = [
   { name: "Profile", url: "/user/profile" },
@@ -30,7 +31,7 @@ const addParamsToPath = (url: string): string => {
 
 const Navbar = () => {
   const { setCurrentUser } = useContext(SocketContext);
-  const { data: userData } = useGetLoggedInUserQuery({});
+  const { data: userData, isLoading } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
   const router = useRouter();
 
@@ -55,7 +56,7 @@ const Navbar = () => {
     <AppBar position="static" className="bg-blue-600 w-full">
       <Container maxWidth={false} className="px-1 lg:px-4">
         <Toolbar disableGutters className="flex justify-between items-center">
-          <div className="flex items-center">
+          <Box component={"div"} className="flex items-center">
             <Avatar
               alt="Logo"
               src="https://res.cloudinary.com/dy4qhabxk/image/upload/v1726682979/chat_favicon_fjgl8w.png"
@@ -70,73 +71,100 @@ const Navbar = () => {
             >
               Talktive
             </Typography>
-          </div>
-
-          {user?.id ? (
-            <Box className="flex-grow-0">
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} className="p-0">
-                  <Avatar
-                    alt="User Avatar"
-                    src={
-                      user?.image || "https://i.ibb.co/1MqspsL/user-Avater.png"
-                    }
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-                className="mt-11"
+          </Box>
+          {isLoading && (
+            <Box>
+              <Box
+                component={"div"}
+                className="flex items-center justify-between gap-2"
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting?.name} onClick={handleCloseUserMenu}>
-                    <Button
-                      className="w-full"
-                      variant="outlined"
-                      onClick={() =>
-                        router.push(
-                          `${addParamsToPath(
-                            `${setting?.url}/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
-                          )}`
-                        )
-                      }
-                    >
-                      {setting?.name}
-                    </Button>
-                  </MenuItem>
-                ))}
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <LogoutButton />
-                </MenuItem>
-              </Menu>
+                <DnsIcon />
+                <Typography className="text-xl font-semibold">
+                  Starting Server
+                </Typography>
+                <CircularProgress size={24} color="inherit" />
+              </Box>
+              <LinearProgress color="inherit" />
+              <Typography>Server is getting started...</Typography>
             </Box>
+          )}
+          {isLoading ? (
+            <Button variant="contained" className="bg-blue-400">
+              <CircularProgress size={24} color="inherit" />
+            </Button>
           ) : (
-            <div className="flex gap-2 items-center">
-              <Link
-                className="bg-transparent border-2 border-blue-400 px-3 py-1 rounded-md"
-                href="/login"
-              >
-                Login
-              </Link>
-              <Link
-                className="bg-transparent border-2 border-blue-400 px-3 py-1 rounded-md"
-                href="/register"
-              >
-                Register
-              </Link>
-            </div>
+            <>
+              {user?.id ? (
+                <Box className="flex-grow-0">
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} className="p-0">
+                      <Avatar
+                        alt="User Avatar"
+                        src={
+                          user?.image ||
+                          "https://i.ibb.co/1MqspsL/user-Avater.png"
+                        }
+                      />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                    className="mt-11"
+                  >
+                    {settings.map((setting) => (
+                      <MenuItem
+                        key={setting?.name}
+                        onClick={handleCloseUserMenu}
+                      >
+                        <Button
+                          className="w-full"
+                          variant="outlined"
+                          onClick={() =>
+                            router.push(
+                              `${addParamsToPath(
+                                `${setting?.url}/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
+                              )}`
+                            )
+                          }
+                        >
+                          {setting?.name}
+                        </Button>
+                      </MenuItem>
+                    ))}
+                    <MenuItem onClick={handleCloseUserMenu}>
+                      <LogoutButton />
+                    </MenuItem>
+                  </Menu>
+                </Box>
+              ) : (
+                <Box component={"div"} className="flex gap-2 items-center">
+                  <Link
+                    className="bg-transparent border-2 border-blue-400 px-3 py-1 rounded-md"
+                    href="/login"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    className="bg-transparent border-2 border-blue-400 px-3 py-1 rounded-md"
+                    href="/register"
+                  >
+                    Register
+                  </Link>
+                </Box>
+              )}
+            </>
           )}
         </Toolbar>
       </Container>

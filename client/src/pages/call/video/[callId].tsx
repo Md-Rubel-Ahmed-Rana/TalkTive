@@ -1,4 +1,4 @@
-import VideoCallRoom from "@/components/calls/VideoCallRoom";
+import VideoCallRoom from "@/components/calls/video/VideoCallRoom";
 import GetHead from "@/utils/Head";
 
 const VideoCallPage = () => {

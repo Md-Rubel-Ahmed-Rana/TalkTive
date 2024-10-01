@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useContext, useState } from "react";
 import { SocketContext } from "@/context/SocketContext";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import {
@@ -10,12 +10,14 @@ import {
   Mic,
   VideocamOff,
   Videocam,
-} from "@mui/icons-material"; // Icons for actions
+} from "@mui/icons-material";
 
 const VideoCallRoom = () => {
   const { socket } = useContext(SocketContext);
   const router = useRouter();
-  const callId = router.query?.callId;
+  const sender = router.query?.sender as string;
+  const receiver = router.query?.receiver as string;
+  const callId = router.query?.callId as string;
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -111,7 +113,11 @@ const VideoCallRoom = () => {
     if (peerConnection) {
       peerConnection.close();
     }
-    router.push("/");
+    socket.emit("video-call-end", {
+      sender: user?.id,
+      receiver: sender === user?.id ? receiver : user?.id,
+    });
+    // router.push("/");
   };
 
   const toggleAudio = () => {
