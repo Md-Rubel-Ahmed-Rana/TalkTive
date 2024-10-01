@@ -1,5 +1,5 @@
-import SearchUserList from "@/components/messages/SearchUserList";
-import ChatList from "@/components/messages/chatList";
+import SearchUserList from "@/components/chatList/SearchUserList";
+import ChatList from "@/components/chatList";
 import InboxActions from "@/components/messages/InboxActions";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 

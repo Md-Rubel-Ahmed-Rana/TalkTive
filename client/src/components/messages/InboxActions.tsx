@@ -9,7 +9,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import LogoutButton from "../shared/LogoutButton";
 import HomeIcon from "@mui/icons-material/Home";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import DeletedChatList from "./chatList/DeletedChatList";
+import DeletedChatList from "../chatList/DeletedChatList";
 
 const inboxActionId = "inbox-action-id";
 

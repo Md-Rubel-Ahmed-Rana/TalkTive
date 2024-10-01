@@ -1,6 +1,6 @@
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import SearchUserList from "./SearchUserList";
-import ChatList from "./chatList";
+import SearchUserList from "../chatList/SearchUserList";
+import ChatList from "../chatList";
 import InboxActions from "./InboxActions";
 import { Box, Typography } from "@mui/material";
 
