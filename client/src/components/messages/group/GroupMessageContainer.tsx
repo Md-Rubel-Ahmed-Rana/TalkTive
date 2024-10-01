@@ -6,12 +6,13 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import { useContext, useEffect, useRef } from "react";
 import { SocketContext } from "@/context/SocketContext";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import {
   handleDeletedMessage,
   handleNewMessage,
   handleUpdatedMessage,
 } from "../utilFunctions";
+import MessageSkeleton from "@/components/skeletons/MessageSkeleton";
 
 const GroupMessageContainer = () => {
   const { socket, realTimeMessages, setRealTimeMessages } =
@@ -66,11 +67,30 @@ const GroupMessageContainer = () => {
   }, [realTimeMessages, socket, setRealTimeMessages]);
 
   return (
-    <Box ref={messagesContainerRef} className="h-full overflow-y-auto p-2">
-      {realTimeMessages?.map((message: IGetMessage) => (
-        <MessageCard key={message?.id} message={message} />
-      ))}
-    </Box>
+    <>
+      {isLoading ? (
+        <MessageSkeleton />
+      ) : (
+        <>
+          {realTimeMessages?.length > 0 ? (
+            <Box
+              ref={messagesContainerRef}
+              className="h-full overflow-y-auto p-2"
+            >
+              {realTimeMessages?.map((message: IGetMessage) => (
+                <MessageCard key={message?.id} message={message} />
+              ))}
+            </Box>
+          ) : (
+            <Box className="h-full flex justify-center items-center overflow-y-auto p-2">
+              <Typography className="font-semibold text-xl text-gray-500">
+                No messages
+              </Typography>
+            </Box>
+          )}
+        </>
+      )}
+    </>
   );
 };
 
