@@ -1,72 +1,70 @@
 import { SocketContext } from "@/context/SocketContext";
+import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import { Avatar, Box, Button, Modal, Typography } from "@mui/material";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 
 type Props = {
-  callerInfo: { id: string; name: string; image: string };
-  isIncomingCall: boolean;
+  isCalling: boolean;
+  setIsCalling: (value: boolean) => void;
+  sender: { id: string; name: string; image: string };
   currentUser: IGetUser;
-  setIsIncomingCall: (value: boolean) => void;
 };
 
-const IncomingVideoCall = ({
-  isIncomingCall,
-  setIsIncomingCall,
-  callerInfo,
+const IncomingAudioCall = ({
+  sender,
+  isCalling,
+  setIsCalling,
   currentUser,
 }: Props) => {
   const { socket } = useContext(SocketContext);
   const router = useRouter();
-
   const handleCloseModal = () => {
-    setIsIncomingCall(false);
+    setIsCalling(false);
   };
 
   const handleDeclineCall = () => {
-    setIsIncomingCall(false);
-    socket.emit("decline-video-call", {
+    handleCloseModal();
+    socket.emit("decline-p2p-audio-call", {
       sender: {
         id: currentUser?.id,
         name: currentUser?.name,
         image: currentUser?.image,
       },
-      receiver: callerInfo?.id,
+      receiver: sender?.id,
     });
   };
 
-  const handleReceiveCall = async () => {
-    setIsIncomingCall(false);
-    socket.emit("video-call-accepted", {
+  const handleReceiveCall = () => {
+    handleCloseModal();
+    socket.emit("receive-p2p-audio-call", {
       sender: {
         id: currentUser?.id,
         name: currentUser?.name,
         image: currentUser?.image,
       },
-      receiver: callerInfo?.id,
+      receiver: sender?.id,
     });
-    router.push(
-      `/call/video/${callerInfo?.id}?sender=${callerInfo?.id}&receiver=${currentUser?.id}`
-    );
-    toast.success("You have accepted video call!");
+    const callRoomPath = `/call/audio/p2p?sender=${sender?.id}&receiver=${currentUser?.id}`;
+    router.push(callRoomPath);
   };
 
   useEffect(() => {
-    socket.on("cancel-video-call", () => {
-      setIsIncomingCall(false);
-      toast.success(`${callerInfo?.name} has cancelled the call!`);
+    socket.on("cancel-p2p-audio-call", () => {
+      setIsCalling(false);
+      toast.success(`${sender?.name} has cancelled the call!`);
     });
 
     return () => {
-      socket.off("cancel-video-call");
+      socket.off("cancel-p2p-audio-call");
     };
-  }, [callerInfo?.name, setIsIncomingCall, socket]);
+  }, [sender?.name, setIsCalling, socket]);
 
   return (
     <Modal
-      open={isIncomingCall}
+      open={isCalling}
       onClose={handleCloseModal}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
@@ -78,14 +76,14 @@ const IncomingVideoCall = ({
           variant="h6"
           component="h2"
         >
-          {callerInfo?.name} is calling...
+          {sender?.name} is calling...
         </Typography>
         <Box className="flex flex-col justify-center items-center w-full my-5">
           <Avatar
-            src={callerInfo?.image}
+            src={sender?.image}
             className="h-24 w-24 ring-2 rounded-full mb-4"
           />
-          <Button variant="outlined">Video call</Button>
+          <Button variant="outlined">Audio call</Button>
         </Box>
         <Box className="flex justify-between w-full gap-5 mt-5">
           <Button
@@ -108,4 +106,4 @@ const IncomingVideoCall = ({
   );
 };
 
-export default IncomingVideoCall;
+export default IncomingAudioCall;

@@ -89,8 +89,101 @@ const socketConnection = (io: SocketIOServer) => {
       socket.on("video-call-end", (data) => {
         socket.to(data?.receiver).emit("video-call-end", data);
       });
-
       // video calling events end here
+
+      // one-to-one audio call events start
+      socket.on(
+        "offer-p2p-audio-call",
+        (data: {
+          sender: { id: string; name: string; image: string };
+          receiver: string;
+        }) => {
+          socket.to(data?.receiver).emit("offer-p2p-audio-call", data);
+        }
+      );
+
+      socket.on(
+        "cancel-p2p-audio-call",
+        (data: {
+          sender: { id: string; name: string; image: string };
+          receiver: string;
+        }) => {
+          console.log("cancel-p2p-audio-call", data);
+          socket.to(data?.receiver).emit("cancel-p2p-audio-call", data);
+        }
+      );
+
+      socket.on(
+        "decline-p2p-audio-call",
+        (data: {
+          sender: { id: string; name: string; image: string };
+          receiver: string;
+        }) => {
+          console.log("decline-p2p-audio-call", data);
+          socket.to(data?.receiver).emit("decline-p2p-audio-call", data);
+        }
+      );
+      socket.on(
+        "receive-p2p-audio-call",
+        (data: {
+          sender: { id: string; name: string; image: string };
+          receiver: string;
+        }) => {
+          console.log("receive-p2p-audio-call", data);
+          socket.to(data?.receiver).emit("receive-p2p-audio-call", data);
+        }
+      );
+
+      socket.on(
+        "p2p-audio-ice-candidate",
+        (data: { candidate: RTCIceCandidateInit; receiver: string }) => {
+          console.log("Received ICE candidate", data.candidate);
+          socket.to(data.receiver).emit("p2p-audio-ice-candidate", data);
+        }
+      );
+
+      socket.on(
+        "offer-p2p-audio-call",
+        (data: {
+          offer: RTCSessionDescriptionInit;
+          sender: { id: string; name: string; image: string };
+          receiver: string;
+        }) => {
+          console.log(
+            "Sending offer-p2p-audio-call to receiver",
+            data.receiver
+          );
+          socket.to(data.receiver).emit("offer-p2p-audio-call", data);
+        }
+      );
+
+      socket.on(
+        "answer-p2p-audio-call",
+        (data: {
+          answer: RTCSessionDescriptionInit;
+          sender: { id: string; name: string; image: string };
+          receiver: string;
+        }) => {
+          console.log(
+            "Sending answer-p2p-audio-call to receiver",
+            data.receiver
+          );
+          socket.to(data.receiver).emit("answer-p2p-audio-call", data);
+        }
+      );
+
+      socket.on(
+        "end-p2p-audio-call",
+        (data: {
+          sender: { id: string; name: string; image: string };
+          receiver: string;
+        }) => {
+          console.log("End call request from", data.sender.name);
+          socket.to(data.receiver).emit("end-p2p-audio-call", data);
+        }
+      );
+
+      // one-to-one audio call events end
 
       // Handle user-disconnect event
       socket.on("user-disconnect", async (disconnectedUser) => {
