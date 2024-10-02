@@ -9,7 +9,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import IncomingVideoCall from "@/components/calls/video/IncomingVideoCall";
+import { IncomingVideoCall } from "@/components/calls/video/one-to-one";
 
 export const SocketContext = createContext<any>(null);
 

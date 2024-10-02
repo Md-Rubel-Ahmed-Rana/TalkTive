@@ -2,13 +2,14 @@ import { useGetSingleChatQuery } from "@/features/chat";
 import { IGetChat } from "@/interfaces/chat.interface";
 import { useRouter } from "next/router";
 import ParticipantList from "./ParticipantList";
-import { Avatar, Box, Button, Typography } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import GroupActions from "./GroupActions";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "@/context/SocketContext";
 import { IGetUser } from "@/interfaces/user.interface";
 import MessageTopBarSkeleton from "@/components/skeletons/MessageTopBarSkeleton";
-import { AudioCall, VideoCall } from "@/components/calls";
+import { GroupVideoCallNegotiation } from "@/components/calls/video/group";
+import { GroupAudioCall } from "@/components/calls/audio/group";
 
 const GroupTopBar = () => {
   const { socket } = useContext(SocketContext);
@@ -85,8 +86,8 @@ const GroupTopBar = () => {
           </Box>
           <Box className="hidden lg:block">
             <Box className="flex gap-3">
-              <AudioCall />
-              <VideoCall />
+              <GroupAudioCall />
+              <GroupVideoCallNegotiation />
               <GroupActions isButton={true} chatId={chat?.id} />
             </Box>
           </Box>

@@ -6,8 +6,9 @@ import P2PActions from "./P2PActions";
 import ParticipantStatus from "./ParticipantStatus";
 import { useContext, useEffect } from "react";
 import { SocketContext } from "@/context/SocketContext";
-import { AudioCall, VideoCall } from "@/components/calls";
 import MessageTopBarSkeleton from "@/components/skeletons/MessageTopBarSkeleton";
+import { VideoCallNegotiation } from "@/components/calls/video/one-to-one";
+import { P2PAudioCall } from "@/components/calls/audio/one-to-one";
 
 const P2PTopBar = () => {
   const { socket } = useContext(SocketContext);
@@ -67,8 +68,8 @@ const P2PTopBar = () => {
           </Box>
           <Box component={"div"} className="hidden lg:block">
             <Box component={"div"} className="flex gap-3">
-              <AudioCall />
-              <VideoCall />
+              <P2PAudioCall />
+              <VideoCallNegotiation />
               <Button variant="outlined">
                 <P2PActions />
               </Button>

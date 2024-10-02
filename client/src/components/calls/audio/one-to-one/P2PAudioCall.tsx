@@ -2,7 +2,7 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import { Button } from "@mui/material";
 import toast from "react-hot-toast";
 
-const AudioCall = () => {
+const P2PAudioCall = () => {
   const handleMakeCall = () => {
     toast.success(
       "Feature unavailable. Stay with us to get the calling feature!. Thanks."
@@ -15,4 +15,4 @@ const AudioCall = () => {
   );
 };
 
-export default AudioCall;
+export default P2PAudioCall;

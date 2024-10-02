@@ -15,7 +15,8 @@ import LeaveGroupButton from "../../groups/common/LeaveGroupButton";
 import ClearChatButton from "../../chatList/ClearChatButton";
 import RestoreClearChatButton from "../../chatList/RestoreClearChatButton";
 import DeleteChatButton from "../../chatList/DeleteChatButton";
-import { AudioCall, VideoCall } from "@/components/calls";
+import { GroupAudioCall } from "@/components/calls/audio/group";
+import { GroupVideoCallNegotiation } from "@/components/calls/video/group";
 
 type Props = {
   isButton?: boolean;
@@ -114,8 +115,8 @@ const GroupActions = ({ isButton, chatId }: Props) => {
         <Box className="flex flex-col gap-2 w-full">
           <Box className="block lg:hidden">
             <Box className="flex justify-between gap-1 mb-2">
-              <AudioCall />
-              <VideoCall />
+              <GroupAudioCall />
+              <GroupVideoCallNegotiation />
             </Box>
             <BackNavigationButton />
           </Box>
