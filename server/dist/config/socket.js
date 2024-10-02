@@ -54,20 +54,20 @@ const socketConnection = (io) => {
             });
             // video calling events start here
             socket.on("send-video-call", (data) => {
-                console.log("receive-video-call");
-                socket.broadcast.emit("receive-video-call", data);
+                console.log("receive-video-call", data);
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("receive-video-call", data);
             });
             socket.on("decline-video-call", (data) => {
                 console.log("decline-video-call");
-                socket.broadcast.emit("decline-video-call", data);
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("decline-video-call", data);
             });
             socket.on("cancel-video-call", (data) => {
                 console.log("cancel-video-call");
-                socket.broadcast.emit("cancel-video-call", data);
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("cancel-video-call", data);
             });
             socket.on("video-call-accepted", (data) => {
                 console.log("video-call-accepted");
-                socket.broadcast.emit("video-call-accepted", data);
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-call-accepted", data);
             });
             // Handle ICE candidate event
             socket.on("ice-candidate", (data) => {
@@ -76,15 +76,13 @@ const socketConnection = (io) => {
             });
             // Handle offer event for WebRTC
             socket.on("offer", (data) => {
-                console.log("Received WebRTC offer");
-                // Emit the offer to the target user
                 socket.broadcast.emit("offer", data);
             });
-            // Handle answer event for WebRTC
             socket.on("answer", (data) => {
-                console.log("Received WebRTC answer");
-                // Emit the answer to the target user
                 socket.broadcast.emit("answer", data);
+            });
+            socket.on("video-call-end", (data) => {
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-call-end", data);
             });
             // video calling events end here
             // Handle user-disconnect event
