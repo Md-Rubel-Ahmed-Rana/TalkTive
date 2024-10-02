@@ -126,9 +126,18 @@ const GroupActions = ({ isButton, chatId }: Props) => {
           >
             Group Details
           </Button>
-          <ClearChatButton chat={chat} />
-          <RestoreClearChatButton chat={chat} />
-          <DeleteChatButton chat={chat} />
+          <ClearChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
+          <RestoreClearChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
+          <DeleteChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
           {chat?.admin?.id === user?.id ? (
             <>
               <Button onClick={handleAddMember} variant="outlined" fullWidth>

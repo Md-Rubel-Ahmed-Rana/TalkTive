@@ -12,12 +12,14 @@ import {
 import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import ServerActionLoadingModal from "../shared/ServerActionLoadingModal";
 
 type Props = {
   chat: IGetChat;
+  options?: Record<string, any>;
 };
 
-const DeleteChatButton = ({ chat }: Props) => {
+const DeleteChatButton = ({ chat, options }: Props) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
@@ -26,6 +28,9 @@ const DeleteChatButton = ({ chat }: Props) => {
   const inboxLink = `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
 
   const handleDeleteChat = async () => {
+    if (options && options?.closeDropdown) {
+      options.closeDropdown();
+    }
     handleCloseConfirmDialog();
     const failedMessage = "Failed to delete chat. Try again!";
     try {
@@ -86,6 +91,12 @@ const DeleteChatButton = ({ chat }: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      {isLoading && (
+        <ServerActionLoadingModal
+          open={isLoading}
+          actionText="Deleting your chat"
+        />
+      )}
     </>
   );
 };

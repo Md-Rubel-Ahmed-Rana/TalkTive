@@ -73,7 +73,7 @@ const Navbar = () => {
             </Typography>
           </Box>
           {isLoading && (
-            <Box>
+            <Box className="hidden lg:block" component={"div"}>
               <Box
                 component={"div"}
                 className="flex items-center justify-between gap-2"

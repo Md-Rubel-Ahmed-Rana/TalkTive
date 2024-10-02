@@ -6,7 +6,6 @@ import P2PActions from "./P2PActions";
 import ParticipantStatus from "./ParticipantStatus";
 import { useContext, useEffect } from "react";
 import { SocketContext } from "@/context/SocketContext";
-import toast from "react-hot-toast";
 import { AudioCall, VideoCall } from "@/components/calls";
 import MessageTopBarSkeleton from "@/components/skeletons/MessageTopBarSkeleton";
 
@@ -28,9 +27,7 @@ const P2PTopBar = () => {
   useEffect(() => {
     socket?.on("user-status", (data: { userId: string; status: string }) => {
       if (participant?.id === data?.userId) {
-        refetch().then(() => {
-          toast.success("Participant status updated");
-        });
+        refetch().then(() => {});
       }
     });
 

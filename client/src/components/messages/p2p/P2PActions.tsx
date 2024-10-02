@@ -63,9 +63,18 @@ const P2PActions = () => {
             </Box>
             <BackNavigationButton />
           </Box>
-          <ClearChatButton chat={chat} />
-          <RestoreClearChatButton chat={chat} />
-          <DeleteChatButton chat={chat} />
+          <ClearChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
+          <RestoreClearChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
+          <DeleteChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
         </Box>
       </Popover>
     </>

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { useClearChatMutation } from "@/features/chat";
 import { IGetChat } from "@/interfaces/chat.interface";
@@ -11,18 +12,23 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import ServerActionLoadingModal from "../shared/ServerActionLoadingModal";
 
 type Props = {
   chat: IGetChat;
+  options?: Record<string, any>;
 };
 
-const ClearChatButton = ({ chat }: Props) => {
+const ClearChatButton = ({ chat, options }: Props) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
   const [clearChat, { isLoading }] = useClearChatMutation();
 
   const handleDeleteChat = async () => {
+    if (options && options?.closeDropdown) {
+      options.closeDropdown();
+    }
     handleCloseConfirmDialog();
     const failedMessage = "Failed to clear chat. Try again!";
     try {
@@ -82,6 +88,12 @@ const ClearChatButton = ({ chat }: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      {isLoading && (
+        <ServerActionLoadingModal
+          open={isLoading}
+          actionText="Clearing your chat/messages"
+        />
+      )}
     </>
   );
 };

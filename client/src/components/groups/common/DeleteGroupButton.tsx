@@ -1,3 +1,4 @@
+import ServerActionLoadingModal from "@/components/shared/ServerActionLoadingModal";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { useDeleteGroupMutation } from "@/features/chat";
 import { IGetUser } from "@/interfaces/user.interface";
@@ -83,6 +84,12 @@ const DeleteGroupButton = ({ btnText, groupId }: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      {isLoading && (
+        <ServerActionLoadingModal
+          open={isLoading}
+          actionText="Deleting your group"
+        />
+      )}
     </>
   );
 };
