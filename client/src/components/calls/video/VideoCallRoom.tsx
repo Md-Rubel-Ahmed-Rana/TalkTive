@@ -11,6 +11,7 @@ import {
   VideocamOff,
   Videocam,
 } from "@mui/icons-material";
+import toast from "react-hot-toast";
 
 const VideoCallRoom = () => {
   const { socket } = useContext(SocketContext);
@@ -76,6 +77,9 @@ const VideoCallRoom = () => {
         new RTCSessionDescription(data.answer)
       );
     });
+    socket.on("video-call-end", async (data: any) => {
+      toast.success(`${data?.sender?.name} has end the call!`);
+    });
 
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
@@ -106,6 +110,7 @@ const VideoCallRoom = () => {
       socket.off("ice-candidate");
       socket.off("offer");
       socket.off("answer");
+      socket.off("video-call-end");
     };
   }, [callId, socket, user?.id]);
 
@@ -114,10 +119,16 @@ const VideoCallRoom = () => {
       peerConnection.close();
     }
     socket.emit("video-call-end", {
-      sender: user?.id,
-      receiver: sender === user?.id ? receiver : user?.id,
+      sender: {
+        id: user?.id,
+        name: user?.name,
+        image: user?.image,
+      },
+      receiver: sender === user?.id ? receiver : sender,
     });
-    // router.push("/");
+    router.push(
+      `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
+    );
   };
 
   const toggleAudio = () => {

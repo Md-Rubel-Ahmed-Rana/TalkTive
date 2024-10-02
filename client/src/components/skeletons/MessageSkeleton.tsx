@@ -8,7 +8,7 @@ const MessageSkeleton = () => {
       className="h-screen overflow-y-auto bg-gray-300 border-t-2"
       component={"div"}
     >
-      {Array.from({ length: 10 }).map((item, index) => (
+      {Array.from({ length: 20 }).map((item, index) => (
         <Box
           className="mb-5 border-b-2 border-gray-400  pb-5"
           key={index}

@@ -1,9 +1,9 @@
-import { Box, Divider, Skeleton } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 
-const CheckListSkeleton = () => {
+const ChatListSkeleton = () => {
   return (
     <Box className="px-2" component={"div"}>
-      {Array.from({ length: 10 }).map((item, index) => (
+      {Array.from({ length: 20 }).map((item, index) => (
         <Box
           key={index}
           className="flex items-center w-full py-2 border-b-2 border-gray-300"
@@ -22,4 +22,4 @@ const CheckListSkeleton = () => {
   );
 };
 
-export default CheckListSkeleton;
+export default ChatListSkeleton;

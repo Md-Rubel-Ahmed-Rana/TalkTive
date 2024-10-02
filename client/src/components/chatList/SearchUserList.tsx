@@ -10,6 +10,7 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
+  Box,
 } from "@mui/material";
 import useHandlePropagation from "@/hooks/useHandlePropagation";
 import { useGetLoggedInUserQuery } from "@/features/auth";
@@ -68,9 +69,9 @@ const SearchUserList = () => {
   }, [closeDropDown]);
 
   return (
-    <div className="my-2 w-[97%] mx-auto relative">
+    <Box component={"div"} className="my-2 w-[97%] mx-auto relative">
       <TextField
-        label="Search user..."
+        label="Search friend..."
         variant="outlined"
         fullWidth
         onFocus={() => setOpen(true)}
@@ -82,11 +83,15 @@ const SearchUserList = () => {
       />
 
       {(searchTerm || open) && (
-        <div
+        <Box
           ref={dropdownRef}
           className="rounded-md border mt-2 z-50 absolute bg-white w-[98%] mx-auto"
+          component={"div"}
         >
-          <div className="max-h-[400px] h-full overflow-y-auto">
+          <Box
+            component={"div"}
+            className="max-h-[400px] h-full overflow-y-auto"
+          >
             {filteredUsers?.map((user: IGetUser) => (
               <MenuItem key={user.id} onClick={() => handleSelectUser(user)}>
                 <ListItem disableGutters>
@@ -104,10 +109,10 @@ const SearchUserList = () => {
             {filteredUsers?.length === 0 && (
               <MenuItem disabled>No users found</MenuItem>
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

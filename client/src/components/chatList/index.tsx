@@ -6,7 +6,7 @@ import ChatCard from "./ChatCard";
 import { useContext, useEffect } from "react";
 import { SocketContext } from "@/context/SocketContext";
 import { Box, Typography } from "@mui/material";
-import CheckListSkeleton from "../skeletons/CheckListSkeleton";
+import ChatListSkeleton from "../skeletons/ChatListSkeleton";
 
 const ChatList = () => {
   const { socket } = useContext(SocketContext);
@@ -32,7 +32,7 @@ const ChatList = () => {
   return (
     <>
       {isLoading ? (
-        <CheckListSkeleton />
+        <ChatListSkeleton />
       ) : (
         <>
           {chats?.length > 0 ? (

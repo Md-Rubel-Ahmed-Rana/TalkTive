@@ -83,16 +83,9 @@ const IncomingVideoCall = ({
         <Box className="flex flex-col justify-center items-center w-full my-5">
           <Avatar
             src={callerInfo?.image}
-            className="h-24 w-24 ring-2 rounded-full"
+            className="h-24 w-24 ring-2 rounded-full mb-4"
           />
-          <Typography
-            className="text-center"
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-          >
-            Video call
-          </Typography>
+          <Button variant="outlined">Video call</Button>
         </Box>
         <Box className="flex justify-between w-full gap-5 mt-5">
           <Button
