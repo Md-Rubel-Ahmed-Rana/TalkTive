@@ -21,7 +21,6 @@ const P2PAudioCallRoom = () => {
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [peerConnection, setPeerConnection] =
     useState<RTCPeerConnection | null>(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
@@ -33,6 +32,7 @@ const P2PAudioCallRoom = () => {
 
     setPeerConnection(newPeerConnection);
 
+    // Handle ICE candidate events
     newPeerConnection.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit("p2p-audio-ice-candidate", {
@@ -42,42 +42,43 @@ const P2PAudioCallRoom = () => {
       }
     };
 
-    newPeerConnection.ontrack = (event) => {
-      const [remoteStream] = event.streams;
-      setRemoteStream(remoteStream);
-      const remoteVideo = document.getElementById(
-        "remoteVideo"
-      ) as HTMLVideoElement;
-      if (remoteVideo) {
-        remoteVideo.srcObject = remoteStream;
-      }
-    };
-
+    // Listen for remote ICE candidates
     socket.on("p2p-audio-ice-candidate", (data: any) => {
       if (data?.candidate) {
         newPeerConnection.addIceCandidate(new RTCIceCandidate(data?.candidate));
       }
     });
 
+    // Handle incoming offer for audio call
     socket.on("offer-p2p-audio-call", async (data: any) => {
+      // Step 1: Set the remote description with the offer
       await newPeerConnection.setRemoteDescription(
         new RTCSessionDescription(data.offer)
       );
+
+      // Step 2: Create and set the local answer
       const answer = await newPeerConnection.createAnswer();
       await newPeerConnection.setLocalDescription(answer);
+
+      // Step 3: Emit the answer back to the caller
       socket.emit("answer-p2p-audio-call", { answer, receiver: receiverId });
     });
 
+    // Handle incoming answer to the call
     socket.on("answer-p2p-audio-call", async (data: any) => {
+      // Set the remote description with the answer
       await newPeerConnection.setRemoteDescription(
         new RTCSessionDescription(data.answer)
       );
     });
 
+    // Handle call end
     socket.on("end-p2p-audio-call", async (data: any) => {
       toast.success(`${data?.sender?.name} has ended the call!`);
+      newPeerConnection.close(); // Close the connection when the call ends
     });
 
+    // Request microphone access and create an offer for the sender
     navigator.mediaDevices
       .getUserMedia({ video: false, audio: true })
       .then((stream) => {
@@ -87,6 +88,7 @@ const P2PAudioCallRoom = () => {
           newPeerConnection.addTrack(track, stream);
         });
 
+        // Only the caller (sender) creates the offer
         if (user?.id === senderId) {
           newPeerConnection.createOffer().then((offer) => {
             newPeerConnection.setLocalDescription(offer);
@@ -96,6 +98,9 @@ const P2PAudioCallRoom = () => {
             });
           });
         }
+      })
+      .catch((error) => {
+        toast.error("Error accessing microphone: " + error.message);
       });
 
     return () => {
@@ -133,53 +138,55 @@ const P2PAudioCallRoom = () => {
   };
 
   return (
-    <Box className="flex flex-col items-center justify-center bg-gray-100 h-[100vh] relative">
-      {/* Names and Avatars */}
-      <Box className="flex justify-between items-center w-full h-full border-2">
-        <Box className="flex justify-center items-center w-full h-full">
-          <Box className="flex flex-col items-center gap-4" component={"div"}>
-            <Avatar
-              src={sender?.image}
-              className="w-24 lg:w-48 h-24 lg:h-48 ring-2"
-            />
-            <Typography variant="h6" className="text-center">
-              {sender?.name}
-            </Typography>
+    <Box className="bg-gray-100 h-screen" component={"div"}>
+      <Box className="flex flex-col items-center justify-center bg-gray-100 h-[90vh] relative">
+        {/* Names and Avatars */}
+        <Box className="flex flex-col lg:flex-row justify-start lg:justify-between lg:items-center gap-2 w-full h-[80%] lg:h-full p-2">
+          <Box className="lg:flex justify-center items-center w-full h-full border p-2 rounded-md shadow-md">
+            <Box className="flex flex-col items-center gap-4" component={"div"}>
+              <Avatar
+                src={sender?.image}
+                className="w-24 lg:w-48 h-24 lg:h-48 ring-2"
+              />
+              <Typography variant="h6" className="text-center">
+                {sender?.name}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box className="lg:flex justify-center items-center w-full h-full border p-2 rounded-md shadow-md">
+            <Box className="flex flex-col items-center gap-4" component={"div"}>
+              <Avatar
+                src={receiver?.image}
+                className="w-24 lg:w-48 h-24 lg:h-48 ring-2"
+              />
+              <Typography variant="h6" className="text-center">
+                {receiver?.name}
+              </Typography>
+            </Box>
           </Box>
         </Box>
 
-        <Box className="flex justify-center items-center w-full h-full">
-          <Box className="flex flex-col items-center gap-4" component={"div"}>
-            <Avatar
-              src={receiver?.image}
-              className="w-24 lg:w-48 h-24 lg:h-48 ring-2"
-            />
-            <Typography variant="h6" className="text-center">
-              {receiver?.name}
-            </Typography>
-          </Box>
+        {/* Action buttons overlay */}
+        <Box className="absolute bottom-2 lg:-bottom-12 left-0 right-0 flex justify-center space-x-4">
+          <IconButton
+            onClick={handleEndCall}
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            <CallEnd />
+          </IconButton>
+
+          <IconButton
+            onClick={toggleAudio}
+            className={`${
+              isAudioMuted
+                ? "bg-gray-600 hover:bg-gray-700 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
+          >
+            {isAudioMuted ? <MicOff /> : <Mic />}
+          </IconButton>
         </Box>
-      </Box>
-
-      {/* Action buttons overlay */}
-      <Box className="absolute bottom-10 lg:bottom-4 left-0 right-0 flex justify-center space-x-4">
-        <IconButton
-          onClick={handleEndCall}
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
-          <CallEnd />
-        </IconButton>
-
-        <IconButton
-          onClick={toggleAudio}
-          className={`${
-            isAudioMuted
-              ? "bg-gray-600 hover:bg-gray-700 text-white"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
-          }`}
-        >
-          {isAudioMuted ? <MicOff /> : <Mic />}
-        </IconButton>
       </Box>
     </Box>
   );

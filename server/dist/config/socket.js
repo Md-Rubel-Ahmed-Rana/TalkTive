@@ -86,8 +86,8 @@ const socketConnection = (io) => {
             });
             // video calling events end here
             // one-to-one audio call events start
-            socket.on("offer-p2p-audio-call", (data) => {
-                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("offer-p2p-audio-call", data);
+            socket.on("incoming-p2p-audio-call", (data) => {
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("incoming-p2p-audio-call", data);
             });
             socket.on("cancel-p2p-audio-call", (data) => {
                 console.log("cancel-p2p-audio-call", data);
@@ -102,7 +102,7 @@ const socketConnection = (io) => {
                 socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("receive-p2p-audio-call", data);
             });
             socket.on("p2p-audio-ice-candidate", (data) => {
-                console.log("Received ICE candidate", data.candidate);
+                console.log("p2p-audio-ice-candidate", data.candidate);
                 socket.to(data.receiver).emit("p2p-audio-ice-candidate", data);
             });
             socket.on("offer-p2p-audio-call", (data) => {

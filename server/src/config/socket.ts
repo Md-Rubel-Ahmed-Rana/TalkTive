@@ -93,12 +93,12 @@ const socketConnection = (io: SocketIOServer) => {
 
       // one-to-one audio call events start
       socket.on(
-        "offer-p2p-audio-call",
+        "incoming-p2p-audio-call",
         (data: {
           sender: { id: string; name: string; image: string };
           receiver: string;
         }) => {
-          socket.to(data?.receiver).emit("offer-p2p-audio-call", data);
+          socket.to(data?.receiver).emit("incoming-p2p-audio-call", data);
         }
       );
 
@@ -137,7 +137,7 @@ const socketConnection = (io: SocketIOServer) => {
       socket.on(
         "p2p-audio-ice-candidate",
         (data: { candidate: RTCIceCandidateInit; receiver: string }) => {
-          console.log("Received ICE candidate", data.candidate);
+          console.log("p2p-audio-ice-candidate", data.candidate);
           socket.to(data.receiver).emit("p2p-audio-ice-candidate", data);
         }
       );

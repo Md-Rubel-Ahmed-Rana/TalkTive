@@ -20,7 +20,7 @@ const P2PAudioCall = () => {
 
   const handleMakeCall = () => {
     setIsAudioCalling(true);
-    socket.emit("offer-p2p-audio-call", {
+    socket.emit("incoming-p2p-audio-call", {
       sender: { id: user?.id, name: user?.name, image: user?.image },
       receiver: participantId,
     });

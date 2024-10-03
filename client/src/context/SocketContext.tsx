@@ -72,7 +72,7 @@ const SocketProvider = ({ children }: Props) => {
       }
     );
     socket?.on(
-      "offer-p2p-audio-call",
+      "incoming-p2p-audio-call",
       (data: {
         sender: { id: string; name: string; image: string };
         receiver: string;
@@ -85,7 +85,7 @@ const SocketProvider = ({ children }: Props) => {
 
     return () => {
       socket?.off("receive-video-call");
-      socket?.off("receive-p2p-audio-call");
+      socket?.off("incoming-p2p-audio-call");
     };
   }, [socket]);
 
