@@ -60,8 +60,6 @@ const MessageFilePreviews = ({ files, setFiles }: Props) => {
     setFiles(updatedFilesList);
   };
 
-  console.log(filePreviews, files);
-
   return (
     <>
       {filePreviews?.length > 0 && (

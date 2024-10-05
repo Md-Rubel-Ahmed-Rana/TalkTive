@@ -4,7 +4,7 @@ import { useGetLoggedInUserQuery } from "@/features/auth";
 import { useGetSingleUserInfoQuery } from "@/features/user";
 import { IGetUser } from "@/interfaces/user.interface";
 import VideocamIcon from "@mui/icons-material/Videocam";
-import { Avatar, Box, Button, Modal, Typography } from "@mui/material";
+import { Avatar, Box, Button, Fade, Modal, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -75,10 +75,6 @@ const VideoCallNegotiation = () => {
     socket.emit("send-video-call", videoDataPack);
   };
 
-  const handleCloseModal = () => {
-    setIsVideoCalling(false);
-  };
-
   const handleCancelCall = () => {
     setIsVideoCalling(false);
     socket.emit("cancel-video-call", {
@@ -96,38 +92,35 @@ const VideoCallNegotiation = () => {
       >
         <VideocamIcon titleAccess="Make a video call" />
       </Button>
-      <Modal
-        open={isVideoCalling}
-        onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-96 rounded-md bg-white shadow-lg p-4">
-          <Typography
-            className="text-center"
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-          >
-            {participant?.name}
-          </Typography>
-          <Box className="flex justify-center flex-col items-center w-full my-5">
-            <Avatar
-              src={participant?.image}
-              className="h-24 w-24 ring-2 mb-3 rounded-full"
-            />
-            <Button variant="outlined">Ringing</Button>
-          </Box>
-          <Box className="flex justify-center w-full gap-5 mt-5">
-            <Button
-              onClick={handleCancelCall}
-              variant="outlined"
-              className="w-full bg-blue-600 text-white"
+      <Modal open={isVideoCalling} onClose={() => {}} disableEscapeKeyDown>
+        <Fade in={isVideoCalling}>
+          <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-96 rounded-md bg-white shadow-lg p-4">
+            <Typography
+              className="text-center"
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
             >
-              Cancel call
-            </Button>
+              {participant?.name}
+            </Typography>
+            <Box className="flex justify-center flex-col items-center w-full my-5">
+              <Avatar
+                src={participant?.image}
+                className="h-24 w-24 ring-2 mb-3 rounded-full"
+              />
+              <Button variant="outlined">Ringing</Button>
+            </Box>
+            <Box className="flex justify-center w-full gap-5 mt-5">
+              <Button
+                onClick={handleCancelCall}
+                variant="outlined"
+                className="w-full bg-blue-600 text-white"
+              >
+                Cancel call
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        </Fade>
       </Modal>
     </>
   );

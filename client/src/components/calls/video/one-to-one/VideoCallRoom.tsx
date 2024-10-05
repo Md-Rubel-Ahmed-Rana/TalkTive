@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useRef } from "react";
 import { SocketContext } from "@/context/SocketContext";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Typography, Avatar } from "@mui/material";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import {
@@ -12,6 +12,7 @@ import {
   Videocam,
 } from "@mui/icons-material";
 import toast from "react-hot-toast";
+import { EventSender, ISocketEvent } from "@/interfaces/socket.interface";
 
 const VideoCallRoom = () => {
   const { socket } = useContext(SocketContext);
@@ -21,12 +22,25 @@ const VideoCallRoom = () => {
   const callId = router.query?.callId as string;
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
+
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [peerConnection, setPeerConnection] =
     useState<RTCPeerConnection | null>(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
+  const [isRemoteCameraOff, setIsRemoteCameraOff] = useState(false);
+  const [cameraOffSenderInfo, setCameraOffSenderInfo] =
+    useState<EventSender | null>(null);
+
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (remoteStream && remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
+  }, [remoteStream]);
 
   useEffect(() => {
     if (!callId) return;
@@ -49,12 +63,6 @@ const VideoCallRoom = () => {
     newPeerConnection.ontrack = (event) => {
       const [remoteStream] = event.streams;
       setRemoteStream(remoteStream);
-      const remoteVideo = document.getElementById(
-        "remoteVideo"
-      ) as HTMLVideoElement;
-      if (remoteVideo) {
-        remoteVideo.srcObject = remoteStream;
-      }
     };
 
     socket.on("ice-candidate", (data: any) => {
@@ -77,24 +85,34 @@ const VideoCallRoom = () => {
         new RTCSessionDescription(data.answer)
       );
     });
-    socket.on("video-call-end", async (data: any) => {
-      toast.success(`${data?.sender?.name} has end the call!`);
+
+    socket.on("video-call-end", (data: ISocketEvent) => {
+      toast.success(`${data?.sender?.name} has ended the call!`);
+      router.back();
+    });
+
+    socket.on("video-turn-off", (data: ISocketEvent) => {
+      toast.success(`${data?.sender?.name} has turned off the camera!`);
+      setIsRemoteCameraOff(true);
+      setCameraOffSenderInfo(data?.sender);
+    });
+
+    socket.on("video-turn-on", (data: ISocketEvent) => {
+      toast.success(`${data?.sender?.name} has turned on the camera!`);
+      setIsRemoteCameraOff(false);
+      setCameraOffSenderInfo(null);
     });
 
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         setLocalStream(stream);
-
         stream.getTracks().forEach((track) => {
           newPeerConnection.addTrack(track, stream);
         });
 
-        const localVideo = document.getElementById(
-          "localVideo"
-        ) as HTMLVideoElement;
-        if (localVideo) {
-          localVideo.srcObject = stream;
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
         }
 
         if (callId === user?.id) {
@@ -111,8 +129,10 @@ const VideoCallRoom = () => {
       socket.off("offer");
       socket.off("answer");
       socket.off("video-call-end");
+      socket.off("video-turn-off");
+      socket.off("video-turn-on");
     };
-  }, [callId, socket, user?.id]);
+  }, [callId, router, socket, user?.id, remoteStream]);
 
   const handleEndCall = () => {
     if (peerConnection) {
@@ -126,12 +146,10 @@ const VideoCallRoom = () => {
       },
       receiver: sender === user?.id ? receiver : sender,
     });
-    router.push(
-      `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`
-    );
+    router.back();
   };
 
-  const toggleAudio = () => {
+  const handleToggleAudio = () => {
     if (localStream) {
       const audioTrack = localStream.getAudioTracks()[0];
       audioTrack.enabled = !audioTrack.enabled;
@@ -139,29 +157,79 @@ const VideoCallRoom = () => {
     }
   };
 
-  const toggleVideo = () => {
+  const handleToggleVideo = () => {
     if (localStream) {
       const videoTrack = localStream.getVideoTracks()[0];
-      videoTrack.enabled = !videoTrack.enabled;
+      const isVideoCurrentlyEnabled = videoTrack.enabled;
+
+      videoTrack.enabled = !isVideoCurrentlyEnabled;
       setIsVideoMuted(!videoTrack.enabled);
+
+      setTimeout(() => {
+        if (localVideoRef.current) {
+          if (!videoTrack.enabled) {
+            localVideoRef.current.srcObject = null;
+          } else {
+            localVideoRef.current.srcObject = localStream;
+          }
+        } else {
+          console.log("localVideoRef.current is null");
+        }
+      }, 0);
+
+      const socketEvent = isVideoCurrentlyEnabled
+        ? "video-turn-off"
+        : "video-turn-on";
+
+      socket.emit(socketEvent, {
+        sender: {
+          id: user?.id,
+          name: user?.name,
+          image: user?.image,
+        },
+        receiver: sender === user?.id ? receiver : sender,
+      });
     }
   };
 
   return (
     <Box className="flex flex-col items-center bg-gray-100 h-[100vh] relative overflow-hidden">
-      <div className="relative w-full h-full">
-        <video
-          id="remoteVideo"
-          autoPlay
-          className="w-full h-full bg-black object-cover"
-        />
-        <Box className="absolute top-2 right-2 w-32 h-24 bg-black object-cover rounded-md">
+      <Box className="relative w-full h-full">
+        {isRemoteCameraOff ? (
+          // Show fallback content when remote camera is off
+          <Box className="w-full h-full bg-black flex flex-col justify-center items-center text-white">
+            <Avatar
+              src={cameraOffSenderInfo?.image}
+              alt={cameraOffSenderInfo?.name}
+              className="w-24 h-24 mb-4"
+            />
+            <Typography variant="h6">{cameraOffSenderInfo?.name}</Typography>
+          </Box>
+        ) : (
           <video
-            id="localVideo"
+            ref={remoteVideoRef}
             autoPlay
-            muted
-            className="w-full h-full object-cover rounded-md border border-gray-400"
+            className="w-full h-full bg-black object-cover"
           />
+        )}
+
+        <Box className="absolute top-2 right-2 w-32 h-24  border border-gray-400 rounded-md">
+          {isVideoMuted ? (
+            <Box className="w-full h-full rounded-md flex flex-col justify-center items-center text-white">
+              <Avatar
+                src={user?.image}
+                alt={user?.name}
+                className="w-20 h-20"
+              />
+            </Box>
+          ) : (
+            <video
+              ref={localVideoRef}
+              autoPlay
+              muted
+              className="w-full h-full object-cover rounded-md "
+            />
+          )}
         </Box>
 
         {/* Action buttons overlay */}
@@ -174,8 +242,8 @@ const VideoCallRoom = () => {
           </IconButton>
 
           <IconButton
-            onClick={toggleAudio}
-            className={` ${
+            onClick={handleToggleAudio}
+            className={`${
               isAudioMuted
                 ? "bg-gray-600 hover:bg-gray-700 text-white"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -185,8 +253,8 @@ const VideoCallRoom = () => {
           </IconButton>
 
           <IconButton
-            onClick={toggleVideo}
-            className={` ${
+            onClick={handleToggleVideo}
+            className={`${
               isVideoMuted
                 ? "bg-gray-600 hover:bg-gray-700 text-white"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -195,7 +263,7 @@ const VideoCallRoom = () => {
             {isVideoMuted ? <VideocamOff /> : <Videocam />}
           </IconButton>
         </Box>
-      </div>
+      </Box>
     </Box>
   );
 };

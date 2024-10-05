@@ -85,7 +85,7 @@ const SearchUserList = () => {
       {(searchTerm || open) && (
         <Box
           ref={dropdownRef}
-          className="rounded-md border mt-2 z-50 absolute bg-white w-[98%] mx-auto"
+          className="rounded-md border mt-2 z-50 absolute bg-white w-full mx-auto"
           component={"div"}
         >
           <Box

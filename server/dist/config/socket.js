@@ -84,6 +84,12 @@ const socketConnection = (io) => {
             socket.on("video-call-end", (data) => {
                 socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-call-end", data);
             });
+            socket.on("video-turn-off", (data) => {
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-turn-off", data);
+            });
+            socket.on("video-turn-on", (data) => {
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-turn-on", data);
+            });
             // video calling events end here
             // one-to-one audio call events start
             socket.on("incoming-p2p-audio-call", (data) => {

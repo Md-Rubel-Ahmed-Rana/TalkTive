@@ -48,7 +48,7 @@ const P2PAudioCall = () => {
       ({ sender }: { sender: { id: string; name: string; image: string } }) => {
         setIsAudioCalling(false);
         toast.success(`${sender?.name} has accepted your call!`);
-        const callRoomPath = `/call/audio/p2p?sender=${user?.id}&receiver=${participant?.id}`;
+        const callRoomPath = `/call/audio/p2p/${user?.id}?sender=${user?.id}&receiver=${participant?.id}`;
         push(callRoomPath);
       }
     );

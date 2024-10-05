@@ -47,7 +47,7 @@ const IncomingAudioCall = ({
       },
       receiver: sender?.id,
     });
-    const callRoomPath = `/call/audio/p2p?sender=${sender?.id}&receiver=${currentUser?.id}`;
+    const callRoomPath = `/call/audio/p2p/${sender?.id}?sender=${sender?.id}&receiver=${currentUser?.id}`;
     router.push(callRoomPath);
   };
 
