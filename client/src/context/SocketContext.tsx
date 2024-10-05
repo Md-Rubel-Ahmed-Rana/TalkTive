@@ -9,6 +9,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import { IncomingVideoCall } from "@/components/calls/video/one-to-one";
+import { IncomingAudioCall } from "@/components/calls/audio/one-to-one";
 
 export const SocketContext = createContext<any>(null);
 
@@ -22,6 +24,10 @@ const SocketProvider = ({ children }: Props) => {
   const [realTimeMessages, setRealTimeMessages] = useState<IGetMessage[]>([]);
   const [currentUser, setCurrentUser] = useState<IGetUser | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isIncomingCall, setIsIncomingCall] = useState(false);
+  const [isP2PAudioCalling, setIsP2PAudioCalling] = useState(false);
+  const [callerInfo, setCallerInfo] = useState<any>({});
+  const [p2pAudioCallerInfo, setP2pAudioCallerInfo] = useState<any>({});
 
   useEffect(() => {
     if (currentUser && currentUser?.id) {
@@ -52,6 +58,37 @@ const SocketProvider = ({ children }: Props) => {
     setIsDialogOpen(false);
   };
 
+  useEffect(() => {
+    socket?.on(
+      "receive-video-call",
+      (data: {
+        sender: { id: string; name: string; image: string };
+        receiver: string;
+        videoOffer: any;
+      }) => {
+        console.log("Got a video call", data);
+        setIsIncomingCall(true);
+        setCallerInfo(data?.sender);
+      }
+    );
+    socket?.on(
+      "incoming-p2p-audio-call",
+      (data: {
+        sender: { id: string; name: string; image: string };
+        receiver: string;
+      }) => {
+        console.log("Got an audio call", data);
+        setIsP2PAudioCalling(true);
+        setP2pAudioCallerInfo(data?.sender);
+      }
+    );
+
+    return () => {
+      socket?.off("receive-video-call");
+      socket?.off("incoming-p2p-audio-call");
+    };
+  }, [socket]);
+
   const values = {
     socket,
     realTimeMessages,
@@ -59,8 +96,6 @@ const SocketProvider = ({ children }: Props) => {
     currentUser,
     setCurrentUser,
   };
-
-  console.log("Hello, I am from Socket context");
 
   return (
     <SocketContext.Provider value={values}>
@@ -82,6 +117,19 @@ const SocketProvider = ({ children }: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <IncomingVideoCall
+        callerInfo={callerInfo}
+        isIncomingCall={isIncomingCall}
+        setIsIncomingCall={setIsIncomingCall}
+        currentUser={currentUser as IGetUser}
+      />
+      <IncomingAudioCall
+        isCalling={isP2PAudioCalling}
+        setIsCalling={setIsP2PAudioCalling}
+        sender={p2pAudioCallerInfo}
+        currentUser={currentUser as IGetUser}
+      />
     </SocketContext.Provider>
   );
 };

@@ -66,7 +66,7 @@ const OneToOneChat = ({ chat, typingChats }: Props) => {
           <Typography variant="inherit" component={"h2"}>
             {participant?.name}
           </Typography>
-          <Typography className="text-xs z-50" component={"small"}>
+          <Typography className="text-xs" component={"small"}>
             {momentTimeFormat(chat?.lastMessage?.createdAt)}
           </Typography>
         </Box>

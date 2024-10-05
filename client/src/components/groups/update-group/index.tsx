@@ -20,12 +20,12 @@ import AddIcon from "@mui/icons-material/Add";
 import toast from "react-hot-toast";
 
 const GroupEdit = () => {
-  const { query, push } = useRouter();
+  const router = useRouter();
+  const { query } = router;
   const chatId = query?.id as string;
   const { data, isLoading } = useGetSingleChatQuery(chatId);
   const [updateGroup, { isLoading: isUpdating }] = useUpdateGroupMutation();
   const group = data?.data as IGetChat;
-  const user = group?.admin;
 
   const { handleSubmit, control } = useForm<IEditGroup>({
     defaultValues: {
@@ -47,8 +47,7 @@ const GroupEdit = () => {
       const result: any = await updateGroup({ chatId: chatId, data: data });
       if (result?.data?.statusCode === 200) {
         toast.success(result?.data?.message || "Group updated successfully!");
-        const inboxLink = `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
-        push(inboxLink);
+        router.back();
       } else {
         toast.error(
           result?.data?.message ||

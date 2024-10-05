@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "@/context/SocketContext";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
+import { Box } from "@mui/material";
 
 type Props = {
   chat: IGetChat;
@@ -43,13 +44,16 @@ const ChatCard = ({ chat }: Props) => {
   }, [socket, user?.id]);
 
   return (
-    <div className="border-b py-2 border-blue-500 cursor-pointer hover:bg-gray-100">
+    <Box
+      component={"div"}
+      className="border-b py-2 border-blue-500 cursor-pointer hover:bg-gray-100"
+    >
       {chat?.isGroupChat ? (
         <GroupChat chat={chat} />
       ) : (
         <OneToOneChat chat={chat} typingChats={typingChats} />
       )}
-    </div>
+    </Box>
   );
 };
 

@@ -1,8 +1,5 @@
 import { useGetLoggedInUserQuery } from "@/features/auth";
-import {
-  useClearChatMutation,
-  useRestoreClearChatMutation,
-} from "@/features/chat";
+import { useDeleteChatMutation } from "@/features/chat";
 import { IGetChat } from "@/interfaces/chat.interface";
 import { IGetUser } from "@/interfaces/user.interface";
 import {
@@ -12,31 +9,38 @@ import {
   DialogActions,
   DialogTitle,
 } from "@mui/material";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import ServerActionLoadingModal from "../shared/ServerActionLoadingModal";
 
 type Props = {
   chat: IGetChat;
+  options?: Record<string, any>;
 };
 
-const RestoreClearChatButton = ({ chat }: Props) => {
+const DeleteChatButton = ({ chat, options }: Props) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
-  const [restoreClearChat, { isLoading }] = useRestoreClearChatMutation();
+  const [deleteChat, { isLoading }] = useDeleteChatMutation();
+  const router = useRouter();
+  const inboxLink = `/inbox/${user?.id}?userName=${user?.name}&userEmail=${user?.email}&userImage=${user?.image}`;
 
   const handleDeleteChat = async () => {
+    if (options && options?.closeDropdown) {
+      options.closeDropdown();
+    }
     handleCloseConfirmDialog();
-    const failedMessage = "Failed to restore clear chat. Try again!";
+    const failedMessage = "Failed to delete chat. Try again!";
     try {
-      const result: any = await restoreClearChat({
+      const result: any = await deleteChat({
         chatId: chat?.id,
         participantId: user?.id,
       });
       if (result.data.statusCode === 200) {
-        toast.success(
-          result?.data?.message || "Restored cleared chat successfully!"
-        );
+        toast.success(result?.data?.message || "Chat deleted successfully!");
+        router.push(inboxLink);
       } else {
         toast.success(
           result?.data?.message || result?.error?.data?.message || failedMessage
@@ -66,7 +70,7 @@ const RestoreClearChatButton = ({ chat }: Props) => {
         {isLoading ? (
           <CircularProgress size={24} color="inherit" />
         ) : (
-          "Restore chat"
+          "Delete chat"
         )}
       </Button>
 
@@ -76,7 +80,7 @@ const RestoreClearChatButton = ({ chat }: Props) => {
         aria-labelledby="confirm-clear-chat"
       >
         <DialogTitle id="confirm-clear-chat">
-          Are you sure to restore cleared chat?
+          Are you sure to delete chat?
         </DialogTitle>
         <DialogActions>
           <Button onClick={handleCloseConfirmDialog} color="primary">
@@ -87,8 +91,14 @@ const RestoreClearChatButton = ({ chat }: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      {isLoading && (
+        <ServerActionLoadingModal
+          open={isLoading}
+          actionText="Deleting your chat"
+        />
+      )}
     </>
   );
 };
 
-export default RestoreClearChatButton;
+export default DeleteChatButton;

@@ -1,4 +1,3 @@
-import { AudioCall, VideoCall } from "@/components/calls";
 import AddGroupMemberModal from "@/components/groups/common/AddGroupMemberModal";
 import DeleteGroupButton from "@/components/groups/common/DeleteGroupButton";
 import GroupImageChange from "@/components/groups/common/GroupImageChange";
@@ -13,9 +12,11 @@ import { Button, Popover, Box } from "@mui/material";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import LeaveGroupButton from "../../groups/common/LeaveGroupButton";
-import ClearChatButton from "../chatList/ClearChatButton";
-import RestoreClearChatButton from "../chatList/RestoreClearChatButton";
-import DeleteChatButton from "../chatList/DeleteChatButton";
+import ClearChatButton from "../../chatList/ClearChatButton";
+import RestoreClearChatButton from "../../chatList/RestoreClearChatButton";
+import DeleteChatButton from "../../chatList/DeleteChatButton";
+import { GroupAudioCall } from "@/components/calls/audio/group";
+import { GroupVideoCallNegotiation } from "@/components/calls/video/group";
 
 type Props = {
   isButton?: boolean;
@@ -114,8 +115,8 @@ const GroupActions = ({ isButton, chatId }: Props) => {
         <Box className="flex flex-col gap-2 w-full">
           <Box className="block lg:hidden">
             <Box className="flex justify-between gap-1 mb-2">
-              <AudioCall />
-              <VideoCall />
+              <GroupAudioCall />
+              <GroupVideoCallNegotiation />
             </Box>
             <BackNavigationButton />
           </Box>
@@ -126,9 +127,18 @@ const GroupActions = ({ isButton, chatId }: Props) => {
           >
             Group Details
           </Button>
-          <ClearChatButton chat={chat} />
-          <RestoreClearChatButton chat={chat} />
-          <DeleteChatButton chat={chat} />
+          <ClearChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
+          <RestoreClearChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
+          <DeleteChatButton
+            chat={chat}
+            options={{ closeDropdown: handleClose }}
+          />
           {chat?.admin?.id === user?.id ? (
             <>
               <Button onClick={handleAddMember} variant="outlined" fullWidth>

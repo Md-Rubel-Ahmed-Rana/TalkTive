@@ -7,7 +7,7 @@ import momentTimeFormat from "@/utils/momentTimeFormat";
 import { Avatar, Box, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { getSenderName } from "../utilFunctions";
+import { getSenderName } from "../messages/utilFunctions";
 
 type Props = {
   chat: IGetChat;
