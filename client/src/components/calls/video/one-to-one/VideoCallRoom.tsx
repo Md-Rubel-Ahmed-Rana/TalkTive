@@ -13,7 +13,7 @@ import {
   Videocam,
 } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import SimplePeer, { SignalData } from "simple-peer";
+import Peer, { SignalData } from "simple-peer";
 
 const VideoCallRoom = () => {
   const { socket } = useContext(SocketContext);
@@ -26,7 +26,7 @@ const VideoCallRoom = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
-  const [peer, setPeer] = useState<SimplePeer.Instance | null>(null);
+  const [peer, setPeer] = useState<Peer.Instance | null>(null);
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -34,10 +34,14 @@ const VideoCallRoom = () => {
   useEffect(() => {
     if (!user?.id || !sender || !receiver) return;
 
+    // 1. Logging to ensure we have the correct user and ids
+    console.log("Starting video call: ", { sender, receiver });
+
     // Get local media stream
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream: MediaStream) => {
+        console.log("Local stream obtained", stream);
         setLocalStream(stream);
 
         // Display local stream
@@ -45,38 +49,49 @@ const VideoCallRoom = () => {
           localVideoRef.current.srcObject = stream;
         }
 
-        // Initialize Peer
+        // 2. Initialize Peer
         const initiator = user?.id === sender;
-        const Peer = new SimplePeer({
+        const peer = new Peer({
           initiator,
           stream,
           trickle: false,
         });
 
-        // Handle signaling data received from other peer
-        Peer.on("signal", (data: SignalData) => {
+        console.log("Peer initialized", { initiator });
+
+        // 3. Emit signaling data to the other peer
+        peer.on("signal", (data: SignalData) => {
+          console.log("Sending signaling data:", data);
           socket.emit("signal", { data, sender: user?.id, receiver });
         });
 
-        socket.on("signal-receive", ({ data }: any) => {
-          Peer.signal(data);
+        // 4. Handle incoming signaling data from other peer
+        socket.on("signal", ({ data }: any) => {
+          console.log("Received signaling data:", data);
+          peer.signal(data);
         });
 
-        // Handle the incoming remote stream
-        Peer.on("stream", (remoteStream: MediaStream) => {
+        // 5. Handle the incoming remote stream
+        peer.on("stream", (remoteStream: MediaStream) => {
+          console.log("Remote stream received", remoteStream);
           if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = remoteStream;
           }
         });
 
-        setPeer(Peer);
+        // 6. Handle peer error
+        peer.on("error", (err) => {
+          console.error("Peer error:", err);
+        });
+
+        setPeer(peer);
       })
       .catch(() => {
         toast.error("Error accessing media devices");
       });
 
     return () => {
-      socket.off("signal-receive");
+      socket.off("signal");
       if (peer) peer.destroy();
       if (localStream) {
         localStream.getTracks().forEach((track) => track.stop());

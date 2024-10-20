@@ -80,8 +80,8 @@ const socketConnection = (io: SocketIOServer) => {
       });
       // Signal exchange between peers
       socket.on("signal", (data) => {
-        console.log("Signal data received");
-        socket.to(data?.receiver).emit("signal-receive", data);
+        console.log("Signal data received", data?.receiver);
+        socket.to(data?.receiver).emit("signal", data);
       });
       // video calling events end here
 

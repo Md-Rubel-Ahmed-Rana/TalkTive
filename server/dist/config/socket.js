@@ -80,8 +80,8 @@ const socketConnection = (io) => {
             });
             // Signal exchange between peers
             socket.on("signal", (data) => {
-                console.log("Signal data received");
-                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("signal-receive", data);
+                console.log("Signal data received", data === null || data === void 0 ? void 0 : data.receiver);
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("signal", data);
             });
             // video calling events end here
             // one-to-one audio call events start
