@@ -69,18 +69,6 @@ const socketConnection = (io) => {
                 console.log("video-call-accepted");
                 socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-call-accepted", data);
             });
-            // Handle ICE candidate event
-            socket.on("ice-candidate", (data) => {
-                console.log("Got ice-candidate");
-                socket.broadcast.emit("ice-candidate", data);
-            });
-            // Handle offer event for WebRTC
-            socket.on("offer", (data) => {
-                socket.broadcast.emit("offer", data);
-            });
-            socket.on("answer", (data) => {
-                socket.broadcast.emit("answer", data);
-            });
             socket.on("video-call-end", (data) => {
                 socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-call-end", data);
             });
@@ -89,6 +77,11 @@ const socketConnection = (io) => {
             });
             socket.on("video-turn-on", (data) => {
                 socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("video-turn-on", data);
+            });
+            // Signal exchange between peers
+            socket.on("signal", (data) => {
+                console.log("Signal data received");
+                socket.to(data === null || data === void 0 ? void 0 : data.receiver).emit("signal-receive", data);
             });
             // video calling events end here
             // one-to-one audio call events start

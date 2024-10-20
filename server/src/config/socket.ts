@@ -56,7 +56,6 @@ const socketConnection = (io: SocketIOServer) => {
         console.log("receive-video-call", data);
         socket.to(data?.receiver).emit("receive-video-call", data);
       });
-
       socket.on("decline-video-call", (data) => {
         console.log("decline-video-call");
         socket.to(data?.receiver).emit("decline-video-call", data);
@@ -70,22 +69,6 @@ const socketConnection = (io: SocketIOServer) => {
         console.log("video-call-accepted");
         socket.to(data?.receiver).emit("video-call-accepted", data);
       });
-
-      // Handle ICE candidate event
-      socket.on("ice-candidate", (data) => {
-        console.log("Got ice-candidate");
-        socket.broadcast.emit("ice-candidate", data);
-      });
-
-      // Handle offer event for WebRTC
-      socket.on("offer", (data) => {
-        socket.broadcast.emit("offer", data);
-      });
-
-      socket.on("answer", (data) => {
-        socket.broadcast.emit("answer", data);
-      });
-
       socket.on("video-call-end", (data) => {
         socket.to(data?.receiver).emit("video-call-end", data);
       });
@@ -94,6 +77,11 @@ const socketConnection = (io: SocketIOServer) => {
       });
       socket.on("video-turn-on", (data) => {
         socket.to(data?.receiver).emit("video-turn-on", data);
+      });
+      // Signal exchange between peers
+      socket.on("signal", (data) => {
+        console.log("Signal data received");
+        socket.to(data?.receiver).emit("signal-receive", data);
       });
       // video calling events end here
 

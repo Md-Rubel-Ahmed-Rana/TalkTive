@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useRouter } from "next/router";
 import { useEffect, useContext, useState, useRef } from "react";
 import { SocketContext } from "@/context/SocketContext";
-import { Box, IconButton, Typography, Avatar } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { useGetLoggedInUserQuery } from "@/features/auth";
 import { IGetUser } from "@/interfaces/user.interface";
 import {
@@ -12,143 +13,88 @@ import {
   Videocam,
 } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { EventSender, ISocketEvent } from "@/interfaces/socket.interface";
+import SimplePeer, { SignalData } from "simple-peer";
 
 const VideoCallRoom = () => {
   const { socket } = useContext(SocketContext);
   const router = useRouter();
   const sender = router.query?.sender as string;
   const receiver = router.query?.receiver as string;
-  const callId = router.query?.callId as string;
   const { data: userData } = useGetLoggedInUserQuery({});
   const user = userData?.data as IGetUser;
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-  const [peerConnection, setPeerConnection] =
-    useState<RTCPeerConnection | null>(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
-  const [isRemoteCameraOff, setIsRemoteCameraOff] = useState(false);
-  const [cameraOffSenderInfo, setCameraOffSenderInfo] =
-    useState<EventSender | null>(null);
+  const [peer, setPeer] = useState<SimplePeer.Instance | null>(null);
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (remoteStream && remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = remoteStream;
-    }
-  }, [remoteStream]);
+    if (!user?.id || !sender || !receiver) return;
 
-  useEffect(() => {
-    if (!callId) return;
-
-    const newPeerConnection = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
-
-    setPeerConnection(newPeerConnection);
-
-    newPeerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit("ice-candidate", {
-          candidate: event.candidate,
-          receiver: callId,
-        });
-      }
-    };
-
-    newPeerConnection.ontrack = (event) => {
-      const [remoteStream] = event.streams;
-      setRemoteStream(remoteStream);
-    };
-
-    socket.on("ice-candidate", (data: any) => {
-      if (data?.candidate) {
-        newPeerConnection.addIceCandidate(new RTCIceCandidate(data?.candidate));
-      }
-    });
-
-    socket.on("offer", async (data: any) => {
-      await newPeerConnection.setRemoteDescription(
-        new RTCSessionDescription(data.offer)
-      );
-      const answer = await newPeerConnection.createAnswer();
-      await newPeerConnection.setLocalDescription(answer);
-      socket.emit("answer", { answer, receiver: callId });
-    });
-
-    socket.on("answer", async (data: any) => {
-      await newPeerConnection.setRemoteDescription(
-        new RTCSessionDescription(data.answer)
-      );
-    });
-
-    socket.on("video-call-end", (data: ISocketEvent) => {
-      toast.success(`${data?.sender?.name} has ended the call!`);
-      router.back();
-    });
-
-    socket.on("video-turn-off", (data: ISocketEvent) => {
-      toast.success(`${data?.sender?.name} has turned off the camera!`);
-      setIsRemoteCameraOff(true);
-      setCameraOffSenderInfo(data?.sender);
-    });
-
-    socket.on("video-turn-on", (data: ISocketEvent) => {
-      toast.success(`${data?.sender?.name} has turned on the camera!`);
-      setIsRemoteCameraOff(false);
-      setCameraOffSenderInfo(null);
-    });
-
+    // Get local media stream
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
+      .then((stream: MediaStream) => {
         setLocalStream(stream);
-        stream.getTracks().forEach((track) => {
-          newPeerConnection.addTrack(track, stream);
-        });
 
+        // Display local stream
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = stream;
         }
 
-        if (callId === user?.id) {
-          newPeerConnection.createOffer().then((offer) => {
-            newPeerConnection.setLocalDescription(offer);
-            socket.emit("offer", { offer, receiver: callId });
-          });
-        }
+        // Initialize Peer
+        const initiator = user?.id === sender;
+        const Peer = new SimplePeer({
+          initiator,
+          stream,
+          trickle: false,
+        });
+
+        // Handle signaling data received from other peer
+        Peer.on("signal", (data: SignalData) => {
+          socket.emit("signal", { data, sender: user?.id, receiver });
+        });
+
+        socket.on("signal-receive", ({ data }: any) => {
+          Peer.signal(data);
+        });
+
+        // Handle the incoming remote stream
+        Peer.on("stream", (remoteStream: MediaStream) => {
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remoteStream;
+          }
+        });
+
+        setPeer(Peer);
+      })
+      .catch(() => {
+        toast.error("Error accessing media devices");
       });
 
     return () => {
-      newPeerConnection.close();
-      socket.off("ice-candidate");
-      socket.off("offer");
-      socket.off("answer");
-      socket.off("video-call-end");
-      socket.off("video-turn-off");
-      socket.off("video-turn-on");
+      socket.off("signal-receive");
+      if (peer) peer.destroy();
+      if (localStream) {
+        localStream.getTracks().forEach((track) => track.stop());
+      }
     };
-  }, [callId, router, socket, user?.id, remoteStream]);
+  }, [socket, user?.id]);
 
+  // End the call and notify the server
   const handleEndCall = () => {
-    if (peerConnection) {
-      peerConnection.close();
-    }
+    if (peer) peer.destroy();
     socket.emit("video-call-end", {
-      sender: {
-        id: user?.id,
-        name: user?.name,
-        image: user?.image,
-      },
+      sender: { id: user?.id, name: user?.name, image: user?.image },
       receiver: sender === user?.id ? receiver : sender,
     });
     router.back();
   };
 
+  // Toggle microphone
   const handleToggleAudio = () => {
     if (localStream) {
       const audioTrack = localStream.getAudioTracks()[0];
@@ -157,79 +103,38 @@ const VideoCallRoom = () => {
     }
   };
 
+  // Toggle video
   const handleToggleVideo = () => {
     if (localStream) {
       const videoTrack = localStream.getVideoTracks()[0];
-      const isVideoCurrentlyEnabled = videoTrack.enabled;
-
-      videoTrack.enabled = !isVideoCurrentlyEnabled;
+      videoTrack.enabled = !videoTrack.enabled;
       setIsVideoMuted(!videoTrack.enabled);
 
       setTimeout(() => {
         if (localVideoRef.current) {
-          if (!videoTrack.enabled) {
-            localVideoRef.current.srcObject = null;
-          } else {
-            localVideoRef.current.srcObject = localStream;
-          }
-        } else {
-          console.log("localVideoRef.current is null");
+          localVideoRef.current.srcObject = videoTrack.enabled
+            ? localStream
+            : null;
         }
       }, 0);
-
-      const socketEvent = isVideoCurrentlyEnabled
-        ? "video-turn-off"
-        : "video-turn-on";
-
-      socket.emit(socketEvent, {
-        sender: {
-          id: user?.id,
-          name: user?.name,
-          image: user?.image,
-        },
-        receiver: sender === user?.id ? receiver : sender,
-      });
     }
   };
 
   return (
     <Box className="flex flex-col items-center bg-gray-100 h-[100vh] relative overflow-hidden">
       <Box className="relative w-full h-full">
-        {isRemoteCameraOff ? (
-          // Show fallback content when remote camera is off
-          <Box className="w-full h-full bg-black flex flex-col justify-center items-center text-white">
-            <Avatar
-              src={cameraOffSenderInfo?.image}
-              alt={cameraOffSenderInfo?.name}
-              className="w-24 h-24 mb-4"
-            />
-            <Typography variant="h6">{cameraOffSenderInfo?.name}</Typography>
-          </Box>
-        ) : (
+        <video
+          ref={remoteVideoRef}
+          autoPlay
+          className="w-full h-full bg-black object-cover"
+        />
+        <Box className="absolute top-2 right-2 w-32 h-24 border border-gray-400 rounded-md">
           <video
-            ref={remoteVideoRef}
+            ref={localVideoRef}
             autoPlay
-            className="w-full h-full bg-black object-cover"
+            muted
+            className="w-full h-full object-cover rounded-md"
           />
-        )}
-
-        <Box className="absolute top-2 right-2 w-32 h-24  border border-gray-400 rounded-md">
-          {isVideoMuted ? (
-            <Box className="w-full h-full rounded-md flex flex-col justify-center items-center text-white">
-              <Avatar
-                src={user?.image}
-                alt={user?.name}
-                className="w-20 h-20"
-              />
-            </Box>
-          ) : (
-            <video
-              ref={localVideoRef}
-              autoPlay
-              muted
-              className="w-full h-full object-cover rounded-md "
-            />
-          )}
         </Box>
 
         {/* Action buttons overlay */}
@@ -240,25 +145,19 @@ const VideoCallRoom = () => {
           >
             <CallEnd />
           </IconButton>
-
           <IconButton
             onClick={handleToggleAudio}
-            className={`${
-              isAudioMuted
-                ? "bg-gray-600 hover:bg-gray-700 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
+            className={
+              isAudioMuted ? "bg-gray-600 text-white" : "bg-blue-600 text-white"
+            }
           >
             {isAudioMuted ? <MicOff /> : <Mic />}
           </IconButton>
-
           <IconButton
             onClick={handleToggleVideo}
-            className={`${
-              isVideoMuted
-                ? "bg-gray-600 hover:bg-gray-700 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
+            className={
+              isVideoMuted ? "bg-gray-600 text-white" : "bg-blue-600 text-white"
+            }
           >
             {isVideoMuted ? <VideocamOff /> : <Videocam />}
           </IconButton>
