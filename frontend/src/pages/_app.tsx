@@ -1,7 +1,9 @@
+import store from "@/redux/store";
 import "@/styles/globals.css";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { ReactElement, ReactNode } from "react";
+import { Provider } from "react-redux";
 import { Toaster } from "sonner";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
@@ -17,8 +19,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <>
-      {getLayout(<Component {...pageProps} />)}
-      <Toaster position="top-right" />
+      <Provider store={store}>
+        {getLayout(<Component {...pageProps} />)}
+        <Toaster position="top-right" />
+      </Provider>
     </>
   );
 }

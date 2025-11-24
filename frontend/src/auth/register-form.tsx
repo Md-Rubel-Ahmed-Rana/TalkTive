@@ -18,18 +18,18 @@ const registerSchema = z.object({
     .max(15, "Password must be less than 15 characters"),
 });
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+export type IRegister = z.infer<typeof registerSchema>;
 
 const RegisterForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormValues>({
+  } = useForm<IRegister>({
     resolver: zodResolver(registerSchema),
   });
 
-  const handleRegister = (data: RegisterFormValues) => {
+  const handleRegister = (data: IRegister) => {
     console.log("Register data:", data);
   };
 
