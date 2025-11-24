@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import GoogleLogin from "./google-login";
 import PasswordInput from "@/common/password-input";
+import { useRegisterUserMutation } from "@/features/auth";
+import handleAsyncMutation from "@/utils/catchReduxAsyncMutation";
 
 const registerSchema = z.object({
   name: z
@@ -24,13 +26,21 @@ const RegisterForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<IRegister>({
     resolver: zodResolver(registerSchema),
   });
 
-  const handleRegister = (data: IRegister) => {
+  const [userRegister, { isLoading }] = useRegisterUserMutation();
+
+  const handleRegister = async (data: IRegister) => {
     console.log("Register data:", data);
+    await handleAsyncMutation(userRegister, data, 201, {
+      success: "Account created successfully! Please log in.",
+      error: "Failed to create account. Please try again.",
+    });
+    // it will be logged in automatically after registration
+    // window.location.replace("/");
   };
 
   return (
@@ -44,6 +54,7 @@ const RegisterForm = () => {
           placeholder="Enter your name"
           className="h-12 text-base"
           {...register("name")}
+          disabled={isLoading}
         />
         {errors.name && (
           <span className="text-red-500 text-sm mt-1">
@@ -58,6 +69,7 @@ const RegisterForm = () => {
           placeholder="Enter your email"
           className="h-12 text-base"
           {...register("email")}
+          disabled={isLoading}
         />
         {errors.email && (
           <span className="text-red-500 text-sm mt-1">
@@ -72,14 +84,15 @@ const RegisterForm = () => {
         className="h-12 text-base"
         error={errors.password?.message}
         placeholder="Enter your password"
+        isLoading={isLoading}
       />
 
       <Button
         type="submit"
         className="h-12 text-base font-semibold mt-2"
-        disabled={isSubmitting}
+        disabled={isLoading}
       >
-        {isSubmitting ? "Creating account..." : "Create Account"}
+        {isLoading ? "Creating account..." : "Create Account"}
       </Button>
       <GoogleLogin />
     </form>
