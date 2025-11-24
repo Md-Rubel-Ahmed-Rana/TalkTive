@@ -1,5 +1,5 @@
+import Login from "@/auth/login";
 import PageMetadata from "@/common/PageMetadata";
-import { Button } from "@/components/ui/button";
 import { Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({
@@ -21,9 +21,9 @@ export default function Home() {
         keywords="Talktive, CMS, Home"
       />
       <div
-        className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
+        className={`${geistSans.className} ${geistMono.className}`}
       >
-        <Button>Welcome to Talktive</Button>
+      <Login />
       </div>
     </>
   );
