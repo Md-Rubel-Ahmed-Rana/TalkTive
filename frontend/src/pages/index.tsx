@@ -1,5 +1,9 @@
 import Login from "@/auth/login";
+import FullScreenLoading from "@/common/loading";
 import PageMetadata from "@/common/PageMetadata";
+import { useGetLoggedInUserQuery } from "@/features/auth";
+import Layout from "@/layout";
+import { IUser } from "@/types/user";
 import { Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({
@@ -13,17 +17,17 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
+  const { data, isLoading } = useGetLoggedInUserQuery({});
+  const user = data?.data as IUser;
   return (
     <>
       <PageMetadata
         title="Talktive"
-        description="Welcome to Talktive CMS"
-        keywords="Talktive, CMS, Home"
+        description="Welcome to Talktive - Your Ultimate Communication Solution!"
+        keywords="Talktive, Home"
       />
-      <div
-        className={`${geistSans.className} ${geistMono.className}`}
-      >
-      <Login />
+      <div className={`${geistSans.className} ${geistMono.className}`}>
+        {isLoading ? <FullScreenLoading /> : user ? <Layout /> : <Login />}
       </div>
     </>
   );
