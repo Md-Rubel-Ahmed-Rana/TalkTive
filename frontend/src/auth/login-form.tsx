@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import GoogleLogin from "./google-login";
+import PasswordInput from "@/common/password-input";
 
 const loginSchema = z.object({
   email: z.email("Invalid email address"),
@@ -45,21 +46,21 @@ const LoginForm = () => {
         )}
       </div>
 
-      <div className="flex flex-col">
-        <Input
-          type="password"
-          placeholder="Enter your password"
-          className="h-12 text-base"
-          {...register("password")}
-        />
-        {errors.password && (
-          <span className="text-red-500 text-sm mt-1">
-            {errors.password.message}
-          </span>
-        )}
-      </div>
+      <PasswordInput
+        name="password"
+        register={register}
+        className="h-12 text-base"
+        error={errors.password?.message}
+        placeholder="Enter your password"
+      />
 
-      <div className="text-right">
+      <div className="flex justify-between items-center">
+        <Link
+          href="/account/create"
+          className="text-sm text-blue-500 hover:underline"
+        >
+          Create account
+        </Link>
         <Link
           href="/forgot-password"
           className="text-sm text-blue-500 hover:underline"
