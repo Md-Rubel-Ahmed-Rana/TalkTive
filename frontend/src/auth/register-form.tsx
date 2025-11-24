@@ -3,11 +3,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import GoogleLogin from "./google-login";
 import PasswordInput from "@/common/password-input";
 
-const loginSchema = z.object({
+const registerSchema = z.object({
+  name: z
+    .string()
+    .min(5, "Name must be at least 5 characters")
+    .max(50, "Name must be less than 50 characters"),
   email: z.email("Invalid email address"),
   password: z
     .string()
@@ -15,23 +18,40 @@ const loginSchema = z.object({
     .max(15, "Password must be less than 15 characters"),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
   });
 
-  const handleLogin = (data: LoginFormValues) => {
-    console.log("Login data:", data);
+  const handleRegister = (data: RegisterFormValues) => {
+    console.log("Register data:", data);
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit(handleLogin)}>
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={handleSubmit(handleRegister)}
+    >
+      <div className="flex flex-col">
+        <Input
+          type="text"
+          placeholder="Enter your name"
+          className="h-12 text-base"
+          {...register("name")}
+        />
+        {errors.name && (
+          <span className="text-red-500 text-sm mt-1">
+            {errors.name.message}
+          </span>
+        )}
+      </div>
+
       <div className="flex flex-col">
         <Input
           type="email"
@@ -54,31 +74,16 @@ const LoginForm = () => {
         placeholder="Enter your password"
       />
 
-      <div className="flex justify-between items-center">
-        <Link
-          href="/register"
-          className="text-sm text-blue-500 hover:underline"
-        >
-          Create account
-        </Link>
-        <Link
-          href="/forgot-password"
-          className="text-sm text-blue-500 hover:underline"
-        >
-          Forgot Password?
-        </Link>
-      </div>
-
       <Button
         type="submit"
         className="h-12 text-base font-semibold mt-2"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Logging in..." : "Login"}
+        {isSubmitting ? "Creating account..." : "Create Account"}
       </Button>
       <GoogleLogin />
     </form>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
