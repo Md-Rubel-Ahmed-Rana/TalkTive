@@ -36,7 +36,3 @@ TalkTive is a real-time communication web app that provides seamless one-on-one 
 
 - STUN / TURN servers
 - Vercel (frontend deployment)
-
----
-
-## 📁 Project Structure
