@@ -15,18 +15,18 @@ const loginSchema = z.object({
     .max(15, "Password must be less than 15 characters"),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+export type ILogin = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormValues>({
+  } = useForm<ILogin>({
     resolver: zodResolver(loginSchema),
   });
 
-  const handleLogin = (data: LoginFormValues) => {
+  const handleLogin = (data: ILogin) => {
     console.log("Login data:", data);
   };
 
