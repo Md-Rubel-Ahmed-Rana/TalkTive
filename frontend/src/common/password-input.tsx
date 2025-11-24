@@ -9,6 +9,7 @@ type PasswordInputProps<T extends FieldValues> = {
   register: UseFormRegister<T>;
   error?: string;
   className?: string;
+  isLoading?: boolean;
 };
 
 const PasswordInput = <T extends FieldValues>({
@@ -17,6 +18,7 @@ const PasswordInput = <T extends FieldValues>({
   register,
   error,
   className,
+  isLoading,
 }: PasswordInputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -27,6 +29,7 @@ const PasswordInput = <T extends FieldValues>({
         placeholder={placeholder}
         className={`h-12 text-base pr-10 ${className || ""}`}
         {...register(name)}
+        disabled={isLoading}
       />
       <button
         type="button"

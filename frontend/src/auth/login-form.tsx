@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import GoogleLogin from "./google-login";
 import PasswordInput from "@/common/password-input";
+import handleAsyncMutation from "@/utils/catchReduxAsyncMutation";
+import { useLoginUserMutation } from "@/features/auth";
 
 const loginSchema = z.object({
   email: z.email("Invalid email address"),
@@ -21,13 +23,20 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ILogin>({
     resolver: zodResolver(loginSchema),
   });
 
-  const handleLogin = (data: ILogin) => {
+  const [loginUser, { isLoading }] = useLoginUserMutation();
+
+  const handleLogin = async (data: ILogin) => {
     console.log("Login data:", data);
+    await handleAsyncMutation(loginUser, data, 200, {
+      error: "Login failed. Please check your credentials.",
+      success: "Login successful! Redirecting...",
+    });
+    // window.location.reload();
   };
 
   return (
@@ -38,6 +47,7 @@ const LoginForm = () => {
           placeholder="Enter your email"
           className="h-12 text-base"
           {...register("email")}
+          disabled={isLoading}
         />
         {errors.email && (
           <span className="text-red-500 text-sm mt-1">
@@ -52,6 +62,7 @@ const LoginForm = () => {
         className="h-12 text-base"
         error={errors.password?.message}
         placeholder="Enter your password"
+        isLoading={isLoading}
       />
 
       <div className="flex justify-between items-center">
@@ -72,9 +83,9 @@ const LoginForm = () => {
       <Button
         type="submit"
         className="h-12 text-base font-semibold mt-2"
-        disabled={isSubmitting}
+        disabled={isLoading}
       >
-        {isSubmitting ? "Logging in..." : "Login"}
+        {isLoading ? "Logging in..." : "Login"}
       </Button>
       <GoogleLogin />
     </form>
