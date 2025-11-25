@@ -32,10 +32,12 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    console.log("Hello, I am from Auth Guard");
     const request: Request = context.switchToHttp().getRequest();
     const response: Response = context.switchToHttp().getResponse();
 
     const { accessToken, refreshToken } = this.extractTokens(request);
+    console.log({ accessToken, refreshToken });
 
     if (!accessToken && !refreshToken) {
       throw new UnauthorizedException("Unauthorized");
@@ -116,8 +118,9 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokens(request: Request) {
-    const accessToken = request.cookies[this.cookieNames.accessToken];
-    const refreshToken = request.cookies[this.cookieNames.refreshToken];
+    // TypeError: Cannot read properties of undefined (reading 'talktive_access_token')
+    const accessToken = request.cookies?.[this.cookieNames.accessToken];
+    const refreshToken = request.cookies?.[this.cookieNames.refreshToken];
 
     return {
       accessToken: accessToken?.startsWith("Bearer ")

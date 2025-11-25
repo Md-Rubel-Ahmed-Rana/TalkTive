@@ -4,6 +4,7 @@ import { UsersService } from "src/users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { ConfigService } from "@nestjs/config";
+import { Types } from "mongoose";
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,16 @@ export class AuthService {
     }
     const tokens = await this.generateTokens(user);
     return tokens;
+  }
+
+  async getLoggedInUser(userId: string): Promise<any> {
+    const user = await this.usersService.findOne(new Types.ObjectId(userId));
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: "Authenticated user retrieved successfully",
+      data: user,
+    };
   }
 
   // generate jwt tokens (access and refresh)
