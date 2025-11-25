@@ -1,13 +1,10 @@
 export type IUser = {
   id: string;
   name: string;
-  username: string;
-  userId: string;
-  phoneNumber?: string;
-  profilePicture?: string;
   email: string;
   password?: string;
   hasPassword?: boolean;
+  profilePicture?: string;
   provider: "email" | "google" | "facebook" | "twitter";
   dateOfBirth?: Date;
   gender?: "male" | "female";
