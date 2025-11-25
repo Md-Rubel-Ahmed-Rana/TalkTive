@@ -2,25 +2,24 @@ import { HttpStatus, Injectable } from "@nestjs/common";
 import { User } from "src/users/users.schema";
 import { UsersService } from "src/users/users.service";
 import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
-  // inject user service
+  private readonly saltOrRounds = 12;
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private configService: ConfigService
   ) {}
   async registerUser(data: User): Promise<any> {
+    // hash password before saving
+    data.password = await bcrypt.hash(data.password, this.saltOrRounds);
     const user = await this.usersService.create(data);
 
     const tokens = await this.generateTokens(user);
-
-    return {
-      statusCode: HttpStatus.CREATED,
-      success: true,
-      message: "User registered successfully",
-      data: { user, tokens },
-    };
+    return tokens;
   }
 
   // generate jwt tokens (access and refresh)
@@ -35,15 +34,19 @@ export class AuthService {
     };
     // expired in 3 days
     const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: "15m",
+      expiresIn: "3d",
+      secret: this.configService.get<string>("JWT_SECRET"),
     });
     // expired in 7 days
     const refreshToken = await this.jwtService.signAsync(payload, {
       expiresIn: "7d",
+      secret: this.configService.get<string>("JWT_SECRET"),
     });
+
+    // return with Bearer prefix
     return {
-      accessToken,
-      refreshToken,
+      accessToken: `Bearer ${accessToken}`,
+      refreshToken: `Bearer ${refreshToken}`,
     };
   }
 }

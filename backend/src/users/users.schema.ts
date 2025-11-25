@@ -55,15 +55,15 @@ export class User {
   @Prop({
     type: String,
     enum: Gender,
-    default: Gender.OTHER,
+    default: null,
   })
   gender: Gender;
 
   @Prop()
   lastLoginAt?: Date;
 
-  @Prop({ default: true })
-  isActive: boolean;
+  @Prop({ default: false })
+  isOnline: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

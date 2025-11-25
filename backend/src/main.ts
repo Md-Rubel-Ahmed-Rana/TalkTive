@@ -9,6 +9,15 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>("PORT");
 
+  // config cors, prefix and others here if needed
+  app.enableCors({
+    credentials: true,
+    origin: ["http://localhost:3000", "https://talktive.vercel.app"],
+  });
+
+  // add 'api/v1' prefix to all routes
+  app.setGlobalPrefix("api/v1");
+
   await databaseConnect();
   await connectWithRetry();
 
