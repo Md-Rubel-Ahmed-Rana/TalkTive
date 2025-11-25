@@ -2,12 +2,16 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpStatus,
   Post,
+  Request,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 import { AuthService } from "./auth.service";
+import { AuthGuard } from "./auth.guard";
 
 @Controller("auth")
 export class AuthController {
@@ -16,6 +20,10 @@ export class AuthController {
     httpOnly: true,
     secure: true,
     sameSite: "none" as const,
+  };
+  private readonly cookieNames = {
+    accessToken: "talktive_access_token",
+    refreshToken: "talktive_refresh_token",
   };
 
   constructor(private readonly authService: AuthService) {}
@@ -29,8 +37,8 @@ export class AuthController {
       await this.authService.registerUser(data);
     console.log({ accessToken, refreshToken });
 
-    res.cookie("talktive_access_token", accessToken, this.cookieOptions);
-    res.cookie("talktive_refresh_token", refreshToken, this.cookieOptions);
+    res.cookie(this.cookieNames.accessToken, accessToken, this.cookieOptions);
+    res.cookie(this.cookieNames.refreshToken, refreshToken, this.cookieOptions);
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -48,8 +56,8 @@ export class AuthController {
       data.email,
       data.password
     );
-    res.cookie("talktive_access_token", accessToken, this.cookieOptions);
-    res.cookie("talktive_refresh_token", refreshToken, this.cookieOptions);
+    res.cookie(this.cookieNames.accessToken, accessToken, this.cookieOptions);
+    res.cookie(this.cookieNames.refreshToken, refreshToken, this.cookieOptions);
     return {
       statusCode: HttpStatus.OK,
       success: true,
@@ -57,10 +65,16 @@ export class AuthController {
     };
   }
 
+  @UseGuards(AuthGuard)
+  @Get("")
+  getProfile(@Request() req: any): any {
+    return this.authService.getLoggedInUser(req.user.id);
+  }
+
   @Delete("logout")
   async logoutUser(@Res({ passthrough: true }) res: Response): Promise<any> {
-    res.clearCookie("talktive_access_token", this.cookieOptions);
-    res.clearCookie("talktive_refresh_token", this.cookieOptions);
+    res.clearCookie(this.cookieNames.accessToken, this.cookieOptions);
+    res.clearCookie(this.cookieNames.refreshToken, this.cookieOptions);
     return {
       statusCode: HttpStatus.OK,
       success: true,

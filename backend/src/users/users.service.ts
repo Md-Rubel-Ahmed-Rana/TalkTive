@@ -33,7 +33,7 @@ export class UsersService {
   }
 
   async findOne(id: Types.ObjectId) {
-    return await this.userModel.findById(id).exec();
+    return await this.userModel.findById(id).select("-password").exec();
   }
 
   async update(id: Types.ObjectId, data: Partial<User>) {
