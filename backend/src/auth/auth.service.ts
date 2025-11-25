@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { User } from "src/users/users.schema";
 import { UsersService } from "src/users/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -18,6 +18,16 @@ export class AuthService {
     data.password = await bcrypt.hash(data.password, this.saltOrRounds);
     const user = await this.usersService.create(data);
 
+    const tokens = await this.generateTokens(user);
+    return tokens;
+  }
+
+  async loginUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new HttpException("Invalid credentials", HttpStatus.UNAUTHORIZED);
+    }
     const tokens = await this.generateTokens(user);
     return tokens;
   }
