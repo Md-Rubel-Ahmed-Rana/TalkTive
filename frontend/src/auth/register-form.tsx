@@ -42,7 +42,7 @@ const RegisterForm = () => {
         success: "Account created successfully! Please log in.",
         error: "Failed to create account. Please try again.",
       },
-      "/login"
+      "/"
     );
   };
 
