@@ -41,7 +41,7 @@ export class AuthService {
     return tokens;
   }
 
-  async googleOneTapLogin(idToken: string): Promise<string> {
+  async googleOneTapLogin(idToken: string): Promise<any> {
     if (!idToken)
       throw new HttpException("ID Token required", HttpStatus.BAD_REQUEST);
 
@@ -59,16 +59,8 @@ export class AuthService {
       name: payload.name,
       profilePicture: payload.picture,
     } as GoogleLoginDto;
-
-    return this.getOrCreateUserAndGenerateToken(credentials);
-  }
-
-  private async getOrCreateUserAndGenerateToken(
-    credentials: GoogleLoginDto
-  ): Promise<any> {
     const user = await this.usersService.createUserWithGoogle(credentials);
-    const tokens = await this.generateTokens(user);
-    return tokens;
+    return await this.generateTokens(user);
   }
 
   async getLoggedInUser(userId: string): Promise<any> {
