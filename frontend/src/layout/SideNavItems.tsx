@@ -1,95 +1,80 @@
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import Link from "next/link";
+import { useState } from "react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   SidebarGroup,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { ChevronRight, UserCog, UserPlus2, Users } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { useGetAllUsersQuery } from "@/features/users";
+import { IUser } from "@/types/user";
+import UsersLoadingSkeleton from "@/skeletons/UsersLoadingSkeleton";
+import UsersLoadingSkeletonMini from "@/skeletons/UsersLoadingSkeletonMini";
 
 const SideNavItems = () => {
-  const pathname = usePathname();
+  const { data, isLoading } = useGetAllUsersQuery({});
+  const [search, setSearch] = useState("");
+  const { open } = useSidebar();
 
-  const navMain = [
-    {
-      title: "Manage admins",
-      icon: UserCog,
-      isActive: false,
-      items: [
-        {
-          title: "All admins",
-          url: `/admins`,
-          icon: Users,
-        },
-        {
-          title: "Create admin",
-          url: `/admins/create`,
-          icon: UserPlus2,
-        },
-      ],
-    },
-  ];
+  const users = (data?.data || data || []) as IUser[];
+
+  const filteredUsers = users.filter((user) =>
+    (user?.name || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (!isLoading) {
+    return open ? <UsersLoadingSkeleton /> : <UsersLoadingSkeletonMini />;
+  }
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="space-y-3">
+      {open && (
+        <Input
+          placeholder="Search to chat..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-9 text-sm ring-2 ring-gray-300 dark:ring-gray-700"
+        />
+      )}
+
       <SidebarMenu>
-        {navMain.map((item) => {
-          const isSectionActive = item.items?.some((subItem) =>
-            pathname?.startsWith(subItem.url)
+        {filteredUsers.map((user) => {
+          const avatar = (
+            <Avatar className="w-8 h-8 ring-1 ring-gray-300 dark:ring-gray-700">
+              {user.profilePicture ? (
+                <AvatarImage
+                  src={user.profilePicture}
+                  alt={user.name || "User Image"}
+                  className="object-cover"
+                />
+              ) : (
+                <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                  {user.name?.charAt(0).toUpperCase() || "N"}
+                </AvatarFallback>
+              )}
+            </Avatar>
           );
 
           return (
-            <Collapsible
-              key={item.title}
-              asChild
-              defaultOpen={isSectionActive}
-              className="group/collapsible mb-3"
+            <SidebarMenuItem
+              key={user._id}
+              className={
+                open
+                  ? "py-3 flex items-center border border-gray-300 dark:border-gray-700 gap-2 hover:bg-white dark:hover:bg-gray-700 rounded-md px-2 cursor-pointer transition"
+                  : "flex justify-center py-2"
+              }
             >
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {item.items?.map((subItem) => {
-                      const isActive = pathname === subItem.url;
-
-                      return (
-                        <SidebarMenuSubItem
-                          className="mb-2"
-                          key={subItem.title}
-                        >
-                          <SidebarMenuSubButton asChild>
-                            <Link
-                              href={subItem.url}
-                              className={
-                                isActive ? "text-primary font-medium" : ""
-                              }
-                            >
-                              {subItem.icon && <subItem.icon />}
-                              <span>{subItem.title}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      );
-                    })}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
+              {/* 👇 Make avatar OR full item clickable based on sidebar state */}
+              <Link
+                href={`/chat/${user._id}`}
+                className={open ? "flex items-center gap-2 w-full" : ""}
+              >
+                {avatar}
+                {open && <span className="truncate">{user.name}</span>}
+              </Link>
+            </SidebarMenuItem>
           );
         })}
       </SidebarMenu>
