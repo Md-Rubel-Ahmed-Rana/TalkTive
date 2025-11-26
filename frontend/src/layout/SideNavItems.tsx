@@ -24,7 +24,7 @@ const SideNavItems = () => {
     (user?.name || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  if (!isLoading) {
+  if (isLoading) {
     return open ? <UsersLoadingSkeleton /> : <UsersLoadingSkeletonMini />;
   }
 
