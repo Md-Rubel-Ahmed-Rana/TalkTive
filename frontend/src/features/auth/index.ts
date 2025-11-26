@@ -99,10 +99,10 @@ export const initializeGoogleOneTap = async () => {
         );
         window.location.replace("/");
       } catch {
-        window.location.replace("/login?error=google_one_tap_failed");
+        window.location.replace("/");
       }
     },
-    auto_select: true,
+    auto_select: false,
     cancel_on_tap_outside: false,
   });
 
