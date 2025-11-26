@@ -1,7 +1,8 @@
 import { HttpException, Injectable } from "@nestjs/common";
-import { User } from "./users.schema";
+import { AuthProvider, User } from "./users.schema";
 import { Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
+import { GoogleLoginDto } from "src/auth/dto/create-google.dto";
 
 @Injectable()
 export class UsersService {
@@ -18,6 +19,21 @@ export class UsersService {
     const createdUser = await this.userModel.create(data);
     createdUser.password = undefined;
     return createdUser;
+  }
+
+  async createUserWithGoogle(data: GoogleLoginDto) {
+    const isExist = await this.userModel.findOne({ email: data.email });
+    if (isExist) {
+      return isExist;
+    }
+    const payload = {
+      ...data,
+      provider: AuthProvider.GOOGLE,
+      hasPassword: false,
+      lastLoginAt: new Date(),
+      isOnline: true,
+    };
+    return await this.userModel.create(payload);
   }
 
   async findAll() {
