@@ -34,13 +34,16 @@ const RegisterForm = () => {
   const [userRegister, { isLoading }] = useRegisterUserMutation();
 
   const handleRegister = async (data: IRegister) => {
-    console.log("Register data:", data);
-    await handleAsyncMutation(userRegister, data, 201, {
-      success: "Account created successfully! Please log in.",
-      error: "Failed to create account. Please try again.",
-    });
-    // it will be logged in automatically after registration
-    // window.location.replace("/");
+    await handleAsyncMutation(
+      userRegister,
+      data,
+      201,
+      {
+        success: "Account created successfully! Please log in.",
+        error: "Failed to create account. Please try again.",
+      },
+      "/"
+    );
   };
 
   return (

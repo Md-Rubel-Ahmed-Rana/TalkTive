@@ -31,12 +31,16 @@ const LoginForm = () => {
   const [loginUser, { isLoading }] = useLoginUserMutation();
 
   const handleLogin = async (data: ILogin) => {
-    console.log("Login data:", data);
-    await handleAsyncMutation(loginUser, data, 200, {
-      error: "Login failed. Please check your credentials.",
-      success: "Login successful! Redirecting...",
-    });
-    // window.location.reload();
+    await handleAsyncMutation(
+      loginUser,
+      data,
+      200,
+      {
+        error: "Login failed. Please check your credentials.",
+        success: "Login successful! Redirecting...",
+      },
+      "/"
+    );
   };
 
   return (
