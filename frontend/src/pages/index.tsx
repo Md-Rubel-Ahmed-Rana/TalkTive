@@ -1,8 +1,9 @@
 import Login from "@/auth/login";
 import FullScreenLoading from "@/common/loading";
 import PageMetadata from "@/common/PageMetadata";
+import Dashboard from "@/dashboard";
 import { useGetLoggedInUserQuery } from "@/features/auth";
-import Layout from "@/layout";
+import DashboardLayout from "@/layout/DashboardLayout";
 import { IUser } from "@/types/user";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -27,7 +28,15 @@ export default function Home() {
         keywords="Talktive, Home"
       />
       <div className={`${geistSans.className} ${geistMono.className}`}>
-        {isLoading ? <FullScreenLoading /> : user ? <Layout /> : <Login />}
+        {isLoading ? (
+          <FullScreenLoading />
+        ) : user ? (
+          <DashboardLayout>
+            <Dashboard />
+          </DashboardLayout>
+        ) : (
+          <Login />
+        )}
       </div>
     </>
   );

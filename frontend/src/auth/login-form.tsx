@@ -39,7 +39,7 @@ const LoginForm = () => {
         error: "Login failed. Please check your credentials.",
         success: "Login successful! Redirecting...",
       },
-      "/profile"
+      "/"
     );
   };
 
