@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ILogin } from "@/auth/login-form";
 import { IRegister } from "@/auth/register-form";
-import apiSlice from "@/redux/apiSlice";
+import apiSlice, { baseApi } from "@/redux/apiSlice";
 import { IUser } from "@/types/user";
+import axios from "axios";
 
 const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -81,3 +83,28 @@ export const {
   useUpdateUserMutation,
   useChangeUserPasswordMutation,
 } = authApi;
+
+export const initializeGoogleOneTap = async () => {
+  window.google.accounts.id.initialize({
+    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+    callback: async (response: any) => {
+      const idToken = response.credential;
+      try {
+        await axios.post(
+          `${baseApi}/auth/google/onetap`,
+          { idToken },
+          {
+            withCredentials: true,
+          }
+        );
+        window.location.replace("/");
+      } catch {
+        window.location.replace("/login?error=google_one_tap_failed");
+      }
+    },
+    auto_select: true,
+    cancel_on_tap_outside: false,
+  });
+
+  window.google.accounts.id.prompt();
+};
