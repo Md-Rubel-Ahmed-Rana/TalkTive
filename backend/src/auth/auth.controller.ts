@@ -12,6 +12,7 @@ import {
 import { Response } from "express";
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "./auth.guard";
+import { ConfigService } from "@nestjs/config";
 
 @Controller("auth")
 export class AuthController {
@@ -26,7 +27,10 @@ export class AuthController {
     refreshToken: "talktive_refresh_token",
   };
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService
+  ) {}
 
   @Post("register")
   async registerUser(
@@ -63,6 +67,20 @@ export class AuthController {
       success: true,
       message: "User logged in successfully",
     };
+  }
+
+  @Post("google/onetap")
+  async googleOneTapLogin(
+    @Body("idToken") idToken: string,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.googleOneTapLogin(idToken);
+
+    res.cookie(this.cookieNames.accessToken, accessToken, this.cookieOptions);
+    res.cookie(this.cookieNames.refreshToken, refreshToken, this.cookieOptions);
+
+    return res.redirect(this.configService.get<string>("GOOGLE_REDIRECT_URL"));
   }
 
   @UseGuards(AuthGuard)

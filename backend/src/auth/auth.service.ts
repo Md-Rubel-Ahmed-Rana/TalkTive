@@ -5,15 +5,23 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { Types } from "mongoose";
+import { OAuth2Client } from "google-auth-library";
+import { GoogleLoginDto } from "./dto/create-google.dto";
 
 @Injectable()
 export class AuthService {
   private readonly saltOrRounds = 12;
+  private readonly client: OAuth2Client;
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService
-  ) {}
+  ) {
+    this.client = new OAuth2Client(
+      this.configService.get<string>("GOOGLE_CLIENT_ID")
+    );
+  }
+
   async registerUser(data: User): Promise<any> {
     // hash password before saving
     data.password = await bcrypt.hash(data.password, this.saltOrRounds);
@@ -31,6 +39,28 @@ export class AuthService {
     }
     const tokens = await this.generateTokens(user);
     return tokens;
+  }
+
+  async googleOneTapLogin(idToken: string): Promise<any> {
+    if (!idToken)
+      throw new HttpException("ID Token required", HttpStatus.BAD_REQUEST);
+
+    const ticket = await this.client.verifyIdToken({
+      idToken,
+      audience: this.configService.get<string>("GOOGLE_CLIENT_ID"),
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload)
+      throw new HttpException("Invalid Google token", HttpStatus.UNAUTHORIZED);
+
+    const credentials = {
+      email: payload.email,
+      name: payload.name,
+      profilePicture: payload.picture,
+    } as GoogleLoginDto;
+    const user = await this.usersService.createUserWithGoogle(credentials);
+    return await this.generateTokens(user);
   }
 
   async getLoggedInUser(userId: string): Promise<any> {
