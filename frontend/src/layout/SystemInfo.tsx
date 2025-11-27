@@ -31,7 +31,7 @@ const items = [
     isTargetBlank: true,
   },
   {
-    name: "Github Account",
+    name: "Github - Follow Now",
     logo: Github,
     url: "https://github.com/Md-Rubel-Ahmed-Rana",
     isTargetBlank: true,
