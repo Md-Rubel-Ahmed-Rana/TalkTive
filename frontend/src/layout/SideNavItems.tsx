@@ -27,7 +27,6 @@ const SideNavItems = () => {
   if (isLoading) {
     return open ? <UsersLoadingSkeleton /> : <UsersLoadingSkeletonMini />;
   }
-
   return (
     <SidebarGroup className="space-y-3">
       {open && (
@@ -68,7 +67,7 @@ const SideNavItems = () => {
             >
               {/* 👇 Make avatar OR full item clickable based on sidebar state */}
               <Link
-                href={`/chat/${user._id}`}
+                href={`/chat/${user._id}?name=${user?.name}`}
                 className={open ? "flex items-center gap-2 w-full" : ""}
               >
                 {avatar}
