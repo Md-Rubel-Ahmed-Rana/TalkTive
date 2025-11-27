@@ -62,13 +62,12 @@ const SideNavItems = () => {
               key={user._id}
               className={
                 open
-                  ? "py-3 flex items-center border border-gray-300 dark:border-gray-700 gap-2 hover:bg-white dark:hover:bg-gray-700 rounded-md px-2 cursor-pointer transition"
+                  ? "py-2 flex items-center border border-gray-300 dark:border-gray-700 gap-2 hover:bg-white dark:hover:bg-gray-700 rounded-md px-2 cursor-pointer transition"
                   : "flex justify-center py-2"
               }
             >
-              {/* 👇 Make avatar OR full item clickable based on sidebar state */}
               <Link
-                href={`/chat/${user._id}`}
+                href={`/chat/${user._id}?name=${user?.name}`}
                 className={open ? "flex items-center gap-2 w-full" : ""}
               >
                 {avatar}

@@ -15,7 +15,7 @@ const DashboardLayout = ({ children }: Props) => {
         {/* dashboard header  */}
         <DashboardHeader />
         {/* dynamic content  */}
-        <main>{children}</main>
+        <main className="max-h-screen h-full">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

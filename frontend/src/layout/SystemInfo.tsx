@@ -31,7 +31,7 @@ const items = [
     isTargetBlank: true,
   },
   {
-    name: "Github Account",
+    name: "Github - Follow Now",
     logo: Github,
     url: "https://github.com/Md-Rubel-Ahmed-Rana",
     isTargetBlank: true,
@@ -39,7 +39,7 @@ const items = [
   {
     name: "Source code",
     logo: Code2,
-    url: "https://github.com/Md-Rubel-Ahmed-Rana/My-Tube",
+    url: "https://github.com/Md-Rubel-Ahmed-Rana/TalkTive",
     isTargetBlank: true,
   },
 ];
