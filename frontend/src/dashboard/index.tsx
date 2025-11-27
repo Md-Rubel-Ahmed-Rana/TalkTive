@@ -6,7 +6,8 @@ import { toast } from "sonner";
 const TalktiveGetStarted = () => {
   const handleShowDownloadMessage = () => {
     toast.info(
-      "Thank you for your interest! Our Windows and mobile apps are not available yet. We truly appreciate your patience and support — we’ll notify you as soon as they’re ready!"
+      "Thank you for your interest! Our Windows and mobile apps are not available yet. We truly appreciate your patience and support — we’ll notify you as soon as they’re ready!",
+      { duration: 10000, closeButton: true }
     );
   };
 

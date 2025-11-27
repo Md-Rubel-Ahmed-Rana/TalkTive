@@ -9,7 +9,14 @@ const usersApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["user"],
     }),
+    getUserById: builder.query({
+      query: ({ id }: { id: string }) => ({
+        method: "GET",
+        url: `/users/${id}`,
+      }),
+      providesTags: ["user"],
+    }),
   }),
 });
 
-export const { useGetAllUsersQuery } = usersApi;
+export const { useGetAllUsersQuery, useGetUserByIdQuery } = usersApi;

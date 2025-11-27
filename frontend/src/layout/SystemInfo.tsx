@@ -39,7 +39,7 @@ const items = [
   {
     name: "Source code",
     logo: Code2,
-    url: "https://github.com/Md-Rubel-Ahmed-Rana/My-Tube",
+    url: "https://github.com/Md-Rubel-Ahmed-Rana/TalkTive",
     isTargetBlank: true,
   },
 ];
