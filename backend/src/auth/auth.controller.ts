@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Post,
+  Req,
   Request,
   Res,
   UseGuards,
@@ -97,6 +98,32 @@ export class AuthController {
       statusCode: HttpStatus.OK,
       success: true,
       message: "User logged out successfully",
+    };
+  }
+
+  @Get("check-cookie")
+  checkCookie(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    const probe = req.cookies?.cookie_probe;
+
+    if (!probe) {
+      res.cookie("cookie_probe", "1", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+      });
+
+      return {
+        success: true,
+        cookiesWorking: false,
+        firstTime: true,
+      };
+    }
+
+    return {
+      success: true,
+      cookiesWorking: true,
     };
   }
 }
