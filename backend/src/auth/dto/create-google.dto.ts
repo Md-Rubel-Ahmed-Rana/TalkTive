@@ -3,3 +3,8 @@ export class GoogleLoginDto {
   email: string;
   profilePicture: string;
 }
+
+export class ChangePasswordDto {
+  newPassword: string;
+  oldPassword: string;
+}
