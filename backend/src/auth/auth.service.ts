@@ -93,6 +93,13 @@ export class AuthService {
     await this.usersService.update(user._id, { password: newPassword });
   }
 
+  async updateUserInfo(data: Partial<User>, id: Types.ObjectId) {
+    const user = await this.usersService.update(id, data);
+    if (!user) {
+      throw new HttpException("User was not found", HttpStatus.NOT_FOUND);
+    }
+  }
+
   // generate jwt tokens (access and refresh)
   async generateTokens(
     user: any
