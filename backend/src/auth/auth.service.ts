@@ -6,7 +6,8 @@ import * as bcrypt from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { Types } from "mongoose";
 import { OAuth2Client } from "google-auth-library";
-import { ChangePasswordDto, GoogleLoginDto } from "./dto/create-google.dto";
+import { GoogleLoginDto } from "./dto/create-google.dto";
+import { ChangePasswordDto } from "./dto/password.dto";
 
 @Injectable()
 export class AuthService {
