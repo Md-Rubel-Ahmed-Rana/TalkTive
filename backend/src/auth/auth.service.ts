@@ -6,7 +6,7 @@ import * as bcrypt from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { Types } from "mongoose";
 import { OAuth2Client } from "google-auth-library";
-import { GoogleLoginDto } from "./dto/create-google.dto";
+import { ChangePasswordDto, GoogleLoginDto } from "./dto/create-google.dto";
 
 @Injectable()
 export class AuthService {
@@ -71,6 +71,25 @@ export class AuthService {
       message: "Authenticated user retrieved successfully",
       data: user,
     };
+  }
+
+  async changePassword(data: ChangePasswordDto, email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new HttpException("User was not found", HttpStatus.NOT_FOUND);
+    }
+
+    // compare old password
+    const isMatched = await bcrypt.compare(data.oldPassword, user.password);
+    if (!isMatched) {
+      throw new HttpException(
+        "Your old password is wrong. Please provide your old password to change",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const newPassword = await bcrypt.hash(data.newPassword, this.saltOrRounds);
+
+    await this.usersService.update(user._id, { password: newPassword });
   }
 
   // generate jwt tokens (access and refresh)
