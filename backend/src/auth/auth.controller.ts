@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpStatus,
+  Patch,
   Post,
   Req,
   Request,
@@ -14,6 +15,8 @@ import { Response } from "express";
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "./auth.guard";
 import { ConfigService } from "@nestjs/config";
+import { ChangePasswordDto } from "./dto/password.dto";
+import { User } from "src/users/users.schema";
 
 @Controller("auth")
 export class AuthController {
@@ -88,6 +91,18 @@ export class AuthController {
   @Get("")
   getProfile(@Request() req: any): any {
     return this.authService.getLoggedInUser(req.user.id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch("change-password")
+  changePassword(@Request() req: any, @Body() body: ChangePasswordDto): any {
+    return this.authService.changePassword(body, req.user.email);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch("")
+  updateUserInfo(@Request() req: any, @Body() body: User): any {
+    return this.authService.updateUserInfo(body, req.user.id);
   }
 
   @Delete("logout")
