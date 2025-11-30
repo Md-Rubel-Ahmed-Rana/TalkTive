@@ -71,13 +71,7 @@ export class AuthService {
   }
 
   async getLoggedInUser(userId: string): Promise<any> {
-    const user = await this.usersService.findOne(new Types.ObjectId(userId));
-    return {
-      statusCode: HttpStatus.OK,
-      success: true,
-      message: "Authenticated user retrieved successfully",
-      data: user,
-    };
+    return await this.usersService.findOne(new Types.ObjectId(userId));
   }
 
   async changePassword(data: ChangePasswordDto, email: string) {

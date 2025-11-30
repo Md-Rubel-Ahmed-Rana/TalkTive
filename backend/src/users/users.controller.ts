@@ -7,8 +7,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll() {
-    const data = this.usersService.findAll();
+  async findAll() {
+    const data = await this.usersService.findAll();
     return {
       statusCode: HttpStatus.OK,
       success: true,
@@ -18,8 +18,8 @@ export class UsersController {
   }
 
   @Get(":id")
-  findOne(@Param("id") id: Types.ObjectId) {
-    const data = this.usersService.findOne(id);
+  async findOne(@Param("id") id: Types.ObjectId) {
+    const data = await this.usersService.findOne(id);
     return {
       statusCode: HttpStatus.OK,
       success: true,
