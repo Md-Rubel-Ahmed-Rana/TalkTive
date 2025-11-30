@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import mongoose from "mongoose";
 
 export const databaseConnect = async () => {
