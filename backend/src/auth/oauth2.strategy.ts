@@ -6,28 +6,24 @@ import axios from "axios";
 
 @Injectable()
 export class OAuth2Strategy extends PassportStrategy(Strategy, "oauth2") {
-  constructor(configService: ConfigService) {
+  constructor(private config: ConfigService) {
     super({
-      authorizationURL: configService.get<string>("GOOGLE_AUTHORIZATION_URL"),
-      tokenURL: configService.get<string>("GOOGLE_TOKEN_URL"),
-      clientID: configService.get<string>("GOOGLE_CLIENT_ID"),
-      clientSecret: configService.get<string>("GOOGLE_CLIENT_SECRET"),
-      callbackURL: configService.get<string>("GOOGLE_CALLBACK_URL"),
+      authorizationURL: config.get<string>("GOOGLE_AUTHORIZATION_URL"),
+      tokenURL: config.get<string>("GOOGLE_TOKEN_URL"),
+      clientID: config.get<string>("GOOGLE_CLIENT_ID"),
+      clientSecret: config.get<string>("GOOGLE_CLIENT_SECRET"),
+      callbackURL: config.get<string>("GOOGLE_CALLBACK_URL"),
       scope: ["profile", "email"],
     });
   }
 
   async validate(accessToken: string): Promise<any> {
     try {
-      const configService = new ConfigService();
-      const { data } = await axios.get(
-        configService.get<string>("GOOGLE_USERINFO_URL"),
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const { data } = await axios.get(this.config.get("GOOGLE_USERINFO_URL"), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       const user = {
         email: data.email,
