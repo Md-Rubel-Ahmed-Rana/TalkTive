@@ -17,6 +17,7 @@ import { AuthGuard } from "./auth.guard";
 import { ConfigService } from "@nestjs/config";
 import { ChangePasswordDto } from "./dto/password.dto";
 import { User } from "src/users/users.schema";
+import { GoogleLoginDto } from "./dto/create-google.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -81,6 +82,19 @@ export class AuthController {
     const { accessToken, refreshToken } =
       await this.authService.googleOneTapLogin(idToken);
 
+    res.cookie(this.cookieNames.accessToken, accessToken, this.cookieOptions);
+    res.cookie(this.cookieNames.refreshToken, refreshToken, this.cookieOptions);
+
+    return res.redirect(this.configService.get<string>("GOOGLE_REDIRECT_URL"));
+  }
+
+  @Post("/google/login")
+  async googleLogin(
+    @Body() credentials: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.googleLogin(credentials);
     res.cookie(this.cookieNames.accessToken, accessToken, this.cookieOptions);
     res.cookie(this.cookieNames.refreshToken, refreshToken, this.cookieOptions);
 
