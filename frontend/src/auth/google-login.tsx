@@ -30,7 +30,7 @@ const GoogleLogin = () => {
       <Button
         type="button"
         variant="outline"
-        className="flex items-center justify-center gap-2 h-12 text-sm w-full bg-white/90 backdrop-blur-xl hover:bg-white/80"
+        className="flex items-center justify-center gap-2 h-12 text-sm w-full bg-white/90 backdrop-blur-xl hover:bg-white/80 text-gray-800"
         onClick={handleGoogleSignIn}
         disabled={loading}
       >

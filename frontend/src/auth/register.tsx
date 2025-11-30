@@ -14,12 +14,12 @@ const Register = () => {
       <Card className="w-full max-w-md relative z-10 shadow-2xl border-0 bg-white/90 backdrop-blur-xl rounded-2xl">
         <CardHeader className="relative flex items-center justify-center">
           {/* Back icon (left aligned) */}
-          <Link href="/" className="absolute left-5">
+          <Link href="/" className="absolute left-5 dark:text-gray-800">
             <ArrowLeft className="h-6 w-6" />
           </Link>
 
           {/* Centered Title */}
-          <CardTitle className="text-center text-2xl font-bold w-full">
+          <CardTitle className="text-center text-2xl font-bold w-full dark:text-gray-800">
             Create an Account
           </CardTitle>
         </CardHeader>

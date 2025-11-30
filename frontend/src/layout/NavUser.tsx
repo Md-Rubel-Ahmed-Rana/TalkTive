@@ -65,9 +65,9 @@ const NavUser = () => {
                     <AvatarImage src={user?.profilePicture} alt={user?.name} />
                     <AvatarFallback className="rounded-lg">
                       {user?.name
-                        .split(" ")
-                        .map((word) => word[0].toUpperCase())
-                        .join("")}
+                        ?.split(" ")
+                        ?.map((word) => word[0].toUpperCase())
+                        ?.join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
