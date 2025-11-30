@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import mongoose from "mongoose";
 
 export const connectWithRetry = async (retryCount = 5, retryDelay = 3000) => {
