@@ -17,6 +17,8 @@ import { AuthGuard } from "./auth.guard";
 import { ConfigService } from "@nestjs/config";
 import { ChangePasswordDto } from "./dto/password.dto";
 import { User } from "src/users/users.schema";
+import { GoogleLoginDto } from "./dto/create-google.dto";
+import { AuthGuard as PassportAuthGuard } from "@nestjs/passport";
 
 @Controller("auth")
 export class AuthController {
@@ -87,22 +89,61 @@ export class AuthController {
     return res.redirect(this.configService.get<string>("GOOGLE_REDIRECT_URL"));
   }
 
+  @UseGuards(PassportAuthGuard("oauth2"))
+  async googleAuth() {}
+
+  @UseGuards(PassportAuthGuard("oauth2"))
+  @Get("google/login")
+  async googleLogin() {}
+
+  @Get("callback/google")
+  @UseGuards(PassportAuthGuard("oauth2"))
+  async googleAuthRedirect(
+    @Body() credentials: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.googleLogin(credentials);
+    res.cookie(this.cookieNames.accessToken, accessToken, this.cookieOptions);
+    res.cookie(this.cookieNames.refreshToken, refreshToken, this.cookieOptions);
+
+    return res.redirect(this.configService.get<string>("GOOGLE_REDIRECT_URL"));
+  }
+
   @UseGuards(AuthGuard)
   @Get("")
   getProfile(@Request() req: any): any {
-    return this.authService.getLoggedInUser(req.user.id);
+    const data = this.authService.getLoggedInUser(req.user.id);
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: "Authenticated user retrieved successfully",
+      data,
+    };
   }
 
   @UseGuards(AuthGuard)
   @Patch("change-password")
   changePassword(@Request() req: any, @Body() body: ChangePasswordDto): any {
-    return this.authService.changePassword(body, req.user.email);
+    this.authService.changePassword(body, req.user.email);
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: "Password has been changed successfully",
+      data: null,
+    };
   }
 
   @UseGuards(AuthGuard)
   @Patch("")
   updateUserInfo(@Request() req: any, @Body() body: User): any {
-    return this.authService.updateUserInfo(body, req.user.id);
+    this.authService.updateUserInfo(body, req.user.id);
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: "User profile info updated successfully",
+      data: null,
+    };
   }
 
   @Delete("logout")
@@ -113,32 +154,7 @@ export class AuthController {
       statusCode: HttpStatus.OK,
       success: true,
       message: "User logged out successfully",
-    };
-  }
-
-  @Get("check-cookie")
-  checkCookie(@Req() req: any, @Res({ passthrough: true }) res: Response) {
-    const probe = req.cookies?.cookie_probe;
-
-    if (!probe) {
-      res.cookie("cookie_probe", "1", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        path: "/",
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-      });
-
-      return {
-        success: true,
-        cookiesWorking: false,
-        firstTime: true,
-      };
-    }
-
-    return {
-      success: true,
-      cookiesWorking: true,
+      data: null,
     };
   }
 }

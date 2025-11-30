@@ -1,32 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param } from "@nestjs/common";
+import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { Types } from "mongoose";
-import { User } from "./users.schema";
 
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: User) {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    const data = this.usersService.findAll();
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: "Users retrieved successfully",
+      data,
+    };
   }
 
   @Get(":id")
   findOne(@Param("id") id: Types.ObjectId) {
-    return this.usersService.findOne(id);
-  }
-
-  @Patch(":id")
-  update(
-    @Param("id") id: Types.ObjectId,
-    @Body() updateUserDto: Partial<User>
-  ) {
-    return this.usersService.update(id, updateUserDto);
+    const data = this.usersService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: "Users retrieved successfully",
+      data,
+    };
   }
 }
