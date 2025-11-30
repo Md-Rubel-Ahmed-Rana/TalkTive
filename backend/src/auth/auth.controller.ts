@@ -18,6 +18,7 @@ import { ConfigService } from "@nestjs/config";
 import { ChangePasswordDto } from "./dto/password.dto";
 import { User } from "src/users/users.schema";
 import { GoogleLoginDto } from "./dto/create-google.dto";
+import { AuthGuard as PassportAuthGuard } from "@nestjs/passport";
 
 @Controller("auth")
 export class AuthController {
@@ -88,8 +89,16 @@ export class AuthController {
     return res.redirect(this.configService.get<string>("GOOGLE_REDIRECT_URL"));
   }
 
-  @Post("/google/login")
-  async googleLogin(
+  @UseGuards(PassportAuthGuard("oauth2"))
+  async googleAuth() {}
+
+  @UseGuards(PassportAuthGuard("oauth2"))
+  @Get("google/login")
+  async googleLogin() {}
+
+  @Get("callback/google")
+  @UseGuards(PassportAuthGuard("oauth2"))
+  async googleAuthRedirect(
     @Body() credentials: GoogleLoginDto,
     @Res({ passthrough: true }) res: Response
   ) {
