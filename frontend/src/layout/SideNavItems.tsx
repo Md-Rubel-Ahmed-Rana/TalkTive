@@ -12,8 +12,11 @@ import { useGetAllUsersQuery } from "@/features/users";
 import { IUser } from "@/types/user";
 import UsersLoadingSkeleton from "@/skeletons/UsersLoadingSkeleton";
 import UsersLoadingSkeletonMini from "@/skeletons/UsersLoadingSkeletonMini";
+import { useGetLoggedInUserQuery } from "@/features/auth";
 
 const SideNavItems = () => {
+  const { data: userData } = useGetLoggedInUserQuery({});
+  const currentUser = userData?.data as IUser;
   const { data, isLoading } = useGetAllUsersQuery({});
   const [search, setSearch] = useState("");
   const { open } = useSidebar();
@@ -45,8 +48,8 @@ const SideNavItems = () => {
             <Avatar className="w-8 h-8 ring-1 ring-gray-300 dark:ring-gray-700">
               {user.profilePicture ? (
                 <AvatarImage
-                  src={user.profilePicture}
-                  alt={user.name || "User Image"}
+                  src={user?.profilePicture}
+                  alt={user?.name || "User Image"}
                   className="object-cover"
                 />
               ) : (
@@ -59,7 +62,7 @@ const SideNavItems = () => {
 
           return (
             <SidebarMenuItem
-              key={user._id}
+              key={user?._id}
               className={
                 open
                   ? "py-2 flex items-center border border-gray-300 dark:border-gray-700 gap-2 hover:bg-white dark:hover:bg-gray-700 rounded-md px-2 cursor-pointer transition"
@@ -67,11 +70,15 @@ const SideNavItems = () => {
               }
             >
               <Link
-                href={`/chat/${user._id}?name=${user?.name}`}
+                href={`/chat/${user?._id}?name=${user?.name}`}
                 className={open ? "flex items-center gap-2 w-full" : ""}
               >
                 {avatar}
-                {open && <span className="truncate">{user.name}</span>}
+                {open && (
+                  <span className="truncate">
+                    {user.name} {currentUser?._id === user?._id && "(You)"}{" "}
+                  </span>
+                )}
               </Link>
             </SidebarMenuItem>
           );
