@@ -90,20 +90,20 @@ export class AuthController {
   }
 
   @UseGuards(PassportAuthGuard("oauth2"))
-  async googleAuth() {}
-
-  @UseGuards(PassportAuthGuard("oauth2"))
   @Get("google/login")
   async googleLogin() {}
 
-  @Get("callback/google")
   @UseGuards(PassportAuthGuard("oauth2"))
+  @Get("callback/google")
   async googleAuthRedirect(
-    @Body() credentials: GoogleLoginDto,
+    @Req() req: any,
     @Res({ passthrough: true }) res: Response
   ) {
+    const user = req.user;
+
     const { accessToken, refreshToken } =
-      await this.authService.googleLogin(credentials);
+      await this.authService.googleLogin(user);
+
     res.cookie(this.cookieNames.accessToken, accessToken, this.cookieOptions);
     res.cookie(this.cookieNames.refreshToken, refreshToken, this.cookieOptions);
 
