@@ -4,9 +4,12 @@ import { useGetUserByIdQuery } from "@/features/users";
 import { IUser } from "@/types/user";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useGetLoggedInUserQuery } from "@/features/auth";
 
 const DashboardHeader = () => {
   const { query } = useRouter();
+  const { data: userData } = useGetLoggedInUserQuery({});
+  const currentUser = userData?.data as IUser;
   const id = query?.id as string;
   const { open, setOpen } = useSidebar();
 
@@ -43,7 +46,7 @@ const DashboardHeader = () => {
             )}
 
             <h2 className="text-md lg:text-lg font-semibold text-gray-800 dark:text-gray-200">
-              {user?.name}
+              {user?.name} {currentUser?._id === user?._id && "(You)"}{" "}
             </h2>
           </div>
         )}
