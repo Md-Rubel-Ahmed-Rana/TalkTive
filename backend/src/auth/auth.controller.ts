@@ -112,8 +112,8 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get("")
-  getProfile(@Request() req: any): any {
-    const data = this.authService.getLoggedInUser(req.user.id);
+  async getProfile(@Request() req: any) {
+    const data = await this.authService.getLoggedInUser(req.user.id);
     return {
       statusCode: HttpStatus.OK,
       success: true,
@@ -124,8 +124,8 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Patch("change-password")
-  changePassword(@Request() req: any, @Body() body: ChangePasswordDto): any {
-    this.authService.changePassword(body, req.user.email);
+  async changePassword(@Request() req: any, @Body() body: ChangePasswordDto) {
+    await this.authService.changePassword(body, req.user.email);
     return {
       statusCode: HttpStatus.OK,
       success: true,
@@ -136,8 +136,8 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Patch("")
-  updateUserInfo(@Request() req: any, @Body() body: User): any {
-    this.authService.updateUserInfo(body, req.user.id);
+  async updateUserInfo(@Request() req: any, @Body() body: User) {
+    await this.authService.updateUserInfo(body, req.user.id);
     return {
       statusCode: HttpStatus.OK,
       success: true,
@@ -147,7 +147,7 @@ export class AuthController {
   }
 
   @Delete("logout")
-  async logoutUser(@Res({ passthrough: true }) res: Response): Promise<any> {
+  async logoutUser(@Res({ passthrough: true }) res: Response) {
     res.clearCookie(this.cookieNames.accessToken, this.cookieOptions);
     res.clearCookie(this.cookieNames.refreshToken, this.cookieOptions);
     return {
