@@ -8,6 +8,7 @@ import { Types } from "mongoose";
 import { OAuth2Client } from "google-auth-library";
 import { GoogleLoginDto } from "./dto/create-google.dto";
 import { ChangePasswordDto } from "./dto/password.dto";
+import { TokensDto } from "./dto/tokens.dto";
 
 @Injectable()
 export class AuthService {
@@ -42,7 +43,7 @@ export class AuthService {
     return tokens;
   }
 
-  async googleOneTapLogin(idToken: string): Promise<any> {
+  async googleOneTapLogin(idToken: string): Promise<TokensDto> {
     if (!idToken)
       throw new HttpException("ID Token required", HttpStatus.BAD_REQUEST);
 
@@ -60,6 +61,11 @@ export class AuthService {
       name: payload.name,
       profilePicture: payload.picture,
     } as GoogleLoginDto;
+    const user = await this.usersService.createUserWithGoogle(credentials);
+    return await this.generateTokens(user);
+  }
+
+  async googleLogin(credentials: GoogleLoginDto): Promise<TokensDto> {
     const user = await this.usersService.createUserWithGoogle(credentials);
     return await this.generateTokens(user);
   }
@@ -101,9 +107,7 @@ export class AuthService {
   }
 
   // generate jwt tokens (access and refresh)
-  async generateTokens(
-    user: any
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  async generateTokens(user: any): Promise<TokensDto> {
     const payload = {
       id: user._id,
       email: user.email,
