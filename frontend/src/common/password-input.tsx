@@ -27,7 +27,7 @@ const PasswordInput = <T extends FieldValues>({
       <Input
         type={showPassword ? "text" : "password"}
         placeholder={placeholder}
-        className={`h-12 text-base pr-10 ${className || ""}`}
+        className={`h-12 dark:text-gray-700  pr-10 ${className || ""}`}
         {...register(name)}
         disabled={isLoading}
       />
@@ -36,7 +36,7 @@ const PasswordInput = <T extends FieldValues>({
         onClick={() => setShowPassword(!showPassword)}
         className={`absolute right-3 ${
           error ? "top-1/3 -translate-y-1/2" : "top-1/2 -translate-y-1/2"
-        } text-gray-400 hover:text-gray-600 cursor-pointer`}
+        } text-gray-400 hover:text-gray-600  cursor-pointer`}
       >
         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
       </button>

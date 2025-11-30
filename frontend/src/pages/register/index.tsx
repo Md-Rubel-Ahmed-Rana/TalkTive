@@ -23,7 +23,6 @@ const RegisterPage = () => {
         description="TalkTive registration page"
         keywords="register, create account, talktive"
       />
-      <Register />
       {!isLoading && !user?._id && <Register />}
     </>
   );

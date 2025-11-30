@@ -47,9 +47,10 @@ const LoginForm = () => {
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(handleLogin)}>
       <div className="flex flex-col">
         <Input
+          autoFocus
           type="email"
           placeholder="Enter your email"
-          className="h-12 text-base"
+          className="h-12 text-gray-800"
           {...register("email")}
           disabled={isLoading}
         />
@@ -63,7 +64,7 @@ const LoginForm = () => {
       <PasswordInput
         name="password"
         register={register}
-        className="h-12 text-base"
+        className="h-12"
         error={errors.password?.message}
         placeholder="Enter your password"
         isLoading={isLoading}
@@ -86,7 +87,7 @@ const LoginForm = () => {
 
       <Button
         type="submit"
-        className="h-12 text-base font-semibold mt-2"
+        className="h-12 text-base font-semibold mt-2 dark:bg-gray-800 dark:text-white"
         disabled={isLoading}
       >
         {isLoading ? "Logging in..." : "Login"}

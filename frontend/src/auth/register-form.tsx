@@ -53,9 +53,10 @@ const RegisterForm = () => {
     >
       <div className="flex flex-col">
         <Input
+          autoFocus
           type="text"
           placeholder="Enter your name"
-          className="h-12 text-base"
+          className="h-12 text-gray-800"
           {...register("name")}
           disabled={isLoading}
         />
@@ -70,7 +71,7 @@ const RegisterForm = () => {
         <Input
           type="email"
           placeholder="Enter your email"
-          className="h-12 text-base"
+          className="h-12 text-gray-800"
           {...register("email")}
           disabled={isLoading}
         />
@@ -92,7 +93,7 @@ const RegisterForm = () => {
 
       <Button
         type="submit"
-        className="h-12 text-base font-semibold mt-2"
+        className="h-12 text-base font-semibold mt-2 dark:bg-gray-800 dark:text-white"
         disabled={isLoading}
       >
         {isLoading ? "Creating account..." : "Create Account"}

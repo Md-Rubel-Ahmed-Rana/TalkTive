@@ -11,7 +11,7 @@ const Login = () => {
 
       <Card className="w-full max-w-md relative z-10 shadow-2xl border-0 bg-white/90 backdrop-blur-xl rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">
+          <CardTitle className="text-center text-2xl font-bold text-gray-800">
             Welcome Back
           </CardTitle>
         </CardHeader>
