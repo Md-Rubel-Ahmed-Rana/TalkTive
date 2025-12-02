@@ -4,6 +4,8 @@ import { ConfigService } from "@nestjs/config";
 import { connectWithRetry } from "./lib/connectWithRetry";
 import { databaseConnect } from "./lib/databaseConnect";
 import * as cookieParser from "cookie-parser";
+import { WsAdapter } from "./sockets/adapters/ws.adapter";
+import { wsAuthMiddleware } from "./sockets/common/ws-auth.middleware";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +26,12 @@ async function bootstrap() {
 
   await databaseConnect();
   await connectWithRetry();
+
+  const wsAdapter = new WsAdapter(app);
+  app.useWebSocketAdapter(wsAdapter);
+
+  const io = wsAdapter.createIOServer(5001);
+  io.use(wsAuthMiddleware);
 
   app.listen(port || 5000, () => {
     console.log(`Talktive server is running on port ${port || 5000}`);
