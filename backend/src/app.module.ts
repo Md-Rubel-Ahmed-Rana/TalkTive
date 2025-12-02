@@ -6,6 +6,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
 import mongoose from "mongoose";
+import { SocketModule } from "./sockets/socket.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import mongoose from "mongoose";
     }),
     UsersModule,
     AuthModule,
+    SocketModule
   ],
   controllers: [AppController],
   providers: [AppService],
