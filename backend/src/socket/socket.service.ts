@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
 import { GetAuthUserDTO } from "src/auth/dto/get-auth-user.dto";
+import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class SocketService {
@@ -8,7 +9,9 @@ export class SocketService {
 
   private readonly onlineUsers = new Map<string, string>();
 
-  handleConnection(socket: Socket, server: Server): void {
+  constructor(private readonly usersService: UsersService) {}
+
+  async handleConnection(socket: Socket, server: Server): Promise<void> {
     const user: GetAuthUserDTO | undefined = socket.data.user;
 
     if (!user) {
@@ -30,6 +33,9 @@ export class SocketService {
       profilePicture: user.profilePicture,
     });
 
+    // update user online status in database
+    await this.usersService.toggleOnlineStatus(user.id, true);
+
     this.logger.log(`Broadcasted user-online for userId=${user.id}`);
 
     socket.on("disconnect", (reason) => {
@@ -37,11 +43,11 @@ export class SocketService {
     });
   }
 
-  private handleDisconnect(
+  private async handleDisconnect(
     socket: Socket,
     server: Server,
     reason: string
-  ): void {
+  ): Promise<void> {
     const user: GetAuthUserDTO | undefined = socket.data.user;
 
     if (user) {
@@ -54,6 +60,9 @@ export class SocketService {
       server.emit("user-offline", {
         userId: user.id,
       });
+
+      // update user online status in database
+      await this.usersService.toggleOnlineStatus(user.id, false);
 
       this.logger.log(`Broadcasted user-offline for userId=${user.id}`);
     } else {

@@ -54,7 +54,7 @@ export class UsersService {
       .exec();
   }
 
-  async toggleOnlineStatus(id: Types.ObjectId, isOnline: boolean) {
+  async toggleOnlineStatus(id: Types.ObjectId | string, isOnline: boolean) {
     return await this.userModel
       .findByIdAndUpdate(id, { isOnline }, { new: true })
       .exec();
