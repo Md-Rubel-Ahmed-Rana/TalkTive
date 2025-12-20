@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import GoogleOneTapSignin from "@/auth/google-one-tap-signin";
+import { useSocketConnection } from "@/hooks/useSocketConnection";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -17,6 +18,8 @@ type AppPropsWithLayout = AppProps & {
 };
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  // Initialize socket connection
+  useSocketConnection();
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
