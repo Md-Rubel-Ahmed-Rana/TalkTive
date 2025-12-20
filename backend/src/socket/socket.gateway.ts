@@ -3,19 +3,26 @@ import {
   OnGatewayConnection,
   WebSocketServer,
 } from "@nestjs/websockets";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { SocketService } from "./socket.service";
+import { JwtService } from "@nestjs/jwt";
+import { socketAuthMiddleware } from "./socket-auth.middleware";
 
 @WebSocketGateway()
 export class SocketGateway implements OnGatewayConnection {
   @WebSocketServer()
-  private server: Socket;
+  private server: Server;
 
-  constructor(private readonly socketService: SocketService) {}
+  constructor(
+    private readonly socketService: SocketService,
+    private readonly jwtService: JwtService
+  ) {}
 
-  handleConnection(socket: Socket): void {
-    this.socketService.handleConnection(socket);
+  afterInit(server: Server) {
+    server.use(socketAuthMiddleware(this.jwtService));
   }
 
-  // Implement other Socket.IO event handlers and message handlers
+  handleConnection(socket: Socket): void {
+    this.socketService.handleConnection(socket, this.server);
+  }
 }
