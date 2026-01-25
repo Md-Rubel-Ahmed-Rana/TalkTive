@@ -7,6 +7,7 @@ import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
 import { SocketModule } from "./socket/socket.module";
 import mongoose from "mongoose";
+import { SocketModule } from "./sockets/socket.module";
 
 @Module({
   imports: [
@@ -23,7 +24,11 @@ import mongoose from "mongoose";
     }),
     UsersModule,
     AuthModule,
+<<<<<<< HEAD
+    SocketModule
+=======
     SocketModule,
+>>>>>>> 2dd8cb4f7da2634d3d9900059456a8d2298c96f5
   ],
   controllers: [AppController],
   providers: [AppService],
