@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
+import { schemaOptions } from "src/utils/schemaOptions";
 
 export type UserDocument = User & Document;
 
@@ -15,14 +16,13 @@ export enum Gender {
   OTHER = "other",
 }
 
-@Schema({
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true },
-})
+@Schema(schemaOptions)
 export class User {
   @Prop({ required: true, trim: true })
   name: string;
+
+  @Prop({ required: true, trim: true, unique: true, index: true })
+  username: string;
 
   @Prop({
     required: true,

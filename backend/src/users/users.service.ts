@@ -3,6 +3,7 @@ import { AuthProvider, User } from "./users.schema";
 import { Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { GoogleLoginDto } from "src/auth/dto/create-google.dto";
+import { generateUserName } from "src/utils/generateUserName";
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,8 @@ export class UsersService {
     if (existingUser) {
       throw new HttpException("User with this email already exists", 409);
     }
+    // generate username
+    data.username = generateUserName(data.email);
     const createdUser = await this.userModel.create(data);
     createdUser.password = undefined;
     return createdUser;
@@ -22,13 +25,17 @@ export class UsersService {
     if (isExist) {
       return isExist;
     }
+
     const payload = {
       ...data,
       provider: AuthProvider.GOOGLE,
       hasPassword: false,
       lastLoginAt: new Date(),
       isOnline: true,
+      // generate username
+      username: generateUserName(data.email),
     };
+
     return await this.userModel.create(payload);
   }
 
