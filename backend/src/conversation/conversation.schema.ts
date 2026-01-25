@@ -12,10 +12,17 @@ export enum ConversationType {
 @Schema(schemaOptions)
 export class Conversation {
   @Prop({
-    required: true,
     enum: ConversationType,
+    required: true,
   })
   type: ConversationType;
+
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: "User" }],
+    required: true,
+    index: true,
+  })
+  participants: Types.ObjectId[];
 
   @Prop({
     type: Types.ObjectId,
@@ -24,10 +31,19 @@ export class Conversation {
   })
   createdBy: Types.ObjectId;
 
-  @Prop({
-    default: true,
-  })
+  @Prop()
+  slug?: string; // "rubel-john"
+
+  @Prop({ default: true })
   isActive: boolean;
 }
 
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);
+
+ConversationSchema.index(
+  { participants: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { type: "direct" },
+  },
+);
