@@ -49,7 +49,7 @@ export class User {
   })
   provider: AuthProvider;
 
-  @Prop()
+  @Prop({ default: null })
   dateOfBirth?: string; //  DD-MM-YYYY
 
   @Prop({
@@ -59,7 +59,7 @@ export class User {
   })
   gender: Gender;
 
-  @Prop()
+  @Prop({ default: null })
   lastLoginAt?: Date;
 
   @Prop({ default: false })
