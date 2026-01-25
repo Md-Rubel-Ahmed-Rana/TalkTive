@@ -22,7 +22,7 @@ export class User {
   name: string;
 
   @Prop({ required: true, trim: true, unique: true, index: true })
-  slug: string;
+  username: string;
 
   @Prop({
     required: true,
