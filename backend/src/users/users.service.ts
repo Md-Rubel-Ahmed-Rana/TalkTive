@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { AuthProvider, User } from "./users.schema";
 import { Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
@@ -37,6 +37,25 @@ export class UsersService {
     };
 
     return await this.userModel.create(payload);
+  }
+
+  async getUserByUsername(username: string) {
+    const user = await this.userModel
+      .findOne({ username })
+      .select({ password: 0 });
+    if (!user) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.NOT_FOUND,
+          success: false,
+          message: "User not found",
+          data: null,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return user;
   }
 
   async findAll() {
