@@ -21,6 +21,9 @@ export class User {
   @Prop({ required: true, trim: true })
   name: string;
 
+  @Prop({ required: true, trim: true, unique: true, index: true })
+  slug: string;
+
   @Prop({
     required: true,
     unique: true,
