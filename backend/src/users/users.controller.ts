@@ -23,7 +23,18 @@ export class UsersController {
     return {
       statusCode: HttpStatus.OK,
       success: true,
-      message: "Users retrieved successfully",
+      message: "User retrieved successfully",
+      data,
+    };
+  }
+
+  @Get("username/:username")
+  async getUserByUsername(@Param("username") username: string) {
+    const data = await this.usersService.getUserByUsername(username);
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: "User retrieved successfully",
       data,
     };
   }
