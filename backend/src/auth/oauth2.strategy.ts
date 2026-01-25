@@ -13,9 +13,6 @@ export class OAuth2Strategy extends PassportStrategy(Strategy, "oauth2") {
     const clientSecret = config.get<string>("GOOGLE_CLIENT_SECRET");
     const callbackURL = config.get<string>("GOOGLE_CALLBACK_URL");
 
-    console.log("🔧 [OAuth2Strategy] Constructor Config:");
-    console.log({ authorizationURL, tokenURL, clientID, callbackURL });
-
     super({
       authorizationURL,
       tokenURL,

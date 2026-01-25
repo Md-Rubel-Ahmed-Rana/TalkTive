@@ -8,14 +8,10 @@ import { GoogleLoginDto } from "src/auth/dto/create-google.dto";
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
   async create(data: User) {
-    // check if user with the same email already exists
     const existingUser = await this.userModel.findOne({ email: data.email });
-    console.log(existingUser);
     if (existingUser) {
-      // http conflict exception
       throw new HttpException("User with this email already exists", 409);
     }
-    // remove the password for not to exposed in response
     const createdUser = await this.userModel.create(data);
     createdUser.password = undefined;
     return createdUser;
@@ -55,6 +51,12 @@ export class UsersService {
   async update(id: Types.ObjectId, data: Partial<User>) {
     return await this.userModel
       .findByIdAndUpdate(id, data, { new: true })
+      .exec();
+  }
+
+  async toggleOnlineStatus(id: Types.ObjectId | string, isOnline: boolean) {
+    return await this.userModel
+      .findByIdAndUpdate(id, { isOnline }, { new: true })
       .exec();
   }
 }
